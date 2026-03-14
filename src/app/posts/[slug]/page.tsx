@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/data";
 import { getPostBySlug, getPostsByTag } from "@/lib/queries";
 import { TagBadge } from "@/components/tag-badge";
 import { PostCard } from "@/components/post-card";
+import { MarkdownContent } from "@/components/markdown-content";
 
 export async function generateMetadata({
   params,
@@ -98,8 +99,9 @@ export default async function PostPage({
         <article
           className="mx-auto max-w-[740px] px-6 animate-fade-in-up prose-blog"
           style={{ animationDelay: "100ms" }}
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        >
+          <MarkdownContent content={post.content} />
+        </article>
       )}
 
       {/* Share & Tags footer */}
