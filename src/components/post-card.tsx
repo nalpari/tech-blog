@@ -1,0 +1,97 @@
+import Link from "next/link";
+import { type Post, formatDate } from "@/lib/data";
+
+export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
+  return (
+    <Link href={`/posts/${post.slug}`} className="group block">
+      <article
+        className="relative p-6 rounded-xl border border-border/40 hover:border-border/80 bg-card/30 hover:bg-card/60 transition-all duration-300 h-full"
+        style={{ animationDelay: `${index * 60}ms` }}
+      >
+        {post.featured && (
+          <div className="absolute top-4 right-4">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-accent/10 text-accent border border-accent/20">
+              <span className="size-1 rounded-full bg-accent animate-pulse" />
+              Featured
+            </span>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {post.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] text-muted-foreground"
+            >
+              {tag.replace("-", " ")}
+            </span>
+          ))}
+        </div>
+
+        <h3 className="text-[17px] font-semibold leading-snug text-foreground group-hover:text-accent transition-colors duration-200 tracking-tight mb-3 pr-8">
+          {post.title}
+        </h3>
+
+        <p className="text-sm text-muted-foreground/80 leading-relaxed mb-6 line-clamp-2">
+          {post.excerpt}
+        </p>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground/50">
+            <time dateTime={post.date}>{formatDate(post.date)}</time>
+            <span className="size-0.5 rounded-full bg-muted-foreground/30" />
+            <span>{post.readTime}</span>
+          </div>
+
+          <span className="text-xs text-accent/60 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-0 group-hover:translate-x-0">
+            Read &rarr;
+          </span>
+        </div>
+      </article>
+    </Link>
+  );
+}
+
+export function FeaturedPostCard({ post }: { post: Post }) {
+  return (
+    <Link href={`/posts/${post.slug}`} className="group block">
+      <article className="relative overflow-hidden rounded-2xl border border-border/40 hover:border-border/80 transition-all duration-500">
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${post.coverGradient || "from-indigo-500/10 via-purple-500/5 to-transparent"}`}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+
+        <div className="relative p-8 sm:p-10 pt-24 sm:pt-32">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-accent/10 text-accent border border-accent/20">
+              <span className="size-1 rounded-full bg-accent animate-pulse" />
+              Featured
+            </span>
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] text-muted-foreground"
+              >
+                {tag.replace("-", " ")}
+              </span>
+            ))}
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-bold leading-tight text-foreground group-hover:text-accent transition-colors duration-300 tracking-tight mb-4">
+            {post.title}
+          </h2>
+
+          <p className="text-base text-muted-foreground/80 leading-relaxed mb-6 max-w-2xl">
+            {post.excerpt}
+          </p>
+
+          <div className="flex items-center gap-4 text-sm text-muted-foreground/50">
+            <time dateTime={post.date}>{formatDate(post.date)}</time>
+            <span className="size-0.5 rounded-full bg-muted-foreground/30" />
+            <span>{post.readTime}</span>
+          </div>
+        </div>
+      </article>
+    </Link>
+  );
+}

@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+.bkit
+docs/.bkit-memory.json
+docs/.pdca-status.json
 
 # debug
 npm-debug.log*
