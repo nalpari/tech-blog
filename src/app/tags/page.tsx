@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { tags } from "@/lib/data";
+import { getTags } from "@/lib/queries";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,7 +8,10 @@ export const metadata: Metadata = {
     "Browse articles by topic — from systems design to modern frontend frameworks.",
 };
 
-export default function TagsPage() {
+export default async function TagsPage() {
+  const tags = await getTags();
+  const totalPosts = tags.reduce((acc, t) => acc + t.postCount, 0);
+
   return (
     <div className="pt-32 pb-20">
       {/* Header */}
@@ -48,7 +51,6 @@ export default function TagsPage() {
                 className="relative p-6 rounded-xl border border-border/40 hover:border-border/80 bg-card/30 hover:bg-card/60 transition-all duration-300 h-full"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
-                {/* Subtle accent glow on hover */}
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-accent/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 <div className="relative">
@@ -102,12 +104,7 @@ export default function TagsPage() {
           <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-8">
             {[
               { label: "Topics", value: tags.length.toString() },
-              {
-                label: "Total Posts",
-                value: tags
-                  .reduce((acc, t) => acc + t.postCount, 0)
-                  .toString(),
-              },
+              { label: "Total Posts", value: totalPosts.toString() },
               { label: "Authors", value: "4" },
               { label: "Since", value: "2024" },
             ].map((stat) => (

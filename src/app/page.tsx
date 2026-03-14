@@ -1,9 +1,12 @@
-import { posts, getFeaturedPosts } from "@/lib/data";
+import { getPosts, getFeaturedPosts } from "@/lib/queries";
 import { FeaturedPostCard, PostCard } from "@/components/post-card";
 
-export default function HomePage() {
-  const featured = getFeaturedPosts();
-  const regularPosts = posts.filter((p) => !p.featured);
+export default async function HomePage() {
+  const [featured, allPosts] = await Promise.all([
+    getFeaturedPosts(),
+    getPosts(),
+  ]);
+  const regularPosts = allPosts.filter((p) => !p.featured);
 
   return (
     <div className="pt-32 pb-20">
@@ -33,13 +36,15 @@ export default function HomePage() {
       </section>
 
       {/* Featured Posts */}
-      <section className="mx-auto max-w-[1200px] px-6 mb-20">
-        <div className="grid gap-6 md:grid-cols-2 stagger-children">
-          {featured.map((post) => (
-            <FeaturedPostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      </section>
+      {featured.length > 0 && (
+        <section className="mx-auto max-w-[1200px] px-6 mb-20">
+          <div className="grid gap-6 md:grid-cols-2 stagger-children">
+            {featured.map((post) => (
+              <FeaturedPostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Divider */}
       <div className="mx-auto max-w-[1200px] px-6 mb-12">
@@ -53,13 +58,18 @@ export default function HomePage() {
 
       {/* Post Grid */}
       <section className="mx-auto max-w-[1200px] px-6">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
-          {regularPosts.map((post, i) => (
-            <PostCard key={post.slug} post={post} index={i} />
-          ))}
-        </div>
+        {regularPosts.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
+            {regularPosts.map((post, i) => (
+              <PostCard key={post.slug} post={post} index={i} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground/60 py-20 text-sm">
+            No posts published yet.
+          </p>
+        )}
       </section>
-
     </div>
   );
 }

@@ -1,26 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { tags, getTagBySlug, getPostsByTag } from "@/lib/data";
+import { getTags, getTagBySlug, getPostsByTag } from "@/lib/queries";
 import { PostCard } from "@/components/post-card";
 import { TagBadge } from "@/components/tag-badge";
 
-export function generateStaticParams() {
-  return tags.map((tag) => ({ slug: tag.slug }));
-}
-
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  return params.then(({ slug }) => {
-    const tag = getTagBySlug(slug);
-    if (!tag) return { title: "Topic Not Found" };
-    return {
-      title: tag.name,
-      description: tag.description,
-    };
-  });
+  const { slug } = await params;
+  const tag = await getTagBySlug(slug);
+  if (!tag) return { title: "Topic Not Found" };
+  return {
+    title: tag.name,
+    description: tag.description,
+  };
 }
 
 export default async function TagDetailPage({
@@ -29,11 +24,14 @@ export default async function TagDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const tag = getTagBySlug(slug);
+  const [tag, tagPosts, allTags] = await Promise.all([
+    getTagBySlug(slug),
+    getPostsByTag(slug),
+    getTags(),
+  ]);
   if (!tag) notFound();
 
-  const tagPosts = getPostsByTag(slug);
-  const otherTags = tags.filter((t) => t.slug !== slug).slice(0, 6);
+  const otherTags = allTags.filter((t) => t.slug !== slug).slice(0, 6);
 
   return (
     <div className="pt-28 pb-20">

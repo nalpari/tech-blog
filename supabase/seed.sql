@@ -1,0 +1,151 @@
+-- =============================================================
+-- Spectra Tech Blog — Seed Data
+-- =============================================================
+-- Run AFTER migration. Tags can be inserted directly.
+-- Posts require a valid author_id (profiles row linked to auth.users).
+--
+-- Usage:
+--   1. Run migration first (00001_initial_schema.sql)
+--   2. Sign up a user via Supabase Auth (trigger creates profile)
+--   3. Update that profile's role to 'admin':
+--      UPDATE public.profiles SET role = 'admin' WHERE username = 'your-username';
+--   4. Then run this seed file
+--   5. Replace <AUTHOR_ID> with the actual profile UUID
+
+-- -------------------------------------------------------------
+-- Tags
+-- -------------------------------------------------------------
+
+insert into public.tags (slug, name, description) values
+  ('systems-design', 'Systems Design', 'Architectural patterns, distributed systems, and the art of designing software that scales.'),
+  ('react', 'React', 'Modern React patterns, server components, and building exceptional user interfaces.'),
+  ('typescript', 'TypeScript', 'Type-level programming, advanced patterns, and making JavaScript safer.'),
+  ('performance', 'Performance', 'Optimization techniques, profiling strategies, and delivering fast experiences.'),
+  ('devops', 'DevOps', 'CI/CD pipelines, infrastructure as code, and the bridge between development and operations.'),
+  ('ai-ml', 'AI & ML', 'Machine learning in production, LLM integrations, and the future of intelligent software.'),
+  ('rust', 'Rust', 'Memory safety, zero-cost abstractions, and systems programming for the modern era.'),
+  ('databases', 'Databases', 'Query optimization, data modeling, and choosing the right storage for your workload.')
+on conflict (slug) do nothing;
+
+-- -------------------------------------------------------------
+-- Posts (uncomment and replace <AUTHOR_ID> after creating admin user)
+-- -------------------------------------------------------------
+
+-- do $$
+-- declare
+--   v_author_id uuid := '<AUTHOR_ID>';
+--   v_post_id uuid;
+-- begin
+--   -- Post 1: Building a Real-Time Collaborative Editor
+--   insert into public.posts (author_id, slug, title, excerpt, status, featured, read_time, cover_gradient, published_at)
+--   values (
+--     v_author_id,
+--     'building-real-time-collaborative-editor',
+--     'Building a Real-Time Collaborative Editor from Scratch',
+--     'A deep dive into CRDTs, operational transforms, and the architectural decisions behind building a multiplayer text editor that actually works.',
+--     'published', true, '14 min read',
+--     'from-indigo-500/20 via-purple-500/10 to-transparent',
+--     '2026-03-12T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('systems-design', 'typescript');
+--
+--   -- Post 2: React Server Components Mental Model
+--   insert into public.posts (author_id, slug, title, excerpt, status, featured, read_time, cover_gradient, published_at)
+--   values (
+--     v_author_id,
+--     'react-server-components-mental-model',
+--     'The Mental Model You Need for React Server Components',
+--     'RSC isn''t just about performance. It''s a fundamental shift in how we think about the boundary between server and client.',
+--     'published', true, '10 min read',
+--     'from-violet-500/20 via-fuchsia-500/10 to-transparent',
+--     '2026-03-08T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('react', 'typescript');
+--
+--   -- Post 3: Type-Safe API Layer
+--   insert into public.posts (author_id, slug, title, excerpt, status, read_time, published_at)
+--   values (
+--     v_author_id,
+--     'type-safe-api-layer',
+--     'Designing a Type-Safe API Layer with tRPC and Zod',
+--     'End-to-end type safety isn''t a dream anymore. Here''s how we built an API layer that catches bugs before they reach production.',
+--     'published', '8 min read', '2026-03-04T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('typescript', 'systems-design');
+--
+--   -- Post 4: Rust for TypeScript Developers
+--   insert into public.posts (author_id, slug, title, excerpt, status, read_time, published_at)
+--   values (
+--     v_author_id,
+--     'rust-for-typescript-developers',
+--     'Rust for TypeScript Developers: A Practical Guide',
+--     'The ownership model, pattern matching, and zero-cost abstractions — explained through the lens of concepts you already know.',
+--     'published', '16 min read', '2026-02-28T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('rust', 'typescript');
+--
+--   -- Post 5: Scaling PostgreSQL
+--   insert into public.posts (author_id, slug, title, excerpt, status, read_time, published_at)
+--   values (
+--     v_author_id,
+--     'scaling-postgres-beyond-million-rows',
+--     'Scaling PostgreSQL Beyond a Million Rows per Second',
+--     'Partitioning strategies, connection pooling, and the query patterns that took our database from struggling to soaring.',
+--     'published', '12 min read', '2026-02-22T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('databases', 'performance');
+--
+--   -- Post 6: LLM-Powered Code Review
+--   insert into public.posts (author_id, slug, title, excerpt, status, read_time, published_at)
+--   values (
+--     v_author_id,
+--     'llm-powered-code-review',
+--     'We Built an LLM-Powered Code Review Bot. Here''s What We Learned.',
+--     'The promises, pitfalls, and practical insights from deploying AI-assisted code review across a team of 40 engineers.',
+--     'published', '11 min read', '2026-02-18T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('ai-ml', 'devops');
+--
+--   -- Post 7: Zero-Downtime Deployments
+--   insert into public.posts (author_id, slug, title, excerpt, status, read_time, published_at)
+--   values (
+--     v_author_id,
+--     'zero-downtime-deployments',
+--     'Zero-Downtime Deployments: The Complete Playbook',
+--     'Blue-green, canary, rolling updates — and the one strategy most teams overlook.',
+--     'published', '9 min read', '2026-02-12T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('devops', 'systems-design');
+--
+--   -- Post 8: Web Performance Budget
+--   insert into public.posts (author_id, slug, title, excerpt, status, read_time, published_at)
+--   values (
+--     v_author_id,
+--     'web-performance-budget',
+--     'Setting a Web Performance Budget That Actually Works',
+--     'Why most performance budgets fail, and the metrics-driven approach we use to keep our apps fast as they grow.',
+--     'published', '7 min read', '2026-02-06T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('performance', 'react');
+--
+--   -- Post 9: Event-Driven Architecture
+--   insert into public.posts (author_id, slug, title, excerpt, status, read_time, published_at)
+--   values (
+--     v_author_id,
+--     'event-driven-architecture-patterns',
+--     'Event-Driven Architecture: Patterns That Scale',
+--     'From event sourcing to CQRS, the patterns we use to build systems that handle millions of events per day.',
+--     'published', '13 min read', '2026-01-30T00:00:00Z'
+--   ) returning id into v_post_id;
+--   insert into public.post_tags (post_id, tag_id)
+--     select v_post_id, id from public.tags where slug in ('systems-design', 'databases');
+-- end;
+-- $$;
