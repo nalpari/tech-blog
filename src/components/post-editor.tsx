@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState, useState } from "react";
+import Link from "next/link";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { createPost, type CreatePostState } from "@/app/posts/new/actions";
+import { generateSlug } from "@/lib/slug";
 
 interface TagOption {
   id: string;
@@ -17,7 +18,6 @@ interface PostEditorProps {
 }
 
 export function PostEditor({ tags }: PostEditorProps) {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState<CreatePostState, FormData>(
     createPost,
     {},
@@ -30,15 +30,8 @@ export function PostEditor({ tags }: PostEditorProps) {
   const [excerpt, setExcerpt] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
-
-  const generateSlug = useCallback((text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[^\w\s가-힣-]/g, "")
-      .replace(/[\s_]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 100);
-  }, []);
+  const [featured, setFeatured] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   function handleTitleChange(value: string) {
     setTitle(value);
@@ -64,23 +57,32 @@ export function PostEditor({ tags }: PostEditorProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setUploadError(null);
+
     if (!file.name.endsWith(".md") && !file.name.endsWith(".markdown")) {
+      setUploadError(".md 또는 .markdown 파일만 업로드할 수 있습니다.");
+      e.target.value = "";
       return;
     }
 
-    const text = await file.text();
-    setContent(text);
+    try {
+      const text = await file.text();
+      setContent(text);
 
-    // Auto-fill title from filename if empty
-    if (!title) {
-      const nameWithoutExt = file.name.replace(/\.(md|markdown)$/, "");
-      const formatted = nameWithoutExt
-        .replace(/[-_]/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase());
-      handleTitleChange(formatted);
+      // Auto-fill title from filename if empty
+      if (!title) {
+        const nameWithoutExt = file.name.replace(/\.(md|markdown)$/, "");
+        const formatted = nameWithoutExt
+          .replace(/[-_]/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+        handleTitleChange(formatted);
+      }
+
+      setActiveTab("preview");
+    } catch {
+      setUploadError("파일을 읽는 중 오류가 발생했습니다. 다시 시도해주세요.");
+      e.target.value = "";
     }
-
-    setActiveTab("preview");
   }
 
   return (
@@ -212,6 +214,9 @@ export function PostEditor({ tags }: PostEditorProps) {
             </label>
           </div>
         </div>
+        {uploadError && (
+          <p className="text-sm text-red-400">{uploadError}</p>
+        )}
 
         {/* Tab switcher */}
         <div className="flex border-b border-border/40">
@@ -272,29 +277,30 @@ export function PostEditor({ tags }: PostEditorProps) {
       {/* Options row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-4 border-t border-border/40">
         {/* Featured toggle */}
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            name="featured"
-            className="sr-only peer"
-          />
-          <div className="relative w-9 h-5 rounded-full bg-white/[0.06] border border-border/40 peer-checked:bg-accent/30 peer-checked:border-accent/40 transition-all">
-            <div className="absolute top-0.5 left-0.5 size-4 rounded-full bg-muted-foreground/60 peer-checked:bg-accent peer-checked:translate-x-4 transition-all" />
+        <button
+          type="button"
+          role="switch"
+          aria-checked={featured}
+          onClick={() => setFeatured((prev) => !prev)}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <input type="hidden" name="featured" value={featured ? "on" : ""} />
+          <div className={`relative w-9 h-5 rounded-full border transition-all ${featured ? "bg-accent/30 border-accent/40" : "bg-white/[0.06] border-border/40"}`}>
+            <div className={`absolute top-0.5 left-0.5 size-4 rounded-full transition-all ${featured ? "bg-accent translate-x-4" : "bg-muted-foreground/60"}`} />
           </div>
           <span className="text-sm text-muted-foreground">Featured 포스트</span>
-        </label>
+        </button>
 
         <div className="flex-1" />
 
         {/* Action buttons */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground border border-border/40 hover:border-border/80 transition-all cursor-pointer"
+          <Link
+            href="/"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground border border-border/40 hover:border-border/80 transition-all"
           >
             취소
-          </button>
+          </Link>
           <button
             type="submit"
             name="status"

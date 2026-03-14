@@ -19,7 +19,7 @@ export default async function NewPostPage() {
   }
 
   // Fetch available tags
-  const { data: tags } = await supabase
+  const { data: tags, error: tagError } = await supabase
     .from("tags")
     .select("id, name, slug")
     .order("name");
@@ -55,6 +55,12 @@ export default async function NewPostPage() {
         <p className="text-sm text-muted-foreground/60 mb-10">
           마크다운으로 포스트를 작성하거나 .md 파일을 업로드하세요.
         </p>
+
+        {tagError && (
+          <div className="mb-6 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
+            태그를 불러오지 못했습니다. 태그 없이 포스트를 작성할 수 있습니다.
+          </div>
+        )}
 
         <PostEditor tags={tags ?? []} />
       </div>
