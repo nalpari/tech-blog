@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/stores/auth-store";
 import { AuthButtons } from "@/components/auth-buttons";
 import { UserAvatar } from "@/components/user-avatar";
 
@@ -11,11 +12,18 @@ const navItems = [
   { href: "/about", label: "About" },
 ];
 
-// TODO: Replace with real auth state
-const MOCK_USER: { name: string; email: string; avatarUrl?: string } | null = null;
-
 export function Header() {
   const pathname = usePathname();
+  const user = useAuthStore((s) => s.user);
+  const isLoading = useAuthStore((s) => s.isLoading);
+
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split("@")[0] ||
+    "User";
+  const avatarUrl =
+    user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40">
@@ -78,11 +86,13 @@ export function Header() {
 
           <div className="w-px h-4 bg-border/60 mx-2" />
 
-          {MOCK_USER ? (
+          {isLoading ? (
+            <div className="size-8 rounded-full bg-white/[0.04] animate-pulse" />
+          ) : user ? (
             <UserAvatar
-              name={MOCK_USER.name}
-              email={MOCK_USER.email}
-              avatarUrl={MOCK_USER.avatarUrl}
+              name={displayName}
+              email={user.email || ""}
+              avatarUrl={avatarUrl}
             />
           ) : (
             <AuthButtons />

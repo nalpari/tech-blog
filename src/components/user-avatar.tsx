@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 interface UserAvatarProps {
   name: string;
@@ -11,8 +13,17 @@ interface UserAvatarProps {
 }
 
 export function UserAvatar({ name, email, avatarUrl }: UserAvatarProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  async function handleSignOut() {
+    setOpen(false);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   const initials = name
     .split(" ")
@@ -74,7 +85,7 @@ export function UserAvatar({ name, email, avatarUrl }: UserAvatarProps) {
 
           <div className="border-t border-border/40 py-1.5">
             <button
-              onClick={() => setOpen(false)}
+              onClick={handleSignOut}
               className="w-full flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <LogOutIcon />
