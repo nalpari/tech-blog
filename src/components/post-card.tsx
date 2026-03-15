@@ -20,10 +20,10 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-card/80 to-transparent" />
             </>
           ) : (
-            <div className={`absolute inset-0 bg-gradient-to-br ${post.coverGradient || "from-indigo-500/20 via-purple-500/10 to-transparent"}`}>
+            <div className={`absolute inset-0 bg-linear-to-br ${post.coverGradient || "from-indigo-500/20 via-purple-500/10 to-transparent"}`}>
               <div className="absolute inset-0 flex items-center justify-center">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/20">
                   <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
@@ -49,7 +49,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] text-muted-foreground"
+                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/4 text-muted-foreground"
               >
                 {tag.replace("-", " ")}
               </span>
@@ -94,14 +94,14 @@ export function FeaturedPostCard({ post }: { post: Post }) {
               className="object-cover group-hover:scale-105 transition-transform duration-700"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
+            <div className="absolute inset-0 bg-linear-to-t from-background via-background/70 to-background/20" />
           </>
         ) : (
           <>
             <div
-              className={`absolute inset-0 bg-gradient-to-br ${post.coverGradient || "from-indigo-500/10 via-purple-500/5 to-transparent"}`}
+              className={`absolute inset-0 bg-linear-to-br ${post.coverGradient || "from-indigo-500/10 via-purple-500/5 to-transparent"}`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-background via-background/80 to-transparent" />
           </>
         )}
 
@@ -114,7 +114,7 @@ export function FeaturedPostCard({ post }: { post: Post }) {
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] text-muted-foreground backdrop-blur-sm"
+                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/4 text-muted-foreground backdrop-blur-sm"
               >
                 {tag.replace("-", " ")}
               </span>

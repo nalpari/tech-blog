@@ -267,7 +267,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             </div>
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-border/40 hover:border-accent/40 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer">
+          <label className="flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-border/40 hover:border-accent/40 bg-white/2 hover:bg-white/4 transition-all cursor-pointer">
             <svg
               width="32"
               height="32"
