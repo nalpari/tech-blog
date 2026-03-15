@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -8,7 +8,6 @@ import remarkGfm from "remark-gfm";
 import { createPost, type CreatePostState } from "@/app/posts/new/actions";
 import { updatePost, type UpdatePostState } from "@/lib/post-actions";
 import { generateSlug } from "@/lib/slug";
-import { uploadImage } from "@/lib/upload-image";
 
 interface TagOption {
   id: string;
@@ -58,13 +57,22 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>(editMode?.tagIds ?? []);
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [featured, setFeatured] = useState(editMode?.featured ?? false);
-  const [coverImage, setCoverImage] = useState(editMode?.coverImage ?? "");
-  const [coverUploading, setCoverUploading] = useState(false);
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(editMode?.coverImage || null);
+  const [existingCoverImage, setExistingCoverImage] = useState(editMode?.coverImage ?? "");
+  const coverImageUrlRef = useRef<string | null>(null);
+  const coverImageInputRef = useRef<HTMLInputElement>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (coverImageUrlRef.current) {
+        URL.revokeObjectURL(coverImageUrlRef.current);
+      }
+    };
+  }, []);
 
   function handleTitleChange(value: string) {
     setTitle(value);
@@ -84,6 +92,51 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
         ? prev.filter((id) => id !== tagId)
         : [...prev, tagId],
     );
+  }
+
+  function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setUploadError("이미지 파일만 업로드할 수 있습니다.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("이미지 크기는 5MB 이하여야 합니다.");
+      e.target.value = "";
+      return;
+    }
+
+    setUploadError(null);
+    setExistingCoverImage("");
+    if (coverImageUrlRef.current) {
+      URL.revokeObjectURL(coverImageUrlRef.current);
+    }
+    const url = URL.createObjectURL(file);
+    coverImageUrlRef.current = url;
+    setCoverImagePreview(url);
+
+    // Copy file to persistent hidden input so it survives re-renders
+    if (coverImageInputRef.current) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      coverImageInputRef.current.files = dt.files;
+    }
+  }
+
+  function removeCoverImage() {
+    if (coverImageUrlRef.current) {
+      URL.revokeObjectURL(coverImageUrlRef.current);
+      coverImageUrlRef.current = null;
+    }
+    setCoverImagePreview(null);
+    setExistingCoverImage("");
+    if (coverImageInputRef.current) {
+      coverImageInputRef.current.value = "";
+    }
   }
 
   function insertAtCursor(text: string) {
@@ -107,24 +160,6 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
     });
   }
 
-  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadError(null);
-    setCoverUploading(true);
-
-    try {
-      const { url } = await uploadImage(file);
-      setCoverImage(url);
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "커버 이미지 업로드 실패");
-    } finally {
-      setCoverUploading(false);
-      e.target.value = "";
-    }
-  }
-
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -133,6 +168,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
     setImageUploading(true);
 
     try {
+      const { uploadImage } = await import("@/lib/upload-image");
       const { url } = await uploadImage(file);
       const altText = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
       insertAtCursor(`\n![${altText}](${url})\n`);
@@ -186,6 +222,79 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
         </div>
       )}
 
+      {/* Cover Image - persistent hidden input for form submission */}
+      <input
+        ref={coverImageInputRef}
+        type="file"
+        name="coverImage"
+        accept="image/*"
+        className="hidden"
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+      <input type="hidden" name="existingCoverImage" value={existingCoverImage} />
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-muted-foreground">
+          커버 이미지
+        </label>
+        {coverImagePreview ? (
+          <div className="relative group rounded-xl overflow-hidden border border-border/40">
+            <Image
+              src={coverImagePreview}
+              alt="커버 이미지 미리보기"
+              width={800}
+              height={400}
+              className="w-full h-48 sm:h-64 object-cover"
+              unoptimized
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <label className="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm text-white text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors">
+                변경
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverImageChange}
+                  className="hidden"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={removeCoverImage}
+                className="px-3 py-1.5 rounded-lg bg-red-500/30 backdrop-blur-sm text-white text-xs font-medium cursor-pointer hover:bg-red-500/50 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-border/40 hover:border-accent/40 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-muted-foreground/40 mb-2"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+              <circle cx="9" cy="9" r="2" />
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            </svg>
+            <span className="text-sm text-muted-foreground/50">클릭하여 커버 이미지 업로드</span>
+            <span className="text-xs text-muted-foreground/30 mt-1">PNG, JPG, WebP (최대 5MB)</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleCoverImageChange}
+              className="hidden"
+            />
+          </label>
+        )}
+      </div>
+
       {/* Title */}
       <div className="space-y-1.5">
         <label htmlFor="title" className="text-xs font-mono text-muted">
@@ -225,70 +334,6 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
         {state.fieldErrors?.slug && (
           <p className="text-sm text-red-400 font-sans">{state.fieldErrors.slug}</p>
         )}
-      </div>
-
-      {/* Cover Image */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-mono text-muted">cover image</label>
-        <input type="hidden" name="coverImage" value={coverImage} />
-        {coverImage ? (
-          <div className="relative border border-border group h-48">
-            <Image
-              src={coverImage}
-              alt="cover preview"
-              fill
-              sizes="(max-width: 768px) 100vw, 740px"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => coverInputRef.current?.click()}
-                disabled={coverUploading}
-                className="px-3 py-1.5 text-xs font-mono text-foreground border border-border bg-background/80 hover:border-accent/50 transition-colors cursor-pointer"
-              >
-                change
-              </button>
-              <button
-                type="button"
-                onClick={() => setCoverImage("")}
-                className="px-3 py-1.5 text-xs font-mono text-red-400 border border-red-500/30 bg-background/80 hover:border-red-500/50 transition-colors cursor-pointer"
-              >
-                remove
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => coverInputRef.current?.click()}
-            disabled={coverUploading}
-            className="w-full h-32 border border-dashed border-border hover:border-accent/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-accent transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {coverUploading ? (
-              <>
-                <span className="size-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs font-mono">uploading...</span>
-              </>
-            ) : (
-              <>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                </svg>
-                <span className="text-xs font-mono">click to upload cover image</span>
-              </>
-            )}
-          </button>
-        )}
-        <input
-          ref={coverInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp"
-          onChange={handleCoverUpload}
-          className="hidden"
-        />
       </div>
 
       {/* Excerpt */}
