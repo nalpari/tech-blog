@@ -41,10 +41,34 @@ export function LikeButton({
     if (hasMounted.current) return;
     hasMounted.current = true;
 
+    // localStorage를 즉시 반영하여 깜빡임 방지
     const storedLiked = localStorage.getItem(`liked-${slug}`);
     if (storedLiked === "1") {
       setLiked(true);
     }
+
+    // 서버(httpOnly 쿠키) 상태를 source of truth로 동기화
+    fetch(`/api/posts/${slug}/like`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Like status API returned ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setLiked(data.liked);
+        if (data.likeCount != null) {
+          setCount(data.likeCount);
+        }
+        // localStorage를 서버 상태와 동기화
+        if (data.liked) {
+          localStorage.setItem(`liked-${slug}`, "1");
+        } else {
+          localStorage.removeItem(`liked-${slug}`);
+        }
+      })
+      .catch((err) => {
+        console.error("[LikeButton] Failed to fetch like status:", slug, err);
+        // fetch 실패 시 localStorage 값 유지
+      });
   }, [slug]);
 
   async function handleToggle() {
