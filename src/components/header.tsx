@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { AuthButtons } from "@/components/auth-buttons";
 import { UserAvatar } from "@/components/user-avatar";
+import { SearchModal } from "@/components/search-modal";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
 
@@ -18,6 +20,18 @@ export function Header() {
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const displayName =
     user?.user_metadata?.full_name ||
@@ -65,9 +79,15 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 px-3 py-1.5 border border-border text-muted-foreground hover:text-foreground text-[13px] font-mono transition-colors cursor-pointer">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex items-center gap-2 px-3 py-1.5 border border-border text-muted-foreground hover:text-foreground text-[13px] font-mono transition-colors cursor-pointer"
+          >
             <span className="text-muted">/</span>
             <span>search...</span>
+            <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 text-[10px] text-muted border border-border bg-background">
+              Ctrl K
+            </kbd>
           </button>
 
           {isLoading ? (
@@ -84,6 +104,7 @@ export function Header() {
           )}
         </div>
       </nav>
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }
