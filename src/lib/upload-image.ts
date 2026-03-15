@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 
 const BUCKET = "post-images";
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
 export interface UploadResult {
@@ -15,7 +15,7 @@ export async function uploadImage(file: File): Promise<UploadResult> {
   }
 
   if (file.size > MAX_SIZE) {
-    throw new Error("파일 크기는 5MB 이하여야 합니다.");
+    throw new Error("파일 크기는 10MB 이하여야 합니다.");
   }
 
   const supabase = createClient();

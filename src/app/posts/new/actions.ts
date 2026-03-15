@@ -157,7 +157,11 @@ export async function createPost(
 
       if (tagError) {
         // Clean up orphaned post
-        await supabase.from("posts").delete().eq("id", post.id);
+        const { error: cleanupError } = await supabase.from("posts").delete().eq("id", post.id);
+        if (cleanupError) {
+          console.error("[createPost] Failed to clean up orphaned post:", post.id, cleanupError.message);
+          return { error: "태그 저장에 실패하여 포스트 정리 중 추가 오류가 발생했습니다. 관리자에게 문의해주세요." };
+        }
         return { error: "태그 저장에 실패했습니다. 다시 시도해주세요." };
       }
     }

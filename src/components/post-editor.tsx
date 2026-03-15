@@ -205,8 +205,9 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       }
 
       setActiveTab("preview");
-    } catch {
-      setUploadError("파일을 읽는 중 오류가 발생했습니다.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "알 수 없는 오류";
+      setUploadError(`파일을 읽는 중 오류가 발생했습니다: ${message}`);
       e.target.value = "";
     }
   }
