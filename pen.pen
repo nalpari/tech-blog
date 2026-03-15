@@ -73,7 +73,8 @@
                   "fill": "$accent-green",
                   "content": "blog",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -82,7 +83,8 @@
                   "fill": "$text-secondary",
                   "content": "tags",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -91,7 +93,8 @@
                   "fill": "$text-secondary",
                   "content": "about",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -118,7 +121,8 @@
                   "fill": "$text-secondary",
                   "content": "/",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -127,7 +131,8 @@
                   "fill": "$text-tertiary",
                   "content": "search...",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -189,7 +194,8 @@
               "fill": "$text-secondary",
               "content": "// where engineers share professional knowledge and technical insights",
               "fontFamily": "IBM Plex Mono",
-              "fontSize": 14
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -209,7 +215,8 @@
               "fill": "$text-secondary",
               "content": "// latest_posts",
               "fontFamily": "JetBrains Mono",
-              "fontSize": 12
+              "fontSize": 12,
+              "fontWeight": "normal"
             },
             {
               "type": "frame",
@@ -253,7 +260,8 @@
                           "fill": "$accent-green",
                           "content": "systems_design",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -278,7 +286,8 @@
                       "width": "fill_container",
                       "content": "exploring fault tolerance patterns and circuit breakers for modern microservice architectures.",
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -295,7 +304,8 @@
                           "fill": "$text-secondary",
                           "content": "$ sarah_chen",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -304,7 +314,8 @@
                           "fill": "$text-tertiary",
                           "content": "2026.03.12",
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -313,7 +324,8 @@
                           "fill": "$text-tertiary",
                           "content": "[8 min]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -354,7 +366,8 @@
                           "fill": "$accent-green",
                           "content": "rust",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -379,7 +392,8 @@
                       "width": "fill_container",
                       "content": "how rust achieves performance without sacrificing safety through its ownership model and borrow checker.",
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -396,7 +410,8 @@
                           "fill": "$text-secondary",
                           "content": "$ alex_kumar",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -405,7 +420,8 @@
                           "fill": "$text-tertiary",
                           "content": "2026.03.10",
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -414,7 +430,8 @@
                           "fill": "$text-tertiary",
                           "content": "[12 min]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -455,7 +472,8 @@
                           "fill": "$accent-green",
                           "content": "infrastructure",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -480,7 +498,8 @@
                       "width": "fill_container",
                       "content": "practical insights from running 500+ nodes in production for three years.",
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -497,7 +516,8 @@
                           "fill": "$text-secondary",
                           "content": "$ maria_lopez",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -506,7 +526,8 @@
                           "fill": "$text-tertiary",
                           "content": "2026.03.08",
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -515,7 +536,8 @@
                           "fill": "$text-tertiary",
                           "content": "[10 min]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -565,7 +587,8 @@
                           "fill": "$accent-green",
                           "content": "algorithms",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -590,7 +613,8 @@
                       "width": "fill_container",
                       "content": "bloom filters, count-min sketch, and hyperloglog for efficient large-scale data processing.",
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -607,7 +631,8 @@
                           "fill": "$text-secondary",
                           "content": "$ james_wu",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -616,7 +641,8 @@
                           "fill": "$text-tertiary",
                           "content": "2026.03.06",
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -625,7 +651,8 @@
                           "fill": "$text-tertiary",
                           "content": "[15 min]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -666,7 +693,8 @@
                           "fill": "$accent-green",
                           "content": "security",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -691,7 +719,8 @@
                       "width": "fill_container",
                       "content": "implementing sigstore, sbom generation, and dependency verification in ci/cd pipelines.",
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -708,7 +737,8 @@
                           "fill": "$text-secondary",
                           "content": "$ priya_nair",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -717,7 +747,8 @@
                           "fill": "$text-tertiary",
                           "content": "2026.03.04",
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -726,7 +757,8 @@
                           "fill": "$text-tertiary",
                           "content": "[9 min]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -767,7 +799,8 @@
                           "fill": "$accent-green",
                           "content": "performance",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -792,7 +825,8 @@
                       "width": "fill_container",
                       "content": "deep dive into pprof, trace analysis, and memory optimization techniques for go services.",
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -809,7 +843,8 @@
                           "fill": "$text-secondary",
                           "content": "$ david_park",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -818,7 +853,8 @@
                           "fill": "$text-tertiary",
                           "content": "2026.03.02",
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -827,7 +863,8 @@
                           "fill": "$text-tertiary",
                           "content": "[11 min]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -863,7 +900,8 @@
               "fill": "$text-tertiary",
               "content": "// built with precision",
               "fontFamily": "IBM Plex Mono",
-              "fontSize": 12
+              "fontSize": 12,
+              "fontWeight": "normal"
             },
             {
               "type": "text",
@@ -872,7 +910,8 @@
               "fill": "$text-tertiary",
               "content": "> 2026",
               "fontFamily": "JetBrains Mono",
-              "fontSize": 12
+              "fontSize": 12,
+              "fontWeight": "normal"
             }
           ]
         }
@@ -958,7 +997,8 @@
                       "fill": "$accent-green",
                       "content": "blog",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -967,7 +1007,8 @@
                       "fill": "$text-secondary",
                       "content": "tags",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -976,7 +1017,8 @@
                       "fill": "$text-secondary",
                       "content": "about",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -1005,7 +1047,8 @@
                   "fill": "$text-secondary",
                   "content": "/",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -1014,7 +1057,8 @@
                   "fill": "$text-tertiary",
                   "content": "search...",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -1113,7 +1157,8 @@
                               "fill": "$text-primary",
                               "content": "sarah_chen",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "text",
@@ -1132,7 +1177,8 @@
                               "fill": "$text-secondary",
                               "content": "mar 08, 2026",
                               "fontFamily": "IBM Plex Mono",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "text",
@@ -1151,7 +1197,8 @@
                               "fill": "$text-secondary",
                               "content": "12 min read",
                               "fontFamily": "IBM Plex Mono",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1185,7 +1232,8 @@
                       "content": "conflict-free replicated data types (crdts) have fundamentally changed how we think about distributed systems. in this post, we'll walk through how we built a real-time collaboration engine from scratch, the trade-offs we encountered, and why crdts were the right choice for our use case.",
                       "lineHeight": 1.7,
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -1202,7 +1250,8 @@
                           "fill": "$accent-green",
                           "content": "//",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -1226,7 +1275,8 @@
                       "content": "traditional approaches to real-time collaboration rely on operational transformation (ot), which requires a central server to resolve conflicts. this works well for simple document editing, but breaks down when you need offline support, peer-to-peer sync, or complex data structures beyond plain text.",
                       "lineHeight": 1.7,
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -1238,7 +1288,8 @@
                       "content": "crdts solve this by ensuring that concurrent operations can be merged automatically without conflicts. each replica maintains its own state and can independently apply operations — convergence is mathematically guaranteed.",
                       "lineHeight": 1.7,
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
@@ -1262,7 +1313,8 @@
                           "fill": "$accent-green",
                           "content": "$ interface CRDTDocument<T> {",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -1271,7 +1323,8 @@
                           "fill": "$text-primary",
                           "content": "    state: T;",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -1280,7 +1333,8 @@
                           "fill": "$text-primary",
                           "content": "    merge(remote: T): T;",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -1289,7 +1343,8 @@
                           "fill": "$text-primary",
                           "content": "    apply(op: Operation): T;",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -1298,7 +1353,8 @@
                           "fill": "$accent-green",
                           "content": "}",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -1331,6 +1387,7 @@
                           "lineHeight": 1.6,
                           "fontFamily": "IBM Plex Mono",
                           "fontSize": 13,
+                          "fontWeight": "normal",
                           "fontStyle": "italic"
                         }
                       ]
@@ -1350,7 +1407,8 @@
                           "fill": "$accent-green",
                           "content": "//",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 14
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -1374,7 +1432,8 @@
                       "content": "we chose to implement a hybrid approach combining last-writer-wins registers for simple properties with sequence crdts for ordered collections. the architecture splits into three layers: the local state manager, the sync protocol handler, and the conflict resolution engine.",
                       "lineHeight": 1.7,
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -1386,7 +1445,8 @@
                       "content": "the sync protocol uses a vector clock to track causality between operations. when two replicas reconnect after being offline, they exchange only the operations that the other hasn't seen yet — making sync bandwidth-efficient even after long periods of disconnection.",
                       "lineHeight": 1.7,
                       "fontFamily": "IBM Plex Mono",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -1463,7 +1523,8 @@
                               "fill": "$accent-green",
                               "content": "[crdts]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -1488,7 +1549,8 @@
                               "fill": "$text-primary",
                               "content": "[distributed_systems]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -1513,7 +1575,8 @@
                               "fill": "$text-primary",
                               "content": "[real_time]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -1538,7 +1601,8 @@
                               "fill": "$text-primary",
                               "content": "[typescript]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -1563,7 +1627,8 @@
                               "fill": "$text-primary",
                               "content": "[architecture]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 11
+                              "fontSize": 11,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -1902,7 +1967,8 @@
                   "fill": "$text-secondary",
                   "content": "blog",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -1911,7 +1977,8 @@
                   "fill": "$accent-green",
                   "content": "tags",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -1920,7 +1987,8 @@
                   "fill": "$text-secondary",
                   "content": "about",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 13
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -1947,7 +2015,8 @@
                   "fill": "$text-tertiary",
                   "content": "/",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 12
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "text",
@@ -1956,7 +2025,8 @@
                   "fill": "$text-tertiary",
                   "content": "search...",
                   "fontFamily": "IBM Plex Mono",
-                  "fontSize": 12
+                  "fontSize": 12,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -2005,7 +2075,8 @@
                       "fill": "$text-secondary",
                       "content": "blog",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -2014,7 +2085,8 @@
                       "fill": "$text-tertiary",
                       "content": "/",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -2023,7 +2095,8 @@
                       "fill": "$text-secondary",
                       "content": "tags",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -2032,7 +2105,8 @@
                       "fill": "$text-tertiary",
                       "content": "/",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "text",
@@ -2041,7 +2115,8 @@
                       "fill": "$accent-green",
                       "content": "rust",
                       "fontFamily": "JetBrains Mono",
-                      "fontSize": 12
+                      "fontSize": 12,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -2084,7 +2159,8 @@
                   "width": "fill_container",
                   "content": "// systems programming, memory safety, and high-performance computing with rust",
                   "fontFamily": "IBM Plex Mono",
-                  "fontSize": 14
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 },
                 {
                   "type": "frame",
@@ -2124,7 +2200,8 @@
                           "fill": "$text-secondary",
                           "content": "posts",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -2162,7 +2239,8 @@
                           "fill": "$text-secondary",
                           "content": "total views",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -2190,7 +2268,8 @@
                           "fill": "$text-secondary",
                           "content": "last updated",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -2199,7 +2278,8 @@
                           "fill": "$text-primary",
                           "content": "2d ago",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -2257,7 +2337,8 @@
                               "fill": "$text-tertiary",
                               "content": "// sort_by",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "text",
@@ -2266,7 +2347,8 @@
                               "fill": "$accent-green",
                               "content": "[latest]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "text",
@@ -2275,7 +2357,8 @@
                               "fill": "$text-secondary",
                               "content": "[popular]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "text",
@@ -2284,7 +2367,8 @@
                               "fill": "$text-secondary",
                               "content": "[oldest]",
                               "fontFamily": "JetBrains Mono",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -2295,7 +2379,8 @@
                           "fill": "$text-tertiary",
                           "content": "showing 12 posts",
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -2309,15 +2394,33 @@
                       "x": 0,
                       "y": 32,
                       "descendants": {
+                        "nVVBW": {
+                          "width": "fit_content",
+                          "height": "fit_content",
+                          "y": 20
+                        },
+                        "XBDzR": {
+                          "width": "fit_content",
+                          "height": "fit_content"
+                        },
                         "EiwJs": {
-                          "content": "rust"
+                          "content": "rust",
+                          "x": 8,
+                          "y": 2
+                        },
+                        "USVjo": {
+                          "x": 51,
+                          "y": 1.5
                         },
                         "RFOZF": {
-                          "content": "mar 10, 2026"
+                          "content": "mar 10, 2026",
+                          "x": 67,
+                          "y": 1.5
                         },
                         "s3DWN": {
                           "width": "fill_container",
-                          "content": "understanding ownership and borrowing in rust"
+                          "content": "understanding ownership and borrowing in rust",
+                          "y": 51
                         },
                         "DsESh": {
                           "width": "fill_container",
@@ -2325,13 +2428,19 @@
                           "content": "a deep dive into rust's unique ownership model, how borrowing works, and why these concepts are fundamental to writing safe, concurrent code without a garbage collector."
                         },
                         "l8ktd": {
-                          "y": 137
+                          "y": 137,
+                          "width": "fit_content",
+                          "height": "fit_content"
                         },
                         "IF0MX": {
                           "content": "by alex chen"
                         },
+                        "gs8Q3": {
+                          "x": 99
+                        },
                         "aHKPB": {
-                          "content": "8 min read"
+                          "content": "8 min read",
+                          "x": 119
                         }
                       }
                     },
@@ -2345,15 +2454,33 @@
                       "x": 0,
                       "y": 205,
                       "descendants": {
+                        "nVVBW": {
+                          "width": "fit_content",
+                          "height": "fit_content",
+                          "y": 20
+                        },
+                        "XBDzR": {
+                          "width": "fit_content",
+                          "height": "fit_content"
+                        },
                         "EiwJs": {
-                          "content": "rust"
+                          "content": "rust",
+                          "x": 8,
+                          "y": 2
+                        },
+                        "USVjo": {
+                          "x": 51,
+                          "y": 1.5
                         },
                         "RFOZF": {
-                          "content": "mar 05, 2026"
+                          "content": "mar 05, 2026",
+                          "x": 67,
+                          "y": 1.5
                         },
                         "s3DWN": {
                           "width": "fill_container",
-                          "content": "building a high-performance web server with actix-web"
+                          "content": "building a high-performance web server with actix-web",
+                          "y": 51
                         },
                         "DsESh": {
                           "width": "fill_container",
@@ -2361,13 +2488,19 @@
                           "content": "learn how to build a production-ready web server using actix-web, exploring middleware, error handling, and async patterns for maximum throughput."
                         },
                         "l8ktd": {
-                          "y": 137
+                          "y": 137,
+                          "width": "fit_content",
+                          "height": "fit_content"
                         },
                         "IF0MX": {
                           "content": "by sarah kim"
                         },
+                        "gs8Q3": {
+                          "x": 99
+                        },
                         "aHKPB": {
-                          "content": "12 min read"
+                          "content": "12 min read",
+                          "x": 119
                         }
                       }
                     },
@@ -2381,15 +2514,33 @@
                       "x": 0,
                       "y": 378,
                       "descendants": {
+                        "nVVBW": {
+                          "width": "fit_content",
+                          "height": "fit_content",
+                          "y": 20
+                        },
+                        "XBDzR": {
+                          "width": "fit_content",
+                          "height": "fit_content"
+                        },
                         "EiwJs": {
-                          "content": "rust"
+                          "content": "rust",
+                          "x": 8,
+                          "y": 2
+                        },
+                        "USVjo": {
+                          "x": 51,
+                          "y": 1.5
                         },
                         "RFOZF": {
-                          "content": "feb 28, 2026"
+                          "content": "feb 28, 2026",
+                          "x": 67,
+                          "y": 1.5
                         },
                         "s3DWN": {
                           "width": "fill_container",
-                          "content": "zero-cost abstractions: how rust achieves performance"
+                          "content": "zero-cost abstractions: how rust achieves performance",
+                          "y": 51
                         },
                         "DsESh": {
                           "width": "fill_container",
@@ -2397,13 +2548,19 @@
                           "content": "exploring how rust's type system and compiler optimizations deliver zero-cost abstractions, comparing runtime performance with c and c++."
                         },
                         "l8ktd": {
-                          "y": 137
+                          "y": 137,
+                          "width": "fit_content",
+                          "height": "fit_content"
                         },
                         "IF0MX": {
                           "content": "by david park"
                         },
+                        "gs8Q3": {
+                          "x": 106
+                        },
                         "aHKPB": {
-                          "content": "10 min read"
+                          "content": "10 min read",
+                          "x": 126
                         }
                       }
                     },
@@ -2417,15 +2574,33 @@
                       "x": 0,
                       "y": 551,
                       "descendants": {
+                        "nVVBW": {
+                          "width": "fit_content",
+                          "height": "fit_content",
+                          "y": 20
+                        },
+                        "XBDzR": {
+                          "width": "fit_content",
+                          "height": "fit_content"
+                        },
                         "EiwJs": {
-                          "content": "rust"
+                          "content": "rust",
+                          "x": 8,
+                          "y": 2
+                        },
+                        "USVjo": {
+                          "x": 51,
+                          "y": 1.5
                         },
                         "RFOZF": {
-                          "content": "feb 20, 2026"
+                          "content": "feb 20, 2026",
+                          "x": 67,
+                          "y": 1.5
                         },
                         "s3DWN": {
                           "content": "async rust: tokio runtime deep dive",
-                          "width": "fill_container"
+                          "width": "fill_container",
+                          "y": 51
                         },
                         "DsESh": {
                           "content": "mastering asynchronous programming in rust with tokio, understanding futures, tasks, and the event loop architecture.",
@@ -2434,13 +2609,18 @@
                         },
                         "l8ktd": {
                           "width": "fit_content",
-                          "y": 117
+                          "y": 117,
+                          "height": "fit_content"
                         },
                         "IF0MX": {
                           "content": "by james lee"
                         },
+                        "gs8Q3": {
+                          "x": 99
+                        },
                         "aHKPB": {
-                          "content": "15 min read"
+                          "content": "15 min read",
+                          "x": 119
                         }
                       }
                     },
@@ -2454,15 +2634,33 @@
                       "x": 0,
                       "y": 704,
                       "descendants": {
+                        "nVVBW": {
+                          "width": "fit_content",
+                          "height": "fit_content",
+                          "y": 20
+                        },
+                        "XBDzR": {
+                          "width": "fit_content",
+                          "height": "fit_content"
+                        },
                         "EiwJs": {
-                          "content": "rust"
+                          "content": "rust",
+                          "x": 8,
+                          "y": 2
+                        },
+                        "USVjo": {
+                          "x": 51,
+                          "y": 1.5
                         },
                         "RFOZF": {
-                          "content": "feb 14, 2026"
+                          "content": "feb 14, 2026",
+                          "x": 67,
+                          "y": 1.5
                         },
                         "s3DWN": {
                           "content": "error handling patterns in production rust",
-                          "width": "fill_container"
+                          "width": "fill_container",
+                          "y": 51
                         },
                         "DsESh": {
                           "content": "practical approaches to error handling using thiserror, anyhow, and custom error types for robust production applications.",
@@ -2470,13 +2668,19 @@
                           "y": 85
                         },
                         "l8ktd": {
-                          "y": 117
+                          "y": 117,
+                          "width": "fit_content",
+                          "height": "fit_content"
                         },
                         "IF0MX": {
                           "content": "by mina choi"
                         },
+                        "gs8Q3": {
+                          "x": 99
+                        },
                         "aHKPB": {
-                          "content": "7 min read"
+                          "content": "7 min read",
+                          "x": 119
                         }
                       }
                     },
@@ -2502,7 +2706,8 @@
                           "fill": "$text-tertiary",
                           "content": "<<",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
@@ -2533,7 +2738,8 @@
                           "fill": "$text-secondary",
                           "content": "[2]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -2542,7 +2748,8 @@
                           "fill": "$text-secondary",
                           "content": "[3]",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "text",
@@ -2551,7 +2758,8 @@
                           "fill": "$text-primary",
                           "content": ">>",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -2593,7 +2801,8 @@
                           "fill": "$text-tertiary",
                           "content": "// related_tags",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
@@ -2643,7 +2852,8 @@
                                       "fill": "$text-primary",
                                       "content": "systems-programming",
                                       "fontFamily": "JetBrains Mono",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 },
@@ -2654,7 +2864,8 @@
                                   "fill": "$text-tertiary",
                                   "content": "24",
                                   "fontFamily": "JetBrains Mono",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -2699,7 +2910,8 @@
                                       "fill": "$text-primary",
                                       "content": "webassembly",
                                       "fontFamily": "JetBrains Mono",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 },
@@ -2710,7 +2922,8 @@
                                   "fill": "$text-tertiary",
                                   "content": "18",
                                   "fontFamily": "JetBrains Mono",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -2755,7 +2968,8 @@
                                       "fill": "$text-primary",
                                       "content": "concurrency",
                                       "fontFamily": "JetBrains Mono",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 },
@@ -2766,7 +2980,8 @@
                                   "fill": "$text-tertiary",
                                   "content": "15",
                                   "fontFamily": "JetBrains Mono",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -2811,7 +3026,8 @@
                                       "fill": "$text-primary",
                                       "content": "memory-safety",
                                       "fontFamily": "JetBrains Mono",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 },
@@ -2822,7 +3038,8 @@
                                   "fill": "$text-tertiary",
                                   "content": "11",
                                   "fontFamily": "JetBrains Mono",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -2860,7 +3077,8 @@
                                       "fill": "$text-primary",
                                       "content": "performance",
                                       "fontFamily": "JetBrains Mono",
-                                      "fontSize": 13
+                                      "fontSize": 13,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 },
@@ -2871,7 +3089,8 @@
                                   "fill": "$text-tertiary",
                                   "content": "9",
                                   "fontFamily": "JetBrains Mono",
-                                  "fontSize": 12
+                                  "fontSize": 12,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -2894,7 +3113,8 @@
                           "fill": "$text-tertiary",
                           "content": "// most_read",
                           "fontFamily": "JetBrains Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
@@ -2959,7 +3179,8 @@
                                       "fill": "$text-tertiary",
                                       "content": "4.2k views · 8 min",
                                       "fontFamily": "IBM Plex Mono",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 }
@@ -3021,7 +3242,8 @@
                                       "fill": "$text-tertiary",
                                       "content": "3.8k views · 15 min",
                                       "fontFamily": "IBM Plex Mono",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 }
@@ -3076,7 +3298,8 @@
                                       "fill": "$text-tertiary",
                                       "content": "2.9k views · 10 min",
                                       "fontFamily": "IBM Plex Mono",
-                                      "fontSize": 11
+                                      "fontSize": 11,
+                                      "fontWeight": "normal"
                                     }
                                   ]
                                 }
@@ -3120,7 +3343,8 @@
                           "content": "get notified when new rust articles are published. no spam, unsubscribe anytime.",
                           "lineHeight": 1.5,
                           "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12
+                          "fontSize": 12,
+                          "fontWeight": "normal"
                         },
                         {
                           "type": "frame",
@@ -3144,7 +3368,8 @@
                               "fill": "$text-tertiary",
                               "content": "your@email.com",
                               "fontFamily": "IBM Plex Mono",
-                              "fontSize": 12
+                              "fontSize": 12,
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -3233,7 +3458,8 @@
                   "fill": "$accent-green",
                   "content": "rust",
                   "fontFamily": "JetBrains Mono",
-                  "fontSize": 11
+                  "fontSize": 11,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -3254,7 +3480,8 @@
               "fill": "$text-tertiary",
               "content": "mar 10, 2026",
               "fontFamily": "JetBrains Mono",
-              "fontSize": 12
+              "fontSize": 12,
+              "fontWeight": "normal"
             }
           ]
         },
@@ -3281,7 +3508,8 @@
           "content": "a deep dive into rust's unique ownership model, how borrowing works, and why these concepts are fundamental to writing safe, concurrent code without a garbage collector.",
           "lineHeight": 1.5,
           "fontFamily": "IBM Plex Mono",
-          "fontSize": 13
+          "fontSize": 13,
+          "fontWeight": "normal"
         },
         {
           "type": "frame",
@@ -3297,7 +3525,8 @@
               "fill": "$text-secondary",
               "content": "by alex chen",
               "fontFamily": "IBM Plex Mono",
-              "fontSize": 12
+              "fontSize": 12,
+              "fontWeight": "normal"
             },
             {
               "type": "text",
@@ -3316,7 +3545,8 @@
               "fill": "$text-tertiary",
               "content": "8 min read",
               "fontFamily": "IBM Plex Mono",
-              "fontSize": 12
+              "fontSize": 12,
+              "fontWeight": "normal"
             }
           ]
         }
