@@ -45,6 +45,8 @@ export async function createPost(
     const status = formData.get("status") as string;
     const featured = formData.get("featured") === "on";
     const tagIds = formData.getAll("tags") as string[];
+    const coverImageFile = formData.get("coverImage") as File | null;
+    const existingCoverImage = formData.get("existingCoverImage") as string;
 
     const fieldErrors: Record<string, string> = {};
     if (!title?.trim()) fieldErrors.title = "제목을 입력해주세요.";
@@ -72,6 +74,55 @@ export async function createPost(
       return { fieldErrors: { slug: "이미 사용 중인 슬러그입니다." } };
     }
 
+    // Upload cover image to Supabase Storage
+    let coverImageUrl: string | null = existingCoverImage || null;
+    if (coverImageFile && coverImageFile.size > 0) {
+      const ALLOWED_IMAGE_TYPES = [
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+      ];
+
+      if (!ALLOWED_IMAGE_TYPES.includes(coverImageFile.type)) {
+        return {
+          error: "허용되지 않는 이미지 형식입니다. PNG, JPG, WebP, GIF만 업로드할 수 있습니다.",
+        };
+      }
+
+      if (coverImageFile.size > 5 * 1024 * 1024) {
+        return {
+          error: "커버 이미지 크기는 5MB 이하여야 합니다.",
+        };
+      }
+
+      const MIME_TO_EXT: Record<string, string> = {
+        "image/png": "png",
+        "image/jpeg": "jpg",
+        "image/webp": "webp",
+        "image/gif": "gif",
+      };
+      const fileExt = MIME_TO_EXT[coverImageFile.type];
+      const filePath = `covers/${slug}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("post-images")
+        .upload(filePath, coverImageFile, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        return { error: `커버 이미지 업로드에 실패했습니다: ${uploadError.message}` };
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("post-images")
+        .getPublicUrl(filePath);
+
+      coverImageUrl = publicUrlData.publicUrl;
+    }
+
     const { data: post, error: insertError } = await supabase
       .from("posts")
       .insert({
@@ -79,6 +130,7 @@ export async function createPost(
         slug,
         content: content.trim(),
         excerpt: excerpt?.trim() || null,
+        cover_image: coverImageUrl,
         status: status === "published" ? "published" : "draft",
         featured,
         read_time: readTime,
