@@ -9,6 +9,7 @@ import { PostCard } from "@/components/post-card";
 import { MarkdownContent } from "@/components/markdown-content";
 import { DeletePostButton } from "@/components/delete-post-button";
 import { ViewCounter } from "@/components/view-counter";
+import { LikeButton } from "@/components/like-button";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
 
@@ -85,6 +86,8 @@ export default async function PostPage({
             )}
             <span className="text-muted-foreground">·</span>
             <ViewCounter slug={post.slug} initialCount={post.viewCount} />
+            <span className="text-muted-foreground">·</span>
+            <LikeButton slug={post.slug} initialCount={post.likeCount} />
           </div>
         </header>
 

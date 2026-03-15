@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { type Post, formatDate } from "@/lib/data";
 import { ViewCount } from "@/components/view-counter";
+import { LikeCount } from "@/components/like-button";
 
 export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   return (
@@ -72,6 +73,8 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               <span>{post.readTime}</span>
               <span className="size-0.5 rounded-full bg-muted-foreground/30" />
               <ViewCount count={post.viewCount} />
+              <span className="size-0.5 rounded-full bg-muted-foreground/30" />
+              <LikeCount count={post.likeCount} />
             </div>
 
             <span className="text-xs text-accent/60 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-0 group-hover:translate-x-0">
@@ -138,6 +141,8 @@ export function FeaturedPostCard({ post }: { post: Post }) {
             <span>{post.readTime}</span>
             <span className="size-0.5 rounded-full bg-muted-foreground/30" />
             <ViewCount count={post.viewCount} />
+            <span className="size-0.5 rounded-full bg-muted-foreground/30" />
+            <LikeCount count={post.likeCount} />
           </div>
         </div>
       </article>
