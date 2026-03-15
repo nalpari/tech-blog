@@ -45,7 +45,7 @@ export default async function PostPage({
 
   return (
     <div className="pt-14">
-      <div className="mx-auto max-w-[720px] px-10 py-12">
+      <div className="mx-auto max-w-[1024px] px-10 py-12">
         {/* Article Header */}
         <header className="mb-8 animate-fade-in-up">
           <div className="flex items-center justify-between mb-4">

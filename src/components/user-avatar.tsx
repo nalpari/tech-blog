@@ -10,9 +10,10 @@ interface UserAvatarProps {
   name: string;
   email: string;
   avatarUrl?: string;
+  isAdmin?: boolean;
 }
 
-export function UserAvatar({ name, email, avatarUrl }: UserAvatarProps) {
+export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -48,7 +49,7 @@ export function UserAvatar({ name, email, avatarUrl }: UserAvatarProps) {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative size-8 rounded-full flex items-center justify-center overflow-hidden ring-1 ring-border/60 hover:ring-border transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40"
+        className="relative size-7 flex items-center justify-center overflow-hidden border border-border hover:border-accent/50 transition-colors cursor-pointer focus:outline-none focus:border-accent"
       >
         {avatarUrl ? (
           <Image
@@ -58,8 +59,8 @@ export function UserAvatar({ name, email, avatarUrl }: UserAvatarProps) {
             className="object-cover"
           />
         ) : (
-          <div className="size-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center">
-            <span className="text-white text-[11px] font-semibold">
+          <div className="size-full bg-accent/10 flex items-center justify-center">
+            <span className="text-accent text-[10px] font-mono font-bold">
               {initials}
             </span>
           </div>
@@ -67,29 +68,46 @@ export function UserAvatar({ name, email, avatarUrl }: UserAvatarProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-black/40 animate-fade-in overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-52 border border-border bg-background shadow-2xl shadow-black/40 animate-fade-in overflow-hidden">
           {/* User info */}
-          <div className="px-4 py-3 border-b border-border/40">
-            <p className="text-sm font-medium text-foreground truncate">
+          <div className="px-4 py-3 border-b border-border">
+            <p className="text-sm font-mono font-bold text-foreground truncate">
               {name}
             </p>
-            <p className="text-xs text-muted-foreground/60 truncate">{email}</p>
+            <p className="text-xs font-sans text-muted-foreground truncate">
+              {email}
+            </p>
           </div>
 
-          {/* Menu items */}
-          <div className="py-1.5">
-            <MenuLink href="/profile" icon={<UserIcon />} label="Profile" onClick={() => setOpen(false)} />
-            <MenuLink href="/bookmarks" icon={<BookmarkIcon />} label="Bookmarks" onClick={() => setOpen(false)} />
-            <MenuLink href="/settings" icon={<SettingsIcon />} label="Settings" onClick={() => setOpen(false)} />
+          {/* Admin menu */}
+          {isAdmin && (
+            <div className="py-1 border-b border-border">
+              <MenuLink
+                href="/posts/new"
+                label="+ write"
+                onClick={() => setOpen(false)}
+              />
+              <MenuLink
+                href="/admin/tags"
+                label="# manage tags"
+                onClick={() => setOpen(false)}
+              />
+            </div>
+          )}
+
+          {/* User menu */}
+          <div className="py-1">
+            <MenuLink href="/profile" label="profile" onClick={() => setOpen(false)} />
+            <MenuLink href="/bookmarks" label="bookmarks" onClick={() => setOpen(false)} />
+            <MenuLink href="/settings" label="settings" onClick={() => setOpen(false)} />
           </div>
 
-          <div className="border-t border-border/40 py-1.5">
+          <div className="border-t border-border py-1">
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="w-full flex items-center px-4 py-2 text-xs font-mono text-muted-foreground hover:text-red-400 hover:bg-card-hover transition-colors cursor-pointer"
             >
-              <LogOutIcon />
-              Sign out
+              sign out
             </button>
           </div>
         </div>
@@ -100,12 +118,10 @@ export function UserAvatar({ name, email, avatarUrl }: UserAvatarProps) {
 
 function MenuLink({
   href,
-  icon,
   label,
   onClick,
 }: {
   href: string;
-  icon: React.ReactNode;
   label: string;
   onClick: () => void;
 }) {
@@ -113,46 +129,9 @@ function MenuLink({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
+      className="flex items-center px-4 py-2 text-xs font-mono text-muted-foreground hover:text-accent hover:bg-card-hover transition-colors"
     >
-      {icon}
       {label}
     </Link>
-  );
-}
-
-function UserIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
-
-function BookmarkIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
-      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-    </svg>
-  );
-}
-
-function SettingsIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function LogOutIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" x2="9" y1="12" y2="12" />
-    </svg>
   );
 }

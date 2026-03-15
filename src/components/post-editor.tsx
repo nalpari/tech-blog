@@ -5,7 +5,7 @@ import Link from "next/link";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { createPost, type CreatePostState } from "@/app/posts/new/actions";
-import { updatePost, type UpdatePostState } from "@/app/posts/[slug]/edit/actions";
+import { updatePost, type UpdatePostState } from "@/lib/post-actions";
 import { generateSlug } from "@/lib/slug";
 import { uploadImage } from "@/lib/upload-image";
 

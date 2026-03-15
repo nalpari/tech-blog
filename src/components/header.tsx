@@ -6,6 +6,8 @@ import { useAuthStore } from "@/stores/auth-store";
 import { AuthButtons } from "@/components/auth-buttons";
 import { UserAvatar } from "@/components/user-avatar";
 
+const ADMIN_EMAIL = "yoo32767@gmail.com";
+
 const navItems = [
   { href: "/", label: "blog" },
   { href: "/tags", label: "tags" },
@@ -24,6 +26,7 @@ export function Header() {
     "User";
   const avatarUrl =
     user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const isAdmin = user?.email === ADMIN_EMAIL;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-background border-b border-border">
@@ -67,19 +70,6 @@ export function Header() {
             <span>search...</span>
           </button>
 
-          {user?.email === "yoo32767@gmail.com" && (
-            <Link
-              href="/posts/new"
-              className={`font-mono text-[13px] transition-colors duration-200 ${
-                pathname === "/posts/new"
-                  ? "text-accent"
-                  : "text-muted hover:text-foreground"
-              }`}
-            >
-              + write
-            </Link>
-          )}
-
           {isLoading ? (
             <div className="size-7 rounded-full bg-border animate-pulse" />
           ) : user ? (
@@ -87,6 +77,7 @@ export function Header() {
               name={displayName}
               email={user.email || ""}
               avatarUrl={avatarUrl}
+              isAdmin={isAdmin}
             />
           ) : (
             <AuthButtons />

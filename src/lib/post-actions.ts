@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateSlug } from "@/lib/slug";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
@@ -13,15 +12,15 @@ function estimateReadTime(content: string): string {
   return `${minutes} min read`;
 }
 
-export type CreatePostState = {
+export type UpdatePostState = {
   error?: string;
   fieldErrors?: Record<string, string>;
 };
 
-export async function createPost(
-  _prev: CreatePostState,
+export async function updatePost(
+  _prev: UpdatePostState,
   formData: FormData,
-): Promise<CreatePostState> {
+): Promise<UpdatePostState> {
   try {
     const supabase = await createClient();
 
@@ -35,13 +34,14 @@ export async function createPost(
     }
 
     if (user.email !== ADMIN_EMAIL) {
-      return { error: "포스트 작성 권한이 없습니다." };
+      return { error: "포스트 수정 권한이 없습니다." };
     }
 
+    const postId = formData.get("postId") as string;
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
     const excerpt = formData.get("excerpt") as string;
-    const customSlug = formData.get("slug") as string;
+    const slug = formData.get("slug") as string;
     const status = formData.get("status") as string;
     const featured = formData.get("featured") === "on";
     const tagIds = formData.getAll("tags") as string[];
@@ -54,48 +54,64 @@ export async function createPost(
       return { fieldErrors };
     }
 
-    const slug = customSlug?.trim() || generateSlug(title);
     const readTime = estimateReadTime(content);
 
-    // Check slug uniqueness — distinguish "not found" from DB errors
-    const { data: existing, error: slugCheckError } = await supabase
+    // Check slug uniqueness (exclude current post)
+    if (slug?.trim()) {
+      const { data: existing, error: slugCheckError } = await supabase
+        .from("posts")
+        .select("id")
+        .eq("slug", slug.trim())
+        .neq("id", postId)
+        .single();
+
+      if (slugCheckError && slugCheckError.code !== "PGRST116") {
+        return { error: "슬러그 중복 확인에 실패했습니다." };
+      }
+
+      if (existing) {
+        return { fieldErrors: { slug: "이미 사용 중인 슬러그입니다." } };
+      }
+    }
+
+    // Get current post to check publish state transition
+    const { data: currentPost } = await supabase
       .from("posts")
-      .select("id")
-      .eq("slug", slug)
+      .select("status, published_at, slug")
+      .eq("id", postId)
       .single();
 
-    if (slugCheckError && slugCheckError.code !== "PGRST116") {
-      return { error: "슬러그 중복 확인에 실패했습니다. 다시 시도해주세요." };
-    }
+    const isNewlyPublished =
+      status === "published" && currentPost?.status !== "published";
 
-    if (existing) {
-      return { fieldErrors: { slug: "이미 사용 중인 슬러그입니다." } };
-    }
+    const finalSlug = slug?.trim() || currentPost?.slug;
 
-    const { data: post, error: insertError } = await supabase
+    const { error: updateError } = await supabase
       .from("posts")
-      .insert({
+      .update({
         title: title.trim(),
-        slug,
+        slug: finalSlug,
         content: content.trim(),
         excerpt: excerpt?.trim() || null,
         status: status === "published" ? "published" : "draft",
         featured,
         read_time: readTime,
-        author_id: user.id,
-        published_at:
-          status === "published" ? new Date().toISOString() : null,
+        published_at: isNewlyPublished
+          ? new Date().toISOString()
+          : currentPost?.published_at,
       })
-      .select("id")
-      .single();
+      .eq("id", postId);
 
-    if (insertError || !post) {
-      return { error: `포스트 저장에 실패했습니다: ${insertError?.message}` };
+    if (updateError) {
+      return { error: `포스트 수정에 실패했습니다: ${updateError.message}` };
     }
+
+    // Update tags: delete existing, insert new
+    await supabase.from("post_tags").delete().eq("post_id", postId);
 
     if (tagIds.length > 0) {
       const postTags = tagIds.map((tagId) => ({
-        post_id: post.id,
+        post_id: postId,
         tag_id: tagId,
       }));
 
@@ -104,19 +120,13 @@ export async function createPost(
         .insert(postTags);
 
       if (tagError) {
-        // Clean up orphaned post
-        await supabase.from("posts").delete().eq("id", post.id);
-        return { error: "태그 저장에 실패했습니다. 다시 시도해주세요." };
+        return { error: "태그 저장에 실패했습니다." };
       }
     }
 
-    if (status === "published") {
-      redirect(`/posts/${encodeURIComponent(slug)}`);
-    }
-
-    redirect("/");
+    redirect(`/posts/${encodeURIComponent(finalSlug!)}`);
   } catch (error) {
     if (isRedirectError(error)) throw error;
-    return { error: "포스트 저장 중 예기치 않은 오류가 발생했습니다." };
+    return { error: "포스트 수정 중 예기치 않은 오류가 발생했습니다." };
   }
 }

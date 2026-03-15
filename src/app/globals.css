@@ -108,17 +108,17 @@ body {
 
 /* Prose styles for blog post content */
 .prose-blog {
-  line-height: 2;
-  font-size: 1.25rem;
+  line-height: 1.8;
+  font-size: 1rem;
   color: var(--muted);
-  font-family: "Nanum Pen Script", cursive;
+  font-family: "Pretendard Variable", Pretendard, sans-serif;
 }
 
 .prose-blog h2 {
   color: var(--foreground);
-  font-family: "Nanum Pen Script", cursive;
-  font-size: 1.75rem;
-  font-weight: 400;
+  font-family: "Pretendard Variable", Pretendard, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
   margin-top: 2.5rem;
   margin-bottom: 1rem;
 }
@@ -132,9 +132,9 @@ body {
 
 .prose-blog h3 {
   color: var(--foreground);
-  font-family: "Nanum Pen Script", cursive;
-  font-size: 1.5rem;
-  font-weight: 400;
+  font-family: "Pretendard Variable", Pretendard, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
 }
