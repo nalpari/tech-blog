@@ -75,14 +75,27 @@ export async function GET(
   const liked = !!cookieStore.get(`liked-${slug}`);
 
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("posts")
     .select("like_count")
     .eq("slug", slug)
     .single();
 
+  if (error) {
+    console.error("[GET /api/posts/[slug]/like] Supabase query failed:", {
+      slug,
+      code: error.code,
+      message: error.message,
+    });
+    const status = error.code === "PGRST116" ? 404 : 500;
+    return NextResponse.json(
+      { error: status === 404 ? "Post not found" : "Failed to fetch like count" },
+      { status },
+    );
+  }
+
   return NextResponse.json({
-    likeCount: data?.like_count ?? 0,
+    likeCount: data.like_count,
     liked,
   });
 }
