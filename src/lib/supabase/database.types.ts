@@ -206,6 +206,7 @@ export type Database = {
           excerpt: string | null
           featured: boolean
           id: string
+          like_count: number
           published_at: string | null
           read_time: string | null
           slug: string
@@ -223,6 +224,7 @@ export type Database = {
           excerpt?: string | null
           featured?: boolean
           id?: string
+          like_count?: number
           published_at?: string | null
           read_time?: string | null
           slug: string
@@ -240,6 +242,7 @@ export type Database = {
           excerpt?: string | null
           featured?: boolean
           id?: string
+          like_count?: number
           published_at?: string | null
           read_time?: string | null
           slug?: string
@@ -324,6 +327,10 @@ export type Database = {
       increment_post_view_count: {
         Args: { post_slug: string }
         Returns: number
+      }
+      toggle_post_like: {
+        Args: { post_slug: string; should_like: boolean }
+        Returns: number | null
       }
     }
     Enums: {

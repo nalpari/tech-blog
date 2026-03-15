@@ -17,6 +17,7 @@ export interface Post {
   coverGradient: string | null;
   authorId: string;
   viewCount: number;
+  likeCount: number;
 }
 
 export interface Tag {
@@ -45,6 +46,7 @@ export function mapPost(
     coverGradient: row.cover_gradient,
     authorId: row.author_id,
     viewCount: row.view_count,
+    likeCount: row.like_count,
   };
 }
 
