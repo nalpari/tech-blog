@@ -16,6 +16,9 @@ BEGIN
     UPDATE posts SET like_count = GREATEST(like_count - 1, 0) WHERE slug = post_slug
     RETURNING like_count INTO current_count;
   END IF;
-  RETURN COALESCE(current_count, 0);
+  IF NOT FOUND THEN
+    RETURN NULL;
+  END IF;
+  RETURN current_count;
 END;
 $fn$;
