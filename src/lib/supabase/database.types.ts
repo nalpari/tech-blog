@@ -330,7 +330,7 @@ export type Database = {
       }
       toggle_post_like: {
         Args: { post_slug: string; should_like: boolean }
-        Returns: number
+        Returns: number | null
       }
     }
     Enums: {

@@ -25,6 +25,27 @@ function HeartIcon({
   );
 }
 
+function getStoredLike(slug: string): boolean {
+  try {
+    return localStorage.getItem(`liked-${slug}`) === "1";
+  } catch (err) {
+    console.warn("[LikeButton] localStorage read failed:", err);
+    return false;
+  }
+}
+
+function setStoredLike(slug: string, liked: boolean) {
+  try {
+    if (liked) {
+      localStorage.setItem(`liked-${slug}`, "1");
+    } else {
+      localStorage.removeItem(`liked-${slug}`);
+    }
+  } catch (err) {
+    console.warn("[LikeButton] localStorage write failed:", err);
+  }
+}
+
 export function LikeButton({
   slug,
   initialCount,
@@ -35,44 +56,38 @@ export function LikeButton({
   const [count, setCount] = useState(initialCount);
   const [liked, setLiked] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const hasMounted = useRef(false);
+  const lastSyncedSlug = useRef<string | null>(null);
+  const isToggling = useRef(false);
 
   useEffect(() => {
-    if (hasMounted.current) return;
-    hasMounted.current = true;
+    if (lastSyncedSlug.current === slug) return;
+    lastSyncedSlug.current = slug;
 
-    // localStorage를 즉시 반영하여 깜빡임 방지
-    const storedLiked = localStorage.getItem(`liked-${slug}`);
-    if (storedLiked === "1") {
-      setLiked(true);
-    }
+    // localStorage에서 초기 상태 설정 (서버 응답 전 임시 표시용)
+    setLiked(getStoredLike(slug));
 
-    // 서버(httpOnly 쿠키) 상태를 source of truth로 동기화
+    // httpOnly 쿠키 기반 서버 상태와 동기화
     fetch(`/api/posts/${slug}/like`)
       .then((res) => {
         if (!res.ok) throw new Error(`Like status API returned ${res.status}`);
         return res.json();
       })
-      .then((data) => {
+      .then((data: Record<string, unknown>) => {
+        if (typeof data.liked !== "boolean" || typeof data.likeCount !== "number") {
+          throw new Error("Malformed like status response");
+        }
         setLiked(data.liked);
-        if (data.likeCount != null) {
-          setCount(data.likeCount);
-        }
-        // localStorage를 서버 상태와 동기화
-        if (data.liked) {
-          localStorage.setItem(`liked-${slug}`, "1");
-        } else {
-          localStorage.removeItem(`liked-${slug}`);
-        }
+        setCount(data.likeCount);
+        setStoredLike(slug, data.liked);
       })
       .catch((err) => {
         console.error("[LikeButton] Failed to fetch like status:", slug, err);
-        // fetch 실패 시 localStorage 값 유지
       });
   }, [slug]);
 
   async function handleToggle() {
-    if (isAnimating) return;
+    if (isToggling.current) return;
+    isToggling.current = true;
 
     const newLiked = !liked;
     setLiked(newLiked);
@@ -82,23 +97,20 @@ export function LikeButton({
     try {
       const res = await fetch(`/api/posts/${slug}/like`, { method: "POST" });
       if (!res.ok) throw new Error(`Like API returned ${res.status}`);
-      const data = await res.json();
+      const data: Record<string, unknown> = await res.json();
 
-      if (data.likeCount != null) {
-        setCount(data.likeCount);
+      if (typeof data.liked !== "boolean" || typeof data.likeCount !== "number") {
+        throw new Error("Malformed like toggle response");
       }
+      setCount(data.likeCount);
       setLiked(data.liked);
-
-      if (data.liked) {
-        localStorage.setItem(`liked-${slug}`, "1");
-      } else {
-        localStorage.removeItem(`liked-${slug}`);
-      }
+      setStoredLike(slug, data.liked);
     } catch (err) {
       console.error("[LikeButton] Failed to toggle like:", slug, err);
       setLiked(!newLiked);
       setCount((prev) => (newLiked ? Math.max(prev - 1, 0) : prev + 1));
     } finally {
+      isToggling.current = false;
       setTimeout(() => setIsAnimating(false), 300);
     }
   }

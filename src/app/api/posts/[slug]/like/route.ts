@@ -2,6 +2,9 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+// 비인증 좋아요: httpOnly 쿠키(`liked-{slug}`)로 브라우저별 상태 추적 (best-effort).
+// 쿠키 삭제·다른 브라우저 사용 시 중복 좋아요가 가능하므로 정확한 중복 방지는 아님.
+
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LIKE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1년
 
@@ -53,9 +56,11 @@ export async function POST(
       maxAge: LIKE_COOKIE_MAX_AGE,
       httpOnly: true,
       sameSite: "lax",
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
     });
   } else {
-    response.cookies.delete(likedKey);
+    response.cookies.delete({ name: likedKey, path: "/" });
   }
 
   return response;
