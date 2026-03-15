@@ -93,7 +93,7 @@ export default async function PostPage({
               src={post.coverImage}
               alt={post.title}
               width={740}
-              height={0}
+              height={400}
               className="w-full h-auto"
               sizes="(max-width: 740px) 100vw, 740px"
               priority

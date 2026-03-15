@@ -51,7 +51,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
                 key={tag}
                 className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/4 text-muted-foreground"
               >
-                {tag.replace("-", " ")}
+                {tag.replaceAll("-", " ")}
               </span>
             ))}
           </div>
@@ -116,7 +116,7 @@ export function FeaturedPostCard({ post }: { post: Post }) {
                 key={tag}
                 className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/4 text-muted-foreground backdrop-blur-sm"
               >
-                {tag.replace("-", " ")}
+                {tag.replaceAll("-", " ")}
               </span>
             ))}
           </div>
