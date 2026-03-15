@@ -166,6 +166,42 @@ export type Database = {
           },
         ]
       }
+      post_views: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          user_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          user_id?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_tags: {
         Row: {
           post_id: string
@@ -325,12 +361,12 @@ export type Database = {
     Functions: {
       get_user_role: { Args: never; Returns: string }
       increment_post_view_count: {
-        Args: { post_slug: string }
+        Args: { post_slug: string; viewer_id?: string | null }
         Returns: number
       }
       toggle_post_like: {
-        Args: { post_slug: string; should_like: boolean }
-        Returns: number | null
+        Args: { post_slug: string; liker_id: string }
+        Returns: { liked: boolean; likeCount: number } | null
       }
     }
     Enums: {

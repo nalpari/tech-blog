@@ -1,9 +1,7 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const VIEW_COOKIE_MAX_AGE = 86400; // 24시간
 
 export async function POST(
   _request: Request,
@@ -15,30 +13,20 @@ export async function POST(
     return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
   }
 
-  // 쿠키 기반 중복 조회 방지 (24시간)
-  const cookieStore = await cookies();
-  const viewedKey = `viewed-${slug}`;
-
   const supabase = await createClient();
 
-  if (cookieStore.get(viewedKey)) {
-    const { data: currentCount } = await supabase
-      .from("posts")
-      .select("view_count")
-      .eq("slug", slug)
-      .single();
-    return NextResponse.json({
-      viewCount: currentCount?.view_count ?? null,
-      deduplicated: true,
-    });
-  }
+  // 로그인 사용자면 user_id 전달, 아니면 null
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data, error } = await supabase.rpc("increment_post_view_count", {
     post_slug: slug,
+    viewer_id: user?.id ?? null,
   });
 
   if (error) {
-    console.error("[POST /api/posts/[slug]/view] Supabase RPC failed:", {
+    console.error("[POST /api/posts/[slug]/view] RPC failed:", {
       slug,
       code: error.code,
       message: error.message,
@@ -50,19 +38,8 @@ export async function POST(
   }
 
   if (data == null || typeof data !== "number") {
-    console.error("[POST /api/posts/[slug]/view] Unexpected RPC result:", {
-      slug,
-      data,
-    });
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
-  const response = NextResponse.json({ viewCount: data });
-  response.cookies.set(viewedKey, "1", {
-    maxAge: VIEW_COOKIE_MAX_AGE,
-    httpOnly: true,
-    sameSite: "lax",
-  });
-
-  return response;
+  return NextResponse.json({ viewCount: data });
 }

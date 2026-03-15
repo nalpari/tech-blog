@@ -83,6 +83,11 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
           {isAdmin && (
             <div className="py-1 border-b border-border">
               <MenuLink
+                href="/admin/dashboard"
+                label="~ dashboard"
+                onClick={() => setOpen(false)}
+              />
+              <MenuLink
                 href="/posts/new"
                 label="+ write"
                 onClick={() => setOpen(false)}

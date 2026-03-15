@@ -34,11 +34,6 @@ export function ViewCounter({
     if (hasFired.current) return;
     hasFired.current = true;
 
-    const key = `viewed-${slug}`;
-    const alreadyViewed = sessionStorage.getItem(key);
-
-    if (alreadyViewed) return;
-
     fetch(`/api/posts/${slug}/view`, { method: "POST" })
       .then((res) => {
         if (!res.ok) throw new Error(`View count API returned ${res.status}`);
@@ -48,7 +43,6 @@ export function ViewCounter({
         if (data.viewCount != null) {
           setCount(data.viewCount);
         }
-        sessionStorage.setItem(key, "1");
       })
       .catch((err) => {
         console.error("[ViewCounter] Failed to increment view count:", slug, err);

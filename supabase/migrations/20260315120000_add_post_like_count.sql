@@ -5,15 +5,17 @@ ALTER TABLE posts ADD COLUMN IF NOT EXISTS like_count integer NOT NULL DEFAULT 0
 CREATE OR REPLACE FUNCTION toggle_post_like(post_slug text, should_like boolean)
 RETURNS integer
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
 AS $fn$
 DECLARE
   current_count integer;
 BEGIN
   IF should_like THEN
-    UPDATE posts SET like_count = like_count + 1 WHERE slug = post_slug
+    UPDATE public.posts SET like_count = like_count + 1 WHERE slug = post_slug
     RETURNING like_count INTO current_count;
   ELSE
-    UPDATE posts SET like_count = GREATEST(like_count - 1, 0) WHERE slug = post_slug
+    UPDATE public.posts SET like_count = GREATEST(like_count - 1, 0) WHERE slug = post_slug
     RETURNING like_count INTO current_count;
   END IF;
   IF NOT FOUND THEN

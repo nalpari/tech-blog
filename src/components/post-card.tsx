@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { type Post, formatDate } from "@/lib/data";
 import { ViewCount } from "@/components/view-counter";
-import { LikeCount } from "@/components/like-button";
+import { LikeButton } from "@/components/like-button";
 
 export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   return (
@@ -35,6 +35,12 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               </div>
             </div>
           )}
+
+          <div className="absolute top-3 left-3 z-10">
+            <span className="inline-flex items-center rounded-full px-2 py-0.5 bg-background">
+              <LikeButton slug={post.slug} initialCount={post.likeCount} compact />
+            </span>
+          </div>
         </div>
 
         <div className="p-6">
@@ -73,11 +79,9 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
               <span>{post.readTime}</span>
               <span className="size-0.5 rounded-full bg-muted-foreground/30" />
               <ViewCount count={post.viewCount} />
-              <span className="size-0.5 rounded-full bg-muted-foreground/30" />
-              <LikeCount count={post.likeCount} />
             </div>
 
-            <span className="text-xs text-accent/60 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-0 group-hover:translate-x-0">
+            <span className="text-xs text-accent/60 opacity-0 group-hover:opacity-100 transition-all duration-300">
               Read &rarr;
             </span>
           </div>
@@ -111,6 +115,12 @@ export function FeaturedPostCard({ post }: { post: Post }) {
           </>
         )}
 
+        <div className="absolute top-4 left-4 z-10">
+          <span className="inline-flex items-center rounded-full px-2.5 py-1 bg-background">
+            <LikeButton slug={post.slug} initialCount={post.likeCount} compact />
+          </span>
+        </div>
+
         <div className="relative p-8 sm:p-10 pt-24 sm:pt-32">
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-background text-accent border border-accent/40">
@@ -141,8 +151,6 @@ export function FeaturedPostCard({ post }: { post: Post }) {
             <span>{post.readTime}</span>
             <span className="size-0.5 rounded-full bg-muted-foreground/30" />
             <ViewCount count={post.viewCount} />
-            <span className="size-0.5 rounded-full bg-muted-foreground/30" />
-            <LikeCount count={post.likeCount} />
           </div>
         </div>
       </article>

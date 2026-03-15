@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/auth-store";
 
 function HeartIcon({
   size = 16,
@@ -25,60 +27,36 @@ function HeartIcon({
   );
 }
 
-function getStoredLike(slug: string): boolean {
-  try {
-    return localStorage.getItem(`liked-${slug}`) === "1";
-  } catch (err) {
-    console.warn("[LikeButton] localStorage read failed:", err);
-    return false;
-  }
-}
-
-function setStoredLike(slug: string, liked: boolean) {
-  try {
-    if (liked) {
-      localStorage.setItem(`liked-${slug}`, "1");
-    } else {
-      localStorage.removeItem(`liked-${slug}`);
-    }
-  } catch (err) {
-    console.warn("[LikeButton] localStorage write failed:", err);
-  }
-}
-
 export function LikeButton({
   slug,
   initialCount,
+  compact = false,
 }: {
   slug: string;
   initialCount: number;
+  compact?: boolean;
 }) {
+  const router = useRouter();
+  const user = useAuthStore((s) => s.user);
   const [count, setCount] = useState(initialCount);
   const [liked, setLiked] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const lastSyncedSlug = useRef<string | null>(null);
   const isToggling = useRef(false);
 
+  // 서버에서 좋아요 상태 동기화
   useEffect(() => {
     if (lastSyncedSlug.current === slug) return;
     lastSyncedSlug.current = slug;
 
-    // localStorage에서 초기 상태 설정 (서버 응답 전 임시 표시용)
-    setLiked(getStoredLike(slug));
-
-    // httpOnly 쿠키 기반 서버 상태와 동기화
     fetch(`/api/posts/${slug}/like`)
       .then((res) => {
         if (!res.ok) throw new Error(`Like status API returned ${res.status}`);
         return res.json();
       })
       .then((data: Record<string, unknown>) => {
-        if (typeof data.liked !== "boolean" || typeof data.likeCount !== "number") {
-          throw new Error("Malformed like status response");
-        }
-        setLiked(data.liked);
-        setCount(data.likeCount);
-        setStoredLike(slug, data.liked);
+        if (typeof data.liked === "boolean") setLiked(data.liked);
+        if (typeof data.likeCount === "number") setCount(data.likeCount);
       })
       .catch((err) => {
         console.error("[LikeButton] Failed to fetch like status:", slug, err);
@@ -86,6 +64,11 @@ export function LikeButton({
   }, [slug]);
 
   async function handleToggle() {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
     if (isToggling.current) return;
     isToggling.current = true;
 
@@ -96,15 +79,19 @@ export function LikeButton({
 
     try {
       const res = await fetch(`/api/posts/${slug}/like`, { method: "POST" });
+
+      if (res.status === 401) {
+        router.push("/sign-in");
+        setLiked(!newLiked);
+        setCount((prev) => (newLiked ? Math.max(prev - 1, 0) : prev + 1));
+        return;
+      }
+
       if (!res.ok) throw new Error(`Like API returned ${res.status}`);
       const data: Record<string, unknown> = await res.json();
 
-      if (typeof data.liked !== "boolean" || typeof data.likeCount !== "number") {
-        throw new Error("Malformed like toggle response");
-      }
-      setCount(data.likeCount);
-      setLiked(data.liked);
-      setStoredLike(slug, data.liked);
+      if (typeof data.likeCount === "number") setCount(data.likeCount);
+      if (typeof data.liked === "boolean") setLiked(data.liked);
     } catch (err) {
       console.error("[LikeButton] Failed to toggle like:", slug, err);
       setLiked(!newLiked);
@@ -115,11 +102,23 @@ export function LikeButton({
     }
   }
 
+  function handleClick(e: React.MouseEvent) {
+    if (compact) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    handleToggle();
+  }
+
+  const iconSize = compact ? 12 : 16;
+
   return (
     <button
       type="button"
-      onClick={handleToggle}
-      className={`inline-flex items-center gap-1.5 transition-colors duration-200 ${
+      onClick={handleClick}
+      className={`inline-flex items-center transition-colors duration-200 ${
+        compact ? "gap-1" : "gap-1.5"
+      } ${
         liked
           ? "text-rose-400 hover:text-rose-300"
           : "text-muted-foreground hover:text-rose-400"
@@ -129,9 +128,11 @@ export function LikeButton({
       <span
         className={`transition-transform duration-300 ${isAnimating ? "scale-125" : "scale-100"}`}
       >
-        <HeartIcon size={16} filled={liked} />
+        <HeartIcon size={iconSize} filled={liked} />
       </span>
-      <span className="text-xs tabular-nums">{count.toLocaleString()}</span>
+      <span className={`tabular-nums ${compact ? "text-[11px]" : "text-xs"}`}>
+        {count.toLocaleString()}
+      </span>
     </button>
   );
 }
