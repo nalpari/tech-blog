@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spectra — Data Explorer Playground</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0a0a; --surface: #111113; --surface2: #1a1a1e;
+    --border: #2a2a2e; --fg: #e4e4e7; --muted: #71717a;
+    --accent: #10b981; --cyan: #06b6d4; --amber: #f59e0b;
+    --rose: #f43f5e; --indigo: #818cf8; --purple: #a78bfa;
+    --blue: #3b82f6; --green: #22c55e; --orange: #f97316;
+    --pink: #ec4899;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; font-size: 13px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+  .header h1 { font-size: 14px; font-weight: 600; color: var(--accent); }
+  .header h1 span { color: var(--muted); font-weight: 400; }
+  .preset-bar { display: flex; gap: 4px; }
+  .preset-btn { padding: 4px 10px; font-size: 11px; font-family: inherit; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: all .15s; border-radius: 4px; }
+  .preset-btn:hover { border-color: var(--accent); color: var(--fg); }
+  .preset-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  /* Main layout */
+  .main { display: flex; flex: 1; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar { width: 260px; border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+  .sidebar-section { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .sidebar-section h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+
+  .layer-toggle { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; }
+  .layer-toggle input { display: none; }
+  .layer-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .layer-toggle label { font-size: 12px; color: var(--fg); cursor: pointer; flex: 1; }
+  .layer-toggle .count { font-size: 10px; color: var(--muted); }
+  .layer-toggle input:not(:checked) ~ label { color: var(--muted); text-decoration: line-through; }
+
+  .conn-toggle { display: flex; align-items: center; gap: 8px; padding: 3px 0; cursor: pointer; }
+  .conn-toggle input { display: none; }
+  .conn-line { width: 16px; height: 2px; flex-shrink: 0; }
+  .conn-toggle label { font-size: 11px; color: var(--fg); cursor: pointer; }
+  .conn-toggle input:not(:checked) ~ label { color: var(--muted); text-decoration: line-through; }
+
+  /* Search */
+  .search-box { width: 100%; padding: 6px 8px; font-size: 11px; font-family: inherit; background: var(--bg); border: 1px solid var(--border); color: var(--fg); border-radius: 4px; outline: none; }
+  .search-box:focus { border-color: var(--accent); }
+  .search-box::placeholder { color: var(--muted); }
+
+  /* Node detail */
+  .detail-panel { padding: 12px 14px; }
+  .detail-panel h4 { font-size: 13px; color: var(--accent); margin-bottom: 4px; }
+  .detail-panel .file { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+  .detail-panel .desc { font-size: 11px; color: var(--fg); line-height: 1.5; margin-bottom: 8px; }
+  .detail-fields { font-size: 11px; }
+  .detail-fields dt { color: var(--muted); margin-top: 6px; }
+  .detail-fields dd { color: var(--fg); padding: 2px 0; }
+  .detail-fields dd code { background: var(--surface2); padding: 1px 4px; border-radius: 2px; font-size: 10px; }
+
+  /* Canvas area */
+  .canvas-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .canvas-toolbar { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .canvas-toolbar button { padding: 3px 8px; font-size: 11px; font-family: inherit; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; border-radius: 3px; }
+  .canvas-toolbar button:hover { color: var(--fg); border-color: var(--accent); }
+  .canvas-toolbar .spacer { flex: 1; }
+  .canvas-toolbar .info { font-size: 10px; color: var(--muted); }
+
+  .svg-wrap { flex: 1; overflow: hidden; position: relative; }
+  svg { width: 100%; height: 100%; }
+
+  /* SVG styles */
+  .node-rect { rx: 6; cursor: pointer; stroke-width: 1.5; transition: all .15s; }
+  .node-rect:hover { stroke-width: 2.5; filter: brightness(1.15); }
+  .node-rect.selected { stroke-width: 2.5; stroke-dasharray: none; }
+  .node-label { font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 11px; fill: #fff; font-weight: 600; pointer-events: none; }
+  .node-sub { font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 8px; fill: rgba(255,255,255,.5); pointer-events: none; }
+  .conn-path { fill: none; stroke-width: 1.5; }
+  .conn-label { font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 8px; fill: var(--muted); }
+
+  /* Prompt area */
+  .prompt-area { border-top: 1px solid var(--border); background: var(--surface); padding: 10px 14px; max-height: 180px; overflow-y: auto; flex-shrink: 0; }
+  .prompt-area .prompt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .prompt-area h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .copy-btn { padding: 3px 10px; font-size: 10px; font-family: inherit; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; border-radius: 3px; transition: all .15s; }
+  .copy-btn:hover { background: var(--accent); color: #000; }
+  .prompt-text { font-size: 11px; color: var(--fg); line-height: 1.6; white-space: pre-wrap; }
+
+  /* Table view */
+  .table-view { display: none; flex: 1; overflow: auto; padding: 16px; }
+  .table-view.active { display: block; }
+  .schema-table { width: 100%; border-collapse: collapse; }
+  .schema-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); padding: 6px 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); }
+  .schema-table td { font-size: 11px; padding: 5px 10px; border-bottom: 1px solid var(--border); color: var(--fg); }
+  .schema-table td.type { color: var(--cyan); }
+  .schema-table td.pk { color: var(--amber); }
+  .schema-table td.fk { color: var(--indigo); }
+  .schema-table tr:hover td { background: var(--surface2); }
+  .table-title { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+  .table-desc { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+  .table-group { margin-bottom: 24px; }
+
+  /* Tabs */
+  .view-tabs { display: flex; gap: 2px; }
+  .view-tab { padding: 3px 10px; font-size: 11px; font-family: inherit; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; border-radius: 3px; }
+  .view-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>spectra <span>// data explorer</span></h1>
+  <div class="preset-bar">
+    <button class="preset-btn active" onclick="setPreset('full')">Full System</button>
+    <button class="preset-btn" onclick="setPreset('frontend')">Frontend</button>
+    <button class="preset-btn" onclick="setPreset('backend')">Backend</button>
+    <button class="preset-btn" onclick="setPreset('data')">Data Flow</button>
+    <button class="preset-btn" onclick="setPreset('auth')">Auth Flow</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <input class="search-box" type="text" placeholder="검색 (노드, 테이블, API...)" oninput="handleSearch(this.value)">
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Layers</h3>
+      <div id="layer-toggles"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Connections</h3>
+      <div id="conn-toggles"></div>
+    </div>
+
+    <div class="sidebar-section" id="detail-section" style="display:none">
+      <h3>Detail</h3>
+      <div class="detail-panel" id="detail-content"></div>
+    </div>
+  </div>
+
+  <div class="canvas-area">
+    <div class="canvas-toolbar">
+      <div class="view-tabs">
+        <button class="view-tab active" onclick="setView('diagram')">Architecture</button>
+        <button class="view-tab" onclick="setView('schema')">DB Schema</button>
+        <button class="view-tab" onclick="setView('api')">API Routes</button>
+        <button class="view-tab" onclick="setView('routes')">Page Routes</button>
+      </div>
+      <div class="spacer"></div>
+      <div class="info" id="stats-info"></div>
+      <button onclick="zoomIn()">+</button>
+      <button onclick="zoomOut()">−</button>
+      <button onclick="zoomReset()">Reset</button>
+    </div>
+
+    <div class="svg-wrap" id="svg-wrap">
+      <svg id="canvas" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3b82f6"/></marker>
+          <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#22c55e"/></marker>
+          <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f97316"/></marker>
+          <marker id="arrow-rose" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f43f5e"/></marker>
+          <marker id="arrow-muted" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#71717a"/></marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="table-view" id="schema-view"></div>
+    <div class="table-view" id="api-view"></div>
+    <div class="table-view" id="routes-view"></div>
+
+    <div class="prompt-area">
+      <div class="prompt-header">
+        <h3>Generated Prompt</h3>
+        <button class="copy-btn" onclick="copyPrompt()">Copy</button>
+      </div>
+      <div class="prompt-text" id="prompt-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA: Spectra Tech Blog Codebase
+// ============================================================
+
+const layers = {
+  pages:    { label: 'Pages',       color: '#3b82f6', fill: '#1e3a5f' },
+  components: { label: 'Components', color: '#10b981', fill: '#0f3d2e' },
+  state:    { label: 'State',       color: '#a78bfa', fill: '#2d1f5e' },
+  data:     { label: 'Data Layer',  color: '#f59e0b', fill: '#4a3510' },
+  api:      { label: 'API Routes',  color: '#f43f5e', fill: '#4a1525' },
+  supabase: { label: 'Supabase',    color: '#06b6d4', fill: '#0a3540' },
+  auth:     { label: 'Auth',        color: '#ec4899', fill: '#4a152e' },
+};
+
+const connTypes = {
+  'data-flow':  { label: 'Data Flow',    color: '#3b82f6', dash: '' },
+  'renders':    { label: 'Renders',       color: '#22c55e', dash: '6,3' },
+  'api-call':   { label: 'API Call',      color: '#f97316', dash: '4,4' },
+  'auth-flow':  { label: 'Auth Flow',     color: '#f43f5e', dash: '8,4' },
+  'imports':    { label: 'Imports',       color: '#71717a', dash: '2,2' },
+};
+
+const nodes = [
+  // Pages (y: 30-80)
+  { id: 'home',       label: 'Home',           sub: 'app/page.tsx',                x: 60,  y: 40,  w: 120, h: 42, layer: 'pages', desc: '홈페이지. getFeaturedPosts + getPosts로 히어로 + 그리드 렌더링' },
+  { id: 'post-detail',label: 'Post [slug]',    sub: 'app/posts/[slug]/page.tsx',   x: 210, y: 40,  w: 120, h: 42, layer: 'pages', desc: 'getPostBySlug로 게시글 상세 + 관련 포스트. ViewCounter 포함' },
+  { id: 'post-new',   label: 'New Post',       sub: 'app/posts/new/page.tsx',      x: 360, y: 40,  w: 120, h: 42, layer: 'pages', desc: '관리자 전용 게시글 작성 페이지. getTags로 태그 로드' },
+  { id: 'post-edit',  label: 'Edit Post',      sub: 'app/posts/[slug]/edit/',      x: 510, y: 40,  w: 120, h: 42, layer: 'pages', desc: '관리자 전용 게시글 수정 페이지' },
+  { id: 'tags-page',  label: 'Tags',           sub: 'app/tags/page.tsx',           x: 660, y: 40,  w: 110, h: 42, layer: 'pages', desc: '태그 디렉토리. getTags로 전체 태그 + 게시글 수' },
+  { id: 'tag-detail', label: 'Tag [slug]',     sub: 'app/tags/[slug]/page.tsx',    x: 800, y: 40,  w: 110, h: 42, layer: 'pages', desc: 'getTagBySlug + getPostsByTag' },
+  { id: 'sign-in',    label: 'Sign In',        sub: 'app/(auth)/sign-in/',         x: 60,  y: 100, w: 110, h: 42, layer: 'pages', desc: 'OAuth(GitHub/Google) + 이메일 로그인' },
+  { id: 'admin-dash', label: 'Dashboard',      sub: 'app/admin/dashboard/',        x: 210, y: 100, w: 120, h: 42, layer: 'pages', desc: '관리자 대시보드. 조회수/좋아요 통계' },
+  { id: 'admin-tags', label: 'Manage Tags',    sub: 'app/admin/tags/',             x: 360, y: 100, w: 120, h: 42, layer: 'pages', desc: '태그 CRUD 관리 (관리자)' },
+
+  // Components (y: 170-240)
+  { id: 'header',      label: 'Header',        sub: 'components/header.tsx',         x: 60,  y: 175, w: 120, h: 42, layer: 'components', desc: 'Client. 네비게이션 + Ctrl+K 검색 트리거 + 인증 상태 표시' },
+  { id: 'search-modal',label: 'SearchModal',   sub: 'components/search-modal.tsx',   x: 210, y: 175, w: 130, h: 42, layer: 'components', desc: 'Client. 디바운스 300ms, 타이틀/본문 분리 검색, 키보드 네비' },
+  { id: 'post-card',   label: 'PostCard',      sub: 'components/post-card.tsx',      x: 370, y: 175, w: 120, h: 42, layer: 'components', desc: '게시글 카드. compact LikeButton 좌상단 배치' },
+  { id: 'post-editor', label: 'PostEditor',    sub: 'components/post-editor.tsx',    x: 520, y: 175, w: 120, h: 42, layer: 'components', desc: 'Client. 게시글 작성/수정 폼. 이미지 업로드 포함' },
+  { id: 'like-btn',    label: 'LikeButton',    sub: 'components/like-button.tsx',    x: 670, y: 175, w: 120, h: 42, layer: 'components', desc: 'Client. 인증 기반 좋아요. compact 모드 지원' },
+  { id: 'view-counter',label: 'ViewCounter',   sub: 'components/view-counter.tsx',   x: 820, y: 175, w: 120, h: 42, layer: 'components', desc: 'Client. 페이지 로드마다 POST /view 호출. 중복 허용' },
+  { id: 'markdown',    label: 'Markdown',      sub: 'components/markdown-content.tsx',x: 60,  y: 235, w: 130, h: 42, layer: 'components', desc: 'Client. react-markdown + remark-gfm' },
+  { id: 'user-avatar', label: 'UserAvatar',    sub: 'components/user-avatar.tsx',    x: 220, y: 235, w: 120, h: 42, layer: 'components', desc: 'Client. 드롭다운 메뉴 (대시보드, 글쓰기, 태그, 로그아웃)' },
+  { id: 'tag-badge',   label: 'TagBadge',      sub: 'components/tag-badge.tsx',      x: 370, y: 235, w: 110, h: 42, layer: 'components', desc: 'Client. 태그 링크/뱃지' },
+  { id: 'dash-content',label: 'DashboardUI',   sub: 'admin/dashboard/dashboard-content.tsx', x: 520, y: 235, w: 130, h: 42, layer: 'components', desc: 'Client. 3탭 대시보드 (통계/좋아요/조회 이력)' },
+
+  // State (y: 310-340)
+  { id: 'auth-store',  label: 'AuthStore',     sub: 'stores/auth-store.ts',         x: 120, y: 315, w: 130, h: 42, layer: 'state', desc: 'Zustand. user, isLoading 상태' },
+  { id: 'auth-prov',   label: 'AuthProvider',  sub: 'providers/auth-provider.tsx',   x: 300, y: 315, w: 140, h: 42, layer: 'state', desc: 'onAuthStateChange 구독 → Zustand 업데이트' },
+  { id: 'query-prov',  label: 'QueryProvider', sub: 'providers/query-provider.tsx',  x: 490, y: 315, w: 140, h: 42, layer: 'state', desc: 'React Query. staleTime: 60s' },
+
+  // Data Layer (y: 390-420)
+  { id: 'queries',     label: 'queries.ts',    sub: 'lib/queries.ts',               x: 100, y: 395, w: 130, h: 42, layer: 'data', desc: 'getPosts, getFeaturedPosts, getPostBySlug, getPostsByTag, getTags, getTagBySlug' },
+  { id: 'data-mapper', label: 'data.ts',       sub: 'lib/data.ts',                  x: 280, y: 395, w: 120, h: 42, layer: 'data', desc: 'Post/Tag 인터페이스, mapPost, mapTag, formatDate' },
+  { id: 'server-acts', label: 'Server Actions',sub: 'lib/post-actions.ts + actions.ts', x: 450, y: 395, w: 140, h: 42, layer: 'data', desc: 'createPost, updatePost, deletePost, tag CRUD' },
+  { id: 'upload-img',  label: 'upload-image',  sub: 'lib/upload-image.ts',          x: 640, y: 395, w: 130, h: 42, layer: 'data', desc: 'Supabase Storage 이미지 업로드' },
+
+  // API Routes (y: 470-500)
+  { id: 'api-view',    label: 'POST /view',    sub: 'api/posts/[slug]/view/route.ts', x: 140, y: 475, w: 140, h: 42, layer: 'api', desc: 'view_count +1, post_views에 기록. viewer_id 전달' },
+  { id: 'api-like',    label: 'GET|POST /like', sub: 'api/posts/[slug]/like/route.ts', x: 340, y: 475, w: 150, h: 42, layer: 'api', desc: 'GET: 상태 조회. POST: 인증 필수 토글 (post_likes)' },
+  { id: 'api-callback',label: 'OAuth Callback', sub: 'app/auth/callback/route.ts',    x: 550, y: 475, w: 140, h: 42, layer: 'api', desc: 'exchangeCodeForSession → 홈 리다이렉트' },
+  { id: 'middleware',   label: 'Middleware',    sub: 'src/middleware.ts',              x: 750, y: 475, w: 120, h: 42, layer: 'api', desc: '모든 요청에서 세션 토큰 갱신 (updateSession)' },
+
+  // Supabase (y: 555-590)
+  { id: 'sb-server',   label: 'Server Client', sub: 'lib/supabase/server.ts',       x: 80,  y: 560, w: 140, h: 42, layer: 'supabase', desc: '서버 컴포넌트/액션용. 쿠키 기반 인증' },
+  { id: 'sb-browser',  label: 'Browser Client',sub: 'lib/supabase/client.ts',       x: 260, y: 560, w: 140, h: 42, layer: 'supabase', desc: '클라이언트 컴포넌트용. OAuth, 검색 쿼리' },
+  { id: 'sb-mw',       label: 'MW Helper',     sub: 'lib/supabase/middleware.ts',    x: 440, y: 560, w: 140, h: 42, layer: 'supabase', desc: 'updateSession(): getUser() → 쿠키 갱신' },
+  { id: 'db',          label: 'PostgreSQL',    sub: 'Supabase Database',             x: 620, y: 560, w: 130, h: 42, layer: 'supabase', desc: 'posts, tags, post_tags, post_likes, post_views, profiles, comments, bookmarks' },
+  { id: 'sb-storage',  label: 'Storage',       sub: 'Supabase Storage',             x: 790, y: 560, w: 110, h: 42, layer: 'supabase', desc: '커버 이미지 버킷' },
+
+  // Auth (y: 630-660)
+  { id: 'sb-auth',     label: 'Supabase Auth', sub: 'OAuth + Email/PW',             x: 200, y: 640, w: 140, h: 42, layer: 'auth', desc: 'GitHub, Google OAuth + 이메일/비밀번호 인증' },
+  { id: 'github',      label: 'GitHub OAuth',  sub: 'External',                     x: 420, y: 640, w: 130, h: 42, layer: 'auth', desc: '외부 OAuth 제공자' },
+  { id: 'google',      label: 'Google OAuth',  sub: 'External',                     x: 600, y: 640, w: 130, h: 42, layer: 'auth', desc: '외부 OAuth 제공자' },
+];
+
+const connections = [
+  // Pages → Queries
+  { from: 'home',       to: 'queries',     type: 'data-flow', label: 'getPosts, getFeatured' },
+  { from: 'post-detail',to: 'queries',     type: 'data-flow', label: 'getPostBySlug' },
+  { from: 'tags-page',  to: 'queries',     type: 'data-flow', label: 'getTags' },
+  { from: 'tag-detail', to: 'queries',     type: 'data-flow', label: 'getPostsByTag' },
+  // Pages → Components
+  { from: 'home',       to: 'post-card',   type: 'renders', label: '' },
+  { from: 'post-detail',to: 'view-counter',type: 'renders', label: '' },
+  { from: 'post-detail',to: 'markdown',    type: 'renders', label: '' },
+  { from: 'post-detail',to: 'like-btn',    type: 'renders', label: '' },
+  { from: 'post-new',   to: 'post-editor', type: 'renders', label: '' },
+  { from: 'post-edit',  to: 'post-editor', type: 'renders', label: '' },
+  { from: 'admin-dash', to: 'dash-content',type: 'renders', label: '' },
+  // Components → API
+  { from: 'view-counter',to: 'api-view',   type: 'api-call', label: 'POST' },
+  { from: 'like-btn',   to: 'api-like',    type: 'api-call', label: 'GET|POST' },
+  { from: 'search-modal',to: 'sb-browser', type: 'api-call', label: 'ilike query' },
+  { from: 'header',     to: 'search-modal',type: 'renders', label: 'Ctrl+K' },
+  { from: 'post-card',  to: 'like-btn',    type: 'renders', label: 'compact' },
+  // Data layer
+  { from: 'queries',    to: 'sb-server',   type: 'data-flow', label: 'createClient()' },
+  { from: 'queries',    to: 'data-mapper', type: 'imports', label: 'mapPost/mapTag' },
+  { from: 'server-acts',to: 'sb-server',   type: 'data-flow', label: '' },
+  { from: 'post-editor',to: 'server-acts', type: 'data-flow', label: 'form action' },
+  { from: 'post-editor',to: 'upload-img',  type: 'api-call', label: 'image upload' },
+  { from: 'upload-img', to: 'sb-storage',  type: 'data-flow', label: '' },
+  // API → Supabase
+  { from: 'api-view',   to: 'sb-server',   type: 'data-flow', label: 'RPC: increment_post_view_count' },
+  { from: 'api-like',   to: 'sb-server',   type: 'data-flow', label: 'RPC: toggle_post_like' },
+  { from: 'sb-server',  to: 'db',          type: 'data-flow', label: 'REST API' },
+  { from: 'sb-browser', to: 'db',          type: 'data-flow', label: 'REST API' },
+  { from: 'middleware',  to: 'sb-mw',       type: 'imports', label: 'updateSession()' },
+  { from: 'sb-mw',      to: 'sb-auth',     type: 'auth-flow', label: 'getUser()' },
+  // Auth flow
+  { from: 'sign-in',    to: 'sb-browser',  type: 'auth-flow', label: 'signInWithOAuth/Password' },
+  { from: 'sb-browser', to: 'sb-auth',     type: 'auth-flow', label: '' },
+  { from: 'api-callback',to: 'sb-auth',    type: 'auth-flow', label: 'exchangeCodeForSession' },
+  { from: 'sb-auth',    to: 'github',      type: 'auth-flow', label: '' },
+  { from: 'sb-auth',    to: 'google',      type: 'auth-flow', label: '' },
+  { from: 'auth-prov',  to: 'sb-browser',  type: 'auth-flow', label: 'getUser + onAuthStateChange' },
+  { from: 'auth-prov',  to: 'auth-store',  type: 'data-flow', label: 'setUser()' },
+  // State
+  { from: 'header',     to: 'auth-store',  type: 'imports', label: 'useAuthStore()' },
+  { from: 'like-btn',   to: 'auth-store',  type: 'imports', label: 'useAuthStore()' },
+  { from: 'user-avatar',to: 'auth-store',  type: 'imports', label: '' },
+];
+
+// DB Schema
+const schema = {
+  posts: {
+    desc: '블로그 게시글',
+    cols: [
+      { name: 'id', type: 'uuid', pk: true, desc: 'PK, gen_random_uuid()' },
+      { name: 'slug', type: 'text', desc: 'UNIQUE, URL 슬러그' },
+      { name: 'title', type: 'text', desc: '제목' },
+      { name: 'content', type: 'text', desc: 'Markdown 본문' },
+      { name: 'excerpt', type: 'text', desc: '요약' },
+      { name: 'status', type: 'text', desc: "draft | published" },
+      { name: 'featured', type: 'boolean', desc: '추천 여부' },
+      { name: 'cover_image', type: 'text', desc: '커버 이미지 URL' },
+      { name: 'cover_gradient', type: 'text', desc: '커버 그라디언트 CSS' },
+      { name: 'author_id', type: 'uuid', fk: 'profiles.id', desc: '작성자 FK' },
+      { name: 'read_time', type: 'text', desc: '예상 읽기 시간' },
+      { name: 'view_count', type: 'integer', desc: '조회수 (중복 허용)' },
+      { name: 'like_count', type: 'integer', desc: '좋아요 수 (비정규화)' },
+      { name: 'published_at', type: 'timestamptz', desc: '발행일' },
+      { name: 'created_at', type: 'timestamptz', desc: '' },
+      { name: 'updated_at', type: 'timestamptz', desc: '' },
+    ]
+  },
+  profiles: {
+    desc: '사용자 프로필 (auth.users 1:1)',
+    cols: [
+      { name: 'id', type: 'uuid', pk: true, desc: 'PK, auth.users FK' },
+      { name: 'username', type: 'text', desc: 'UNIQUE' },
+      { name: 'display_name', type: 'text', desc: '' },
+      { name: 'avatar_url', type: 'text', desc: '' },
+      { name: 'bio', type: 'text', desc: '' },
+      { name: 'role', type: 'text', desc: 'admin | author | user' },
+      { name: 'created_at', type: 'timestamptz', desc: '' },
+      { name: 'updated_at', type: 'timestamptz', desc: '' },
+    ]
+  },
+  tags: {
+    desc: '태그 마스터',
+    cols: [
+      { name: 'id', type: 'uuid', pk: true, desc: 'PK' },
+      { name: 'slug', type: 'text', desc: 'UNIQUE' },
+      { name: 'name', type: 'text', desc: '태그명' },
+      { name: 'description', type: 'text', desc: '' },
+      { name: 'created_at', type: 'timestamptz', desc: '' },
+    ]
+  },
+  post_tags: {
+    desc: '포스트-태그 M:N 조인',
+    cols: [
+      { name: 'post_id', type: 'uuid', pk: true, fk: 'posts.id', desc: 'PK, FK' },
+      { name: 'tag_id', type: 'uuid', pk: true, fk: 'tags.id', desc: 'PK, FK' },
+    ]
+  },
+  post_likes: {
+    desc: '좋아요 (인증 기반, 1인 1좋아요)',
+    cols: [
+      { name: 'user_id', type: 'uuid', pk: true, fk: 'profiles.id', desc: 'PK, FK' },
+      { name: 'post_id', type: 'uuid', pk: true, fk: 'posts.id', desc: 'PK, FK' },
+      { name: 'created_at', type: 'timestamptz', desc: '' },
+    ]
+  },
+  post_views: {
+    desc: '조회 이력 (로그인 사용자 추적)',
+    cols: [
+      { name: 'id', type: 'uuid', pk: true, desc: 'PK' },
+      { name: 'post_id', type: 'uuid', fk: 'posts.id', desc: 'FK' },
+      { name: 'user_id', type: 'uuid', fk: 'profiles.id', desc: 'FK (nullable, 비로그인=null)' },
+      { name: 'created_at', type: 'timestamptz', desc: '' },
+    ]
+  },
+  bookmarks: {
+    desc: '사용자 북마크',
+    cols: [
+      { name: 'user_id', type: 'uuid', pk: true, fk: 'profiles.id', desc: 'PK, FK' },
+      { name: 'post_id', type: 'uuid', pk: true, fk: 'posts.id', desc: 'PK, FK' },
+      { name: 'created_at', type: 'timestamptz', desc: '' },
+    ]
+  },
+  comments: {
+    desc: '게시글 댓글 (대댓글 지원)',
+    cols: [
+      { name: 'id', type: 'uuid', pk: true, desc: 'PK' },
+      { name: 'post_slug', type: 'text', desc: '게시글 슬러그' },
+      { name: 'content', type: 'text', desc: '댓글 내용' },
+      { name: 'user_id', type: 'uuid', fk: 'profiles.id', desc: 'FK' },
+      { name: 'parent_id', type: 'uuid', fk: 'comments.id', desc: '상위 댓글 (대댓글)' },
+      { name: 'is_deleted', type: 'boolean', desc: '소프트 삭제' },
+      { name: 'created_at', type: 'timestamptz', desc: '' },
+      { name: 'updated_at', type: 'timestamptz', desc: '' },
+    ]
+  },
+};
+
+const apiRoutes = [
+  { method: 'POST', path: '/api/posts/[slug]/view', auth: 'None', desc: 'view_count +1, post_views에 기록. 로그인 시 viewer_id 포함', rpc: 'increment_post_view_count(slug, viewer_id)' },
+  { method: 'GET',  path: '/api/posts/[slug]/like', auth: 'None', desc: '좋아요 수 + 현재 사용자 좋아요 여부 반환', rpc: 'posts.select + post_likes.select' },
+  { method: 'POST', path: '/api/posts/[slug]/like', auth: 'Required', desc: '좋아요 토글 (인증 필수, 401 반환)', rpc: 'toggle_post_like(slug, liker_id)' },
+  { method: 'GET',  path: '/auth/callback',          auth: 'OAuth',   desc: 'OAuth 인증 코드 → 세션 교환 → 홈 리다이렉트', rpc: 'exchangeCodeForSession(code)' },
+];
+
+const pageRoutes = [
+  { path: '/',                  type: 'Server', data: 'getPosts(), getFeaturedPosts()', desc: '홈 (히어로 + 그리드)' },
+  { path: '/posts/[slug]',     type: 'Server (SSG)', data: 'getPostBySlug(slug)', desc: '게시글 상세' },
+  { path: '/posts/[slug]/edit',type: 'Server', data: 'getPostBySlug, getTags', desc: '게시글 수정 (관리자)' },
+  { path: '/posts/new',        type: 'Server', data: 'getTags()', desc: '게시글 작성 (관리자)' },
+  { path: '/tags',             type: 'Server', data: 'getTags()', desc: '태그 디렉토리' },
+  { path: '/tags/[slug]',      type: 'Server (SSG)', data: 'getTagBySlug, getPostsByTag', desc: '태그별 게시글' },
+  { path: '/about',            type: 'Server (Static)', data: '없음', desc: '소개 페이지' },
+  { path: '/sign-in',          type: 'Client', data: '없음', desc: 'OAuth + 이메일 로그인' },
+  { path: '/sign-up',          type: 'Client', data: '없음', desc: '회원가입' },
+  { path: '/admin/dashboard',  type: 'Server', data: 'posts, post_likes, post_views', desc: '관리자 대시보드' },
+  { path: '/admin/tags',       type: 'Server', data: 'getTags()', desc: '태그 관리 (관리자)' },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+
+const state = {
+  layers: {},
+  connTypes: {},
+  view: 'diagram',
+  selectedNode: null,
+  zoom: 1,
+  panX: 0, panY: 0,
+  search: '',
+};
+
+// Initialize
+Object.keys(layers).forEach(k => state.layers[k] = true);
+Object.keys(connTypes).forEach(k => state.connTypes[k] = true);
+
+const presets = {
+  full:     { layers: Object.fromEntries(Object.keys(layers).map(k=>[k,true])), conns: Object.fromEntries(Object.keys(connTypes).map(k=>[k,true])) },
+  frontend: { layers: { pages: true, components: true, state: true, data: false, api: false, supabase: false, auth: false }, conns: { 'data-flow': true, renders: true, 'api-call': false, 'auth-flow': false, imports: true } },
+  backend:  { layers: { pages: false, components: false, state: false, data: true, api: true, supabase: true, auth: false }, conns: { 'data-flow': true, renders: false, 'api-call': true, 'auth-flow': false, imports: true } },
+  data:     { layers: { pages: true, components: false, state: false, data: true, api: true, supabase: true, auth: false }, conns: { 'data-flow': true, renders: false, 'api-call': true, 'auth-flow': false, imports: false } },
+  auth:     { layers: { pages: true, components: true, state: true, data: false, api: true, supabase: true, auth: true }, conns: { 'data-flow': true, renders: false, 'api-call': false, 'auth-flow': true, imports: true } },
+};
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function buildControls() {
+  const lDiv = document.getElementById('layer-toggles');
+  lDiv.innerHTML = Object.entries(layers).map(([k, v]) => {
+    const count = nodes.filter(n => n.layer === k).length;
+    return `<div class="layer-toggle" onclick="toggleLayer('${k}')">
+      <input type="checkbox" id="l-${k}" ${state.layers[k]?'checked':''}>
+      <span class="layer-dot" style="background:${v.color}"></span>
+      <label for="l-${k}">${v.label}</label>
+      <span class="count">${count}</span>
+    </div>`;
+  }).join('');
+
+  const cDiv = document.getElementById('conn-toggles');
+  cDiv.innerHTML = Object.entries(connTypes).map(([k, v]) => {
+    return `<div class="conn-toggle" onclick="toggleConn('${k}')">
+      <input type="checkbox" id="c-${k}" ${state.connTypes[k]?'checked':''}>
+      <span class="conn-line" style="background:${v.color};${v.dash?`background:repeating-linear-gradient(90deg,${v.color} 0,${v.color} 4px,transparent 4px,transparent 6px)`:``}"></span>
+      <label for="c-${k}">${v.label}</label>
+    </div>`;
+  }).join('');
+}
+
+function renderDiagram() {
+  const svg = document.getElementById('canvas');
+  const wrap = document.getElementById('svg-wrap');
+  // Clear
+  while (svg.lastChild && svg.lastChild.tagName !== 'defs') svg.removeChild(svg.lastChild);
+
+  const visibleNodes = nodes.filter(n => state.layers[n.layer] && matchSearch(n));
+  const visibleIds = new Set(visibleNodes.map(n => n.id));
+  const visibleConns = connections.filter(c => state.connTypes[c.type] && visibleIds.has(c.from) && visibleIds.has(c.to));
+
+  // Layer bands
+  const layerBands = {};
+  visibleNodes.forEach(n => {
+    if (!layerBands[n.layer]) layerBands[n.layer] = { minY: Infinity, maxY: -Infinity };
+    layerBands[n.layer].minY = Math.min(layerBands[n.layer].minY, n.y - 8);
+    layerBands[n.layer].maxY = Math.max(layerBands[n.layer].maxY, n.y + n.h + 8);
+  });
+  Object.entries(layerBands).forEach(([k, band]) => {
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', 20); rect.setAttribute('y', band.minY);
+    rect.setAttribute('width', 950); rect.setAttribute('height', band.maxY - band.minY);
+    rect.setAttribute('rx', 8); rect.setAttribute('fill', layers[k].fill); rect.setAttribute('opacity', '0.3');
+    svg.appendChild(rect);
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', 30); txt.setAttribute('y', band.minY + 14);
+    txt.setAttribute('fill', layers[k].color); txt.setAttribute('font-size', '9'); txt.setAttribute('font-family', 'inherit'); txt.setAttribute('opacity', '0.6');
+    txt.textContent = layers[k].label;
+    svg.appendChild(txt);
+  });
+
+  // Connections
+  visibleConns.forEach(c => {
+    const from = nodes.find(n => n.id === c.from);
+    const to = nodes.find(n => n.id === c.to);
+    if (!from || !to) return;
+    const x1 = from.x + from.w / 2, y1 = from.y + from.h;
+    const x2 = to.x + to.w / 2, y2 = to.y;
+    const ct = connTypes[c.type];
+    const mid = (y1 + y2) / 2;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M${x1},${y1} C${x1},${mid} ${x2},${mid} ${x2},${y2}`);
+    path.setAttribute('class', 'conn-path');
+    path.setAttribute('stroke', ct.color);
+    if (ct.dash) path.setAttribute('stroke-dasharray', ct.dash);
+    const markerColor = ct.color === '#3b82f6' ? 'blue' : ct.color === '#22c55e' ? 'green' : ct.color === '#f97316' ? 'orange' : ct.color === '#f43f5e' ? 'rose' : 'muted';
+    path.setAttribute('marker-end', `url(#arrow-${markerColor})`);
+    svg.appendChild(path);
+
+    if (c.label) {
+      const lx = (x1 + x2) / 2, ly = mid - 4;
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', lx); t.setAttribute('y', ly);
+      t.setAttribute('class', 'conn-label'); t.setAttribute('text-anchor', 'middle');
+      t.textContent = c.label;
+      svg.appendChild(t);
+    }
+  });
+
+  // Nodes
+  visibleNodes.forEach(n => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.onclick = () => selectNode(n.id);
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', n.x); rect.setAttribute('y', n.y);
+    rect.setAttribute('width', n.w); rect.setAttribute('height', n.h);
+    rect.setAttribute('class', 'node-rect' + (state.selectedNode === n.id ? ' selected' : ''));
+    rect.setAttribute('fill', layers[n.layer].fill);
+    rect.setAttribute('stroke', state.selectedNode === n.id ? '#fff' : layers[n.layer].color);
+    g.appendChild(rect);
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', n.x + n.w / 2); label.setAttribute('y', n.y + 18);
+    label.setAttribute('class', 'node-label'); label.setAttribute('text-anchor', 'middle');
+    label.textContent = n.label;
+    g.appendChild(label);
+
+    const sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    sub.setAttribute('x', n.x + n.w / 2); sub.setAttribute('y', n.y + 32);
+    sub.setAttribute('class', 'node-sub'); sub.setAttribute('text-anchor', 'middle');
+    sub.textContent = n.sub;
+    g.appendChild(sub);
+
+    svg.appendChild(g);
+  });
+
+  svg.setAttribute('viewBox', `${state.panX} ${state.panY} ${980 / state.zoom} ${720 / state.zoom}`);
+  document.getElementById('stats-info').textContent = `${visibleNodes.length} nodes · ${visibleConns.length} connections`;
+}
+
+function renderSchemaView() {
+  const el = document.getElementById('schema-view');
+  el.innerHTML = Object.entries(schema).map(([name, t]) => `
+    <div class="table-group">
+      <div class="table-title">${name}</div>
+      <div class="table-desc">${t.desc}</div>
+      <table class="schema-table">
+        <thead><tr><th>Column</th><th>Type</th><th>Key</th><th>Description</th></tr></thead>
+        <tbody>${t.cols.map(c => `<tr>
+          <td>${c.name}</td>
+          <td class="type">${c.type}</td>
+          <td>${c.pk ? '<span class="pk">PK</span>' : ''}${c.fk ? `<span class="fk">FK → ${c.fk}</span>` : ''}</td>
+          <td>${c.desc}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`).join('');
+}
+
+function renderApiView() {
+  const el = document.getElementById('api-view');
+  el.innerHTML = `
+    <div class="table-group">
+      <div class="table-title">API Endpoints</div>
+      <div class="table-desc">Next.js Route Handlers</div>
+      <table class="schema-table">
+        <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th><th>Supabase</th></tr></thead>
+        <tbody>${apiRoutes.map(r => `<tr>
+          <td style="color:${r.method==='GET'?'var(--green)':'var(--amber)'}">${r.method}</td>
+          <td>${r.path}</td>
+          <td style="color:${r.auth==='Required'?'var(--rose)':'var(--muted)'}">${r.auth}</td>
+          <td>${r.desc}</td>
+          <td style="font-size:10px;color:var(--cyan)">${r.rpc}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderRoutesView() {
+  const el = document.getElementById('routes-view');
+  el.innerHTML = `
+    <div class="table-group">
+      <div class="table-title">Page Routes</div>
+      <div class="table-desc">Next.js App Router Pages</div>
+      <table class="schema-table">
+        <thead><tr><th>Path</th><th>Type</th><th>Data Source</th><th>Description</th></tr></thead>
+        <tbody>${pageRoutes.map(r => `<tr>
+          <td style="color:var(--accent)">${r.path}</td>
+          <td style="color:${r.type.includes('Client')?'var(--purple)':'var(--blue)'}">${r.type}</td>
+          <td style="font-size:10px">${r.data}</td>
+          <td>${r.desc}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+function selectNode(id) {
+  state.selectedNode = state.selectedNode === id ? null : id;
+  renderDiagram();
+  renderDetail();
+  updatePrompt();
+}
+
+function renderDetail() {
+  const sec = document.getElementById('detail-section');
+  const el = document.getElementById('detail-content');
+  if (!state.selectedNode) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  const n = nodes.find(x => x.id === state.selectedNode);
+  const incoming = connections.filter(c => c.to === n.id).map(c => ({ ...c, node: nodes.find(x => x.id === c.from) }));
+  const outgoing = connections.filter(c => c.from === n.id).map(c => ({ ...c, node: nodes.find(x => x.id === c.to) }));
+
+  el.innerHTML = `
+    <h4>${n.label}</h4>
+    <div class="file">src/${n.sub}</div>
+    <div class="desc">${n.desc}</div>
+    <dl class="detail-fields">
+      <dt>Layer</dt><dd><code>${layers[n.layer].label}</code></dd>
+      ${incoming.length ? `<dt>← Incoming (${incoming.length})</dt>${incoming.map(c => `<dd><code>${c.node?.label||c.from}</code> <span style="color:${connTypes[c.type].color}">${c.label||connTypes[c.type].label}</span></dd>`).join('')}` : ''}
+      ${outgoing.length ? `<dt>→ Outgoing (${outgoing.length})</dt>${outgoing.map(c => `<dd><code>${c.node?.label||c.to}</code> <span style="color:${connTypes[c.type].color}">${c.label||connTypes[c.type].label}</span></dd>`).join('')}` : ''}
+    </dl>`;
+}
+
+function updatePrompt() {
+  const el = document.getElementById('prompt-output');
+  const visibleLayers = Object.entries(state.layers).filter(([,v])=>v).map(([k])=>layers[k].label);
+  const visibleConnsTypes = Object.entries(state.connTypes).filter(([,v])=>v).map(([k])=>connTypes[k].label);
+
+  let parts = [`Spectra tech-blog (Next.js 16 + Supabase) 아키텍처에서`];
+
+  if (visibleLayers.length < Object.keys(layers).length) {
+    parts.push(`${visibleLayers.join(', ')} 레이어를 보고 있습니다.`);
+  } else {
+    parts.push('전체 시스템을 보고 있습니다.');
+  }
+
+  if (state.selectedNode) {
+    const n = nodes.find(x => x.id === state.selectedNode);
+    const incoming = connections.filter(c => c.to === n.id);
+    const outgoing = connections.filter(c => c.from === n.id);
+    parts.push(`\n\n선택된 컴포넌트: ${n.label} (src/${n.sub})\n${n.desc}`);
+    if (incoming.length) parts.push(`\n수신 연결: ${incoming.map(c => nodes.find(x=>x.id===c.from)?.label).join(', ')}`);
+    if (outgoing.length) parts.push(`발신 연결: ${outgoing.map(c => nodes.find(x=>x.id===c.to)?.label).join(', ')}`);
+  }
+
+  if (state.view === 'schema') {
+    parts.push('\n\nDB 스키마: ' + Object.keys(schema).join(', '));
+  }
+
+  el.textContent = parts.join(' ');
+}
+
+// ============================================================
+// INTERACTIONS
+// ============================================================
+
+function toggleLayer(k) { state.layers[k] = !state.layers[k]; buildControls(); renderDiagram(); updatePrompt(); }
+function toggleConn(k) { state.connTypes[k] = !state.connTypes[k]; buildControls(); renderDiagram(); updatePrompt(); }
+
+function setPreset(name) {
+  const p = presets[name];
+  state.layers = { ...p.layers };
+  state.connTypes = { ...p.conns };
+  state.selectedNode = null;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().replace(' ','') === name));
+  buildControls(); renderDiagram(); renderDetail(); updatePrompt();
+}
+
+function setView(v) {
+  state.view = v;
+  document.querySelectorAll('.view-tab').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(v === 'diagram' ? 'arch' : v === 'schema' ? 'db' : v === 'api' ? 'api' : 'page')));
+  document.getElementById('svg-wrap').style.display = v === 'diagram' ? '' : 'none';
+  document.getElementById('schema-view').classList.toggle('active', v === 'schema');
+  document.getElementById('api-view').classList.toggle('active', v === 'api');
+  document.getElementById('routes-view').classList.toggle('active', v === 'routes');
+  updatePrompt();
+}
+
+function matchSearch(n) {
+  if (!state.search) return true;
+  const q = state.search.toLowerCase();
+  return n.label.toLowerCase().includes(q) || n.sub.toLowerCase().includes(q) || n.desc.toLowerCase().includes(q);
+}
+
+function handleSearch(val) {
+  state.search = val;
+  renderDiagram();
+}
+
+function zoomIn() { state.zoom = Math.min(state.zoom * 1.2, 3); renderDiagram(); }
+function zoomOut() { state.zoom = Math.max(state.zoom / 1.2, 0.5); renderDiagram(); }
+function zoomReset() { state.zoom = 1; state.panX = 0; state.panY = 0; renderDiagram(); }
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-output').textContent;
+  navigator.clipboard.writeText(text);
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
+}
+
+// Pan
+let isPanning = false, startX, startY;
+document.getElementById('svg-wrap').addEventListener('mousedown', e => {
+  if (e.target.closest('.node-rect')) return;
+  isPanning = true; startX = e.clientX; startY = e.clientY;
+});
+document.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  state.panX -= (e.clientX - startX) / state.zoom;
+  state.panY -= (e.clientY - startY) / state.zoom;
+  startX = e.clientX; startY = e.clientY;
+  renderDiagram();
+});
+document.addEventListener('mouseup', () => isPanning = false);
+document.getElementById('svg-wrap').addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.deltaY < 0) zoomIn(); else zoomOut();
+}, { passive: false });
+
+// ============================================================
+// INIT
+// ============================================================
+
+buildControls();
+renderDiagram();
+renderSchemaView();
+renderApiView();
+renderRoutesView();
+renderDetail();
+updatePrompt();
+</script>
+</body>
+</html>
