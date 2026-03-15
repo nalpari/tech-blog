@@ -321,6 +321,10 @@ export type Database = {
     }
     Functions: {
       get_user_role: { Args: never; Returns: string }
+      increment_post_view_count: {
+        Args: { post_slug: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

@@ -8,6 +8,7 @@ import { TagBadge } from "@/components/tag-badge";
 import { PostCard } from "@/components/post-card";
 import { MarkdownContent } from "@/components/markdown-content";
 import { DeletePostButton } from "@/components/delete-post-button";
+import { ViewCounter } from "@/components/view-counter";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
 
@@ -82,6 +83,8 @@ export default async function PostPage({
                 <span>{post.readTime}</span>
               </>
             )}
+            <span className="text-muted-foreground">·</span>
+            <ViewCounter slug={post.slug} initialCount={post.viewCount} />
           </div>
         </header>
 
