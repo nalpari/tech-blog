@@ -63,6 +63,7 @@ export default async function EditPostPage({
             slug: post.slug,
             content: post.content ?? "",
             excerpt: post.excerpt ?? "",
+            coverImage: post.cover_image ?? "",
             featured: post.featured,
             status: post.status,
             tagIds: existingTagIds,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -21,6 +22,7 @@ interface EditMode {
   slug: string;
   content: string;
   excerpt: string;
+  coverImage: string;
   featured: boolean;
   status: string;
   tagIds: string[];
@@ -56,10 +58,13 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>(editMode?.tagIds ?? []);
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [featured, setFeatured] = useState(editMode?.featured ?? false);
+  const [coverImage, setCoverImage] = useState(editMode?.coverImage ?? "");
+  const [coverUploading, setCoverUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   function handleTitleChange(value: string) {
     setTitle(value);
@@ -100,6 +105,24 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       textarea.focus();
       textarea.setSelectionRange(newPos, newPos);
     });
+  }
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+    setCoverUploading(true);
+
+    try {
+      const { url } = await uploadImage(file);
+      setCoverImage(url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "커버 이미지 업로드 실패");
+    } finally {
+      setCoverUploading(false);
+      e.target.value = "";
+    }
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -202,6 +225,70 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
         {state.fieldErrors?.slug && (
           <p className="text-sm text-red-400 font-sans">{state.fieldErrors.slug}</p>
         )}
+      </div>
+
+      {/* Cover Image */}
+      <div className="space-y-1.5">
+        <label className="text-xs font-mono text-muted">cover image</label>
+        <input type="hidden" name="coverImage" value={coverImage} />
+        {coverImage ? (
+          <div className="relative border border-border group h-48">
+            <Image
+              src={coverImage}
+              alt="cover preview"
+              fill
+              sizes="(max-width: 768px) 100vw, 740px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                disabled={coverUploading}
+                className="px-3 py-1.5 text-xs font-mono text-foreground border border-border bg-background/80 hover:border-accent/50 transition-colors cursor-pointer"
+              >
+                change
+              </button>
+              <button
+                type="button"
+                onClick={() => setCoverImage("")}
+                className="px-3 py-1.5 text-xs font-mono text-red-400 border border-red-500/30 bg-background/80 hover:border-red-500/50 transition-colors cursor-pointer"
+              >
+                remove
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => coverInputRef.current?.click()}
+            disabled={coverUploading}
+            className="w-full h-32 border border-dashed border-border hover:border-accent/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-accent transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {coverUploading ? (
+              <>
+                <span className="size-5 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs font-mono">uploading...</span>
+              </>
+            ) : (
+              <>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+                <span className="text-xs font-mono">click to upload cover image</span>
+              </>
+            )}
+          </button>
+        )}
+        <input
+          ref={coverInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleCoverUpload}
+          className="hidden"
+        />
       </div>
 
       {/* Excerpt */}

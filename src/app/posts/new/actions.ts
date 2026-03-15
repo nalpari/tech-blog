@@ -42,6 +42,7 @@ export async function createPost(
     const content = formData.get("content") as string;
     const excerpt = formData.get("excerpt") as string;
     const customSlug = formData.get("slug") as string;
+    const coverImage = formData.get("coverImage") as string;
     const status = formData.get("status") as string;
     const featured = formData.get("featured") === "on";
     const tagIds = formData.getAll("tags") as string[];
@@ -79,6 +80,7 @@ export async function createPost(
         slug,
         content: content.trim(),
         excerpt: excerpt?.trim() || null,
+        cover_image: coverImage?.trim() || null,
         status: status === "published" ? "published" : "draft",
         featured,
         read_time: readTime,
