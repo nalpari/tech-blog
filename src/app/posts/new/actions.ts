@@ -45,6 +45,8 @@ export async function createPost(
     const status = formData.get("status") as string;
     const featured = formData.get("featured") === "on";
     const tagIds = formData.getAll("tags") as string[];
+    const coverImageFile = formData.get("coverImage") as File | null;
+    const existingCoverImage = formData.get("existingCoverImage") as string;
 
     const fieldErrors: Record<string, string> = {};
     if (!title?.trim()) fieldErrors.title = "제목을 입력해주세요.";
@@ -72,6 +74,30 @@ export async function createPost(
       return { fieldErrors: { slug: "이미 사용 중인 슬러그입니다." } };
     }
 
+    // Upload cover image to Supabase Storage
+    let coverImageUrl: string | null = existingCoverImage || null;
+    if (coverImageFile && coverImageFile.size > 0) {
+      const fileExt = coverImageFile.name.split(".").pop();
+      const filePath = `covers/${slug}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("post-images")
+        .upload(filePath, coverImageFile, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        return { error: `커버 이미지 업로드에 실패했습니다: ${uploadError.message}` };
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("post-images")
+        .getPublicUrl(filePath);
+
+      coverImageUrl = publicUrlData.publicUrl;
+    }
+
     const { data: post, error: insertError } = await supabase
       .from("posts")
       .insert({
@@ -79,6 +105,7 @@ export async function createPost(
         slug,
         content: content.trim(),
         excerpt: excerpt?.trim() || null,
+        cover_image: coverImageUrl,
         status: status === "published" ? "published" : "draft",
         featured,
         read_time: readTime,
