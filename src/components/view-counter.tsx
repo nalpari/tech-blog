@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function EyeIcon({ size = 14 }: { size?: number }) {
   return (
@@ -28,8 +28,12 @@ export function ViewCounter({
   initialCount: number;
 }) {
   const [count, setCount] = useState(initialCount);
+  const hasFired = useRef(false);
 
   useEffect(() => {
+    if (hasFired.current) return;
+    hasFired.current = true;
+
     const key = `viewed-${slug}`;
     if (sessionStorage.getItem(key)) return;
 
