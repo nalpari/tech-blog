@@ -10,23 +10,35 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
         className="relative rounded-xl border border-border/40 hover:border-border/80 bg-card/30 hover:bg-card/60 transition-all duration-300 h-full overflow-hidden"
         style={{ animationDelay: `${index * 60}ms` }}
       >
-        {post.coverImage && (
-          <div className="relative w-full h-40 overflow-hidden">
-            <Image
-              src={post.coverImage}
-              alt={post.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
-          </div>
-        )}
+        <div className="relative w-full h-40 overflow-hidden">
+          {post.coverImage ? (
+            <>
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-card/80 to-transparent" />
+            </>
+          ) : (
+            <div className={`absolute inset-0 bg-linear-to-br ${post.coverGradient || "from-indigo-500/20 via-purple-500/10 to-transparent"}`}>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/20">
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                </svg>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="p-6">
           {post.featured && (
             <div className="absolute top-4 right-4">
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-accent/10 text-accent border border-accent/20 backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-background text-accent border border-accent/40">
                 <span className="size-1 rounded-full bg-accent animate-pulse" />
                 Featured
               </span>
@@ -37,9 +49,9 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] text-muted-foreground"
+                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/4 text-muted-foreground"
               >
-                {tag.replace("-", " ")}
+                {tag.replaceAll("-", " ")}
               </span>
             ))}
           </div>
@@ -82,29 +94,29 @@ export function FeaturedPostCard({ post }: { post: Post }) {
               className="object-cover group-hover:scale-105 transition-transform duration-700"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
+            <div className="absolute inset-0 bg-linear-to-t from-background via-background/70 to-background/20" />
           </>
         ) : (
           <>
             <div
-              className={`absolute inset-0 bg-gradient-to-br ${post.coverGradient || "from-indigo-500/10 via-purple-500/5 to-transparent"}`}
+              className={`absolute inset-0 bg-linear-to-br ${post.coverGradient || "from-indigo-500/10 via-purple-500/5 to-transparent"}`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-background via-background/80 to-transparent" />
           </>
         )}
 
         <div className="relative p-8 sm:p-10 pt-24 sm:pt-32">
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-accent/10 text-accent border border-accent/20 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-background text-accent border border-accent/40">
               <span className="size-1 rounded-full bg-accent animate-pulse" />
               Featured
             </span>
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/[0.04] text-muted-foreground backdrop-blur-sm"
+                className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-white/4 text-muted-foreground backdrop-blur-sm"
               >
-                {tag.replace("-", " ")}
+                {tag.replaceAll("-", " ")}
               </span>
             ))}
           </div>

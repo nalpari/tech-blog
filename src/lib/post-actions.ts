@@ -77,16 +77,20 @@ export async function updatePost(
     }
 
     // Get current post to check publish state transition
-    const { data: currentPost } = await supabase
+    const { data: currentPost, error: fetchError } = await supabase
       .from("posts")
       .select("status, published_at, slug")
       .eq("id", postId)
       .single();
 
-    const isNewlyPublished =
-      status === "published" && currentPost?.status !== "published";
+    if (fetchError || !currentPost) {
+      return { error: "수정할 포스트를 찾을 수 없습니다. 페이지를 새로고침 후 다시 시도해주세요." };
+    }
 
-    const finalSlug = slug?.trim() || currentPost?.slug;
+    const isNewlyPublished =
+      status === "published" && currentPost.status !== "published";
+
+    const finalSlug = slug?.trim() || currentPost.slug;
 
     // Upload cover image to Supabase Storage
     let coverImageUrl: string | null = existingCoverImage || null;
@@ -104,9 +108,9 @@ export async function updatePost(
         };
       }
 
-      if (coverImageFile.size > 5 * 1024 * 1024) {
+      if (coverImageFile.size > 10 * 1024 * 1024) {
         return {
-          error: "커버 이미지 크기는 5MB 이하여야 합니다.",
+          error: "커버 이미지 크기는 10MB 이하여야 합니다.",
         };
       }
 
@@ -150,7 +154,7 @@ export async function updatePost(
         read_time: readTime,
         published_at: isNewlyPublished
           ? new Date().toISOString()
-          : currentPost?.published_at,
+          : currentPost.published_at,
       })
       .eq("id", postId);
 
@@ -159,7 +163,11 @@ export async function updatePost(
     }
 
     // Update tags: delete existing, insert new
-    await supabase.from("post_tags").delete().eq("post_id", postId);
+    const { error: deleteTagError } = await supabase.from("post_tags").delete().eq("post_id", postId);
+
+    if (deleteTagError) {
+      return { error: "기존 태그 삭제에 실패했습니다. 다시 시도해주세요." };
+    }
 
     if (tagIds.length > 0) {
       const postTags = tagIds.map((tagId) => ({

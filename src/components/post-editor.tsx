@@ -104,8 +104,8 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setUploadError("이미지 크기는 5MB 이하여야 합니다.");
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError("이미지 크기는 10MB 이하여야 합니다.");
       e.target.value = "";
       return;
     }
@@ -205,8 +205,9 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       }
 
       setActiveTab("preview");
-    } catch {
-      setUploadError("파일을 읽는 중 오류가 발생했습니다.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "알 수 없는 오류";
+      setUploadError(`파일을 읽는 중 오류가 발생했습니다: ${message}`);
       e.target.value = "";
     }
   }
@@ -267,7 +268,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             </div>
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-border/40 hover:border-accent/40 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer">
+          <label className="flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-border/40 hover:border-accent/40 bg-white/2 hover:bg-white/4 transition-all cursor-pointer">
             <svg
               width="32"
               height="32"
@@ -284,7 +285,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
               <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
             </svg>
             <span className="text-sm text-muted-foreground/50">클릭하여 커버 이미지 업로드</span>
-            <span className="text-xs text-muted-foreground/30 mt-1">PNG, JPG, WebP (최대 5MB)</span>
+            <span className="text-xs text-muted-foreground/30 mt-1">PNG, JPG, WebP (최대 10MB)</span>
             <input
               type="file"
               accept="image/*"
