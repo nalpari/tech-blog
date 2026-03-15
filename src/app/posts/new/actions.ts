@@ -77,7 +77,32 @@ export async function createPost(
     // Upload cover image to Supabase Storage
     let coverImageUrl: string | null = existingCoverImage || null;
     if (coverImageFile && coverImageFile.size > 0) {
-      const fileExt = coverImageFile.name.split(".").pop();
+      const ALLOWED_IMAGE_TYPES = [
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+      ];
+
+      if (!ALLOWED_IMAGE_TYPES.includes(coverImageFile.type)) {
+        return {
+          error: "허용되지 않는 이미지 형식입니다. PNG, JPG, WebP, GIF만 업로드할 수 있습니다.",
+        };
+      }
+
+      if (coverImageFile.size > 5 * 1024 * 1024) {
+        return {
+          error: "커버 이미지 크기는 5MB 이하여야 합니다.",
+        };
+      }
+
+      const MIME_TO_EXT: Record<string, string> = {
+        "image/png": "png",
+        "image/jpeg": "jpg",
+        "image/webp": "webp",
+        "image/gif": "gif",
+      };
+      const fileExt = MIME_TO_EXT[coverImageFile.type];
       const filePath = `covers/${slug}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage

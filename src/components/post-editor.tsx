@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -33,7 +33,17 @@ export function PostEditor({ tags }: PostEditorProps) {
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [featured, setFeatured] = useState(false);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  const coverImageUrlRef = useRef<string | null>(null);
+  const coverImageInputRef = useRef<HTMLInputElement>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (coverImageUrlRef.current) {
+        URL.revokeObjectURL(coverImageUrlRef.current);
+      }
+    };
+  }, []);
 
   function handleTitleChange(value: string) {
     setTitle(value);
@@ -72,14 +82,30 @@ export function PostEditor({ tags }: PostEditorProps) {
     }
 
     setUploadError(null);
+    if (coverImageUrlRef.current) {
+      URL.revokeObjectURL(coverImageUrlRef.current);
+    }
     const url = URL.createObjectURL(file);
+    coverImageUrlRef.current = url;
     setCoverImagePreview(url);
+
+    // Copy file to persistent hidden input so it survives re-renders
+    if (coverImageInputRef.current) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      coverImageInputRef.current.files = dt.files;
+    }
   }
 
   function removeCoverImage() {
+    if (coverImageUrlRef.current) {
+      URL.revokeObjectURL(coverImageUrlRef.current);
+      coverImageUrlRef.current = null;
+    }
     setCoverImagePreview(null);
-    const input = document.getElementById("coverImage") as HTMLInputElement;
-    if (input) input.value = "";
+    if (coverImageInputRef.current) {
+      coverImageInputRef.current.value = "";
+    }
   }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -122,7 +148,16 @@ export function PostEditor({ tags }: PostEditorProps) {
         </div>
       )}
 
-      {/* Cover Image */}
+      {/* Cover Image - persistent hidden input for form submission */}
+      <input
+        ref={coverImageInputRef}
+        type="file"
+        name="coverImage"
+        accept="image/*"
+        className="hidden"
+        tabIndex={-1}
+        aria-hidden="true"
+      />
       <div className="space-y-2">
         <label className="text-sm font-medium text-muted-foreground">
           커버 이미지
@@ -141,8 +176,6 @@ export function PostEditor({ tags }: PostEditorProps) {
               <label className="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm text-white text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors">
                 변경
                 <input
-                  id="coverImage"
-                  name="coverImage"
                   type="file"
                   accept="image/*"
                   onChange={handleCoverImageChange}
@@ -178,8 +211,6 @@ export function PostEditor({ tags }: PostEditorProps) {
             <span className="text-sm text-muted-foreground/50">클릭하여 커버 이미지 업로드</span>
             <span className="text-xs text-muted-foreground/30 mt-1">PNG, JPG, WebP (최대 5MB)</span>
             <input
-              id="coverImage"
-              name="coverImage"
               type="file"
               accept="image/*"
               onChange={handleCoverImageChange}
