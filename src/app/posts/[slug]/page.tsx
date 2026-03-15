@@ -88,12 +88,13 @@ export default async function PostPage({
       {/* Cover Image */}
       {post.coverImage && (
         <div className="mx-auto max-w-[740px] px-6 mb-12 animate-fade-in-up" style={{ animationDelay: "50ms" }}>
-          <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-border/20">
+          <div className="overflow-hidden border border-border/20">
             <Image
               src={post.coverImage}
               alt={post.title}
-              fill
-              className="object-cover"
+              width={740}
+              height={0}
+              className="w-full h-auto"
               sizes="(max-width: 740px) 100vw, 740px"
               priority
             />

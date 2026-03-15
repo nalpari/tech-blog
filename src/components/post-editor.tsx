@@ -104,8 +104,8 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setUploadError("이미지 크기는 5MB 이하여야 합니다.");
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError("이미지 크기는 10MB 이하여야 합니다.");
       e.target.value = "";
       return;
     }
@@ -284,7 +284,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
               <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
             </svg>
             <span className="text-sm text-muted-foreground/50">클릭하여 커버 이미지 업로드</span>
-            <span className="text-xs text-muted-foreground/30 mt-1">PNG, JPG, WebP (최대 5MB)</span>
+            <span className="text-xs text-muted-foreground/30 mt-1">PNG, JPG, WebP (최대 10MB)</span>
             <input
               type="file"
               accept="image/*"

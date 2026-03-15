@@ -214,6 +214,7 @@ body {
 
 .prose-blog img {
   border: 1px solid var(--border);
+  border-radius: 0;
   margin: 1.5rem 0;
 }
 
