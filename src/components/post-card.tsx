@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { type Post, formatDate } from "@/lib/data";
 
-export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
+export function PostCard({ post }: { post: Post; index?: number }) {
   return (
     <Link href={`/posts/${post.slug}`} className="group block">
+
       <article
         className="relative rounded-xl border border-border/40 hover:border-border/80 bg-card/30 hover:bg-card/60 transition-all duration-300 h-full overflow-hidden"
         style={{ animationDelay: `${index * 60}ms` }}

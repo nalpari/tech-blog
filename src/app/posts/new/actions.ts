@@ -163,7 +163,7 @@ export async function createPost(
     }
 
     if (status === "published") {
-      redirect(`/posts/${slug}`);
+      redirect(`/posts/${encodeURIComponent(slug)}`);
     }
 
     redirect("/");
