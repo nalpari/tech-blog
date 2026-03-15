@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/data";
@@ -88,6 +89,22 @@ export default async function PostPage({
           )}
         </div>
       </header>
+
+      {/* Cover Image */}
+      {post.coverImage && (
+        <div className="mx-auto max-w-[740px] px-6 mb-12 animate-fade-in-up" style={{ animationDelay: "50ms" }}>
+          <div className="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-border/20">
+            <Image
+              src={post.coverImage}
+              alt={post.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 740px) 100vw, 740px"
+              priority
+            />
+          </div>
+        </div>
+      )}
 
       {/* Gradient line */}
       <div className="mx-auto max-w-[740px] px-6 mb-12">

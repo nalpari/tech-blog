@@ -13,6 +13,7 @@ export interface Post {
   readTime: string | null;
   tags: string[];
   featured: boolean;
+  coverImage: string | null;
   coverGradient: string | null;
   authorId: string;
   viewCount: number;
@@ -40,6 +41,7 @@ export function mapPost(
     readTime: row.read_time,
     tags: tagSlugs,
     featured: row.featured,
+    coverImage: row.cover_image,
     coverGradient: row.cover_gradient,
     authorId: row.author_id,
     viewCount: row.view_count,
