@@ -154,7 +154,7 @@ export async function updatePost(
         read_time: readTime,
         published_at: isNewlyPublished
           ? new Date().toISOString()
-          : currentPost?.published_at,
+          : currentPost.published_at,
       })
       .eq("id", postId);
 
