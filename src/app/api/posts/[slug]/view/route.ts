@@ -19,11 +19,19 @@ export async function POST(
   const cookieStore = await cookies();
   const viewedKey = `viewed-${slug}`;
 
-  if (cookieStore.get(viewedKey)) {
-    return NextResponse.json({ viewCount: null, deduplicated: true });
-  }
-
   const supabase = await createClient();
+
+  if (cookieStore.get(viewedKey)) {
+    const { data: currentCount } = await supabase
+      .from("posts")
+      .select("view_count")
+      .eq("slug", slug)
+      .single();
+    return NextResponse.json({
+      viewCount: currentCount?.view_count ?? null,
+      deduplicated: true,
+    });
+  }
 
   const { data, error } = await supabase.rpc("increment_post_view_count", {
     post_slug: slug,

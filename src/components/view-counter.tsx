@@ -35,7 +35,9 @@ export function ViewCounter({
     hasFired.current = true;
 
     const key = `viewed-${slug}`;
-    if (sessionStorage.getItem(key)) return;
+    const alreadyViewed = sessionStorage.getItem(key);
+
+    if (alreadyViewed) return;
 
     fetch(`/api/posts/${slug}/view`, { method: "POST" })
       .then((res) => {
