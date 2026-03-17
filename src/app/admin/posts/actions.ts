@@ -56,10 +56,17 @@ export async function deletePost(postId: string) {
   const supabase = await assertAdmin();
 
   // Delete related records first
-  await supabase.from("post_tags").delete().eq("post_id", postId);
-  await supabase.from("post_likes").delete().eq("post_id", postId);
-  await supabase.from("post_views").delete().eq("post_id", postId);
-  await supabase.from("bookmarks").delete().eq("post_id", postId);
+  const deletes = await Promise.all([
+    supabase.from("post_tags").delete().eq("post_id", postId),
+    supabase.from("post_likes").delete().eq("post_id", postId),
+    supabase.from("post_views").delete().eq("post_id", postId),
+    supabase.from("bookmarks").delete().eq("post_id", postId),
+  ]);
+
+  const relatedError = deletes.find((d) => d.error);
+  if (relatedError?.error) {
+    return { error: `관련 데이터 삭제에 실패했습니다: ${relatedError.error.message}` };
+  }
 
   const { error } = await supabase.from("posts").delete().eq("id", postId);
 

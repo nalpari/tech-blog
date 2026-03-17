@@ -10,9 +10,13 @@ function CopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard API 미지원 환경 (HTTP, 구형 브라우저)
+    }
   }
 
   return (

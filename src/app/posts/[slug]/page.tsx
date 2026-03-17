@@ -19,10 +19,10 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug, { includeDraft: true });
+  const post = await getPostBySlug(slug);
   if (!post) return { title: "Post Not Found" };
   return {
-    title: post.status === "draft" ? `[Draft] ${post.title}` : post.title,
+    title: post.title,
     description: post.excerpt,
   };
 }

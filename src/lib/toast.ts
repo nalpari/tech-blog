@@ -1,3 +1,5 @@
+"use client";
+
 export function showToast(message: string, duration = 2500) {
   const existing = document.getElementById("global-toast");
   if (existing) existing.remove();
