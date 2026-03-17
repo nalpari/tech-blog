@@ -8,7 +8,7 @@ export async function getPosts(): Promise<Post[]> {
     .from("posts")
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
-    .order("published_at", { ascending: false });
+    .order("updated_at", { ascending: false });
 
   if (!posts) return [];
 
@@ -28,7 +28,7 @@ export async function getFeaturedPosts(): Promise<Post[]> {
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
     .eq("featured", true)
-    .order("published_at", { ascending: false });
+    .order("updated_at", { ascending: false });
 
   if (!posts) return [];
 
@@ -40,15 +40,22 @@ export async function getFeaturedPosts(): Promise<Post[]> {
   });
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+export async function getPostBySlug(
+  slug: string,
+  options?: { includeDraft?: boolean },
+): Promise<(Post & { status?: string }) | null> {
   const supabase = await createClient();
 
-  const { data: post } = await supabase
+  let query = supabase
     .from("posts")
     .select("*, post_tags(tag_id, tags(slug))")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .single();
+    .eq("slug", slug);
+
+  if (!options?.includeDraft) {
+    query = query.eq("status", "published");
+  }
+
+  const { data: post } = await query.single();
 
   if (!post) return null;
 
@@ -56,7 +63,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     .map((pt) => pt.tags?.slug)
     .filter((s): s is string => !!s);
 
-  return mapPost(post, tagSlugs);
+  return { ...mapPost(post, tagSlugs), status: post.status };
 }
 
 export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
@@ -85,7 +92,7 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
     .in("id", postIds)
-    .order("published_at", { ascending: false });
+    .order("updated_at", { ascending: false });
 
   if (!posts) return [];
 

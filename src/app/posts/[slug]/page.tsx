@@ -19,10 +19,10 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = await getPostBySlug(slug, { includeDraft: true });
   if (!post) return { title: "Post Not Found" };
   return {
-    title: post.title,
+    title: post.status === "draft" ? `[Draft] ${post.title}` : post.title,
     description: post.excerpt,
   };
 }
@@ -33,12 +33,48 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
-  if (!post) notFound();
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const isAdmin = user?.email === ADMIN_EMAIL;
+
+  const post = await getPostBySlug(slug, { includeDraft: isAdmin });
+
+  if (!post) {
+    // draft 포스트가 존재하는지 확인하여 적절한 안내 제공
+    const { data: draftExists } = await supabase
+      .from("posts")
+      .select("id")
+      .eq("slug", slug)
+      .eq("status", "draft")
+      .single();
+
+    if (draftExists) {
+      return (
+        <div className="pt-14">
+          <div className="mx-auto max-w-[740px] px-10 py-24 text-center animate-fade-in-up">
+            <p className="text-xs font-mono text-amber-400 mb-4">{"// draft"}</p>
+            <h1 className="text-xl font-mono font-bold mb-4">
+              비공개 포스트입니다
+            </h1>
+            <p className="text-sm text-muted-foreground mb-8">
+              이 포스트는 아직 발행되지 않았습니다. 관리자만 열람할 수 있습니다.
+            </p>
+            <Link
+              href="/"
+              className="inline-block px-4 py-2 text-xs font-mono text-accent border border-accent/30 hover:bg-accent/10 transition-colors"
+            >
+              홈으로 돌아가기
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
+    notFound();
+  }
+
+  const isDraft = post.status === "draft";
 
   const relatedPosts = post.tags[0]
     ? (await getPostsByTag(post.tags[0]))
@@ -49,6 +85,26 @@ export default async function PostPage({
   return (
     <div className="pt-14">
       <div className="mx-auto max-w-[1024px] px-10 py-12">
+        {/* Draft banner */}
+        {isDraft && (
+          <div className="mb-6 px-4 py-3 border border-amber-400/30 bg-amber-400/5 animate-fade-in-up">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-amber-400 text-xs font-mono">{"// draft"}</span>
+                <span className="text-sm text-amber-400/80">
+                  이 포스트는 아직 발행되지 않았습니다. 관리자만 볼 수 있습니다.
+                </span>
+              </div>
+              <Link
+                href={`/posts/${post.slug}/edit`}
+                className="text-xs font-mono text-amber-400 border border-amber-400/30 hover:bg-amber-400/10 px-2.5 py-1 transition-colors"
+              >
+                edit & publish
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Article Header */}
         <header className="mb-8 animate-fade-in-up">
           <div className="flex items-center justify-between mb-4">

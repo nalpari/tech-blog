@@ -542,8 +542,8 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             className="px-4 py-1.5 text-xs font-mono border border-accent bg-accent text-background hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending
-              ? isEditing ? "updating..." : "publishing..."
-              : isEditing ? "update" : "publish"}
+              ? isEditing && editMode.status === "published" ? "updating..." : "publishing..."
+              : isEditing && editMode.status === "published" ? "update" : "publish"}
           </button>
         </div>
       </div>

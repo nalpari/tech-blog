@@ -184,7 +184,12 @@ export async function updatePost(
       }
     }
 
-    redirect(`/posts/${encodeURIComponent(finalSlug!)}`);
+    const finalStatus = status === "published" ? "published" : "draft";
+    if (finalStatus === "published") {
+      redirect(`/posts/${encodeURIComponent(finalSlug!)}`);
+    } else {
+      redirect("/admin/posts");
+    }
   } catch (error) {
     if (isRedirectError(error)) throw error;
     return { error: "포스트 수정 중 예기치 않은 오류가 발생했습니다." };

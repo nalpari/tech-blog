@@ -7,13 +7,14 @@ import { useAuthStore } from "@/stores/auth-store";
 import { AuthButtons } from "@/components/auth-buttons";
 import { UserAvatar } from "@/components/user-avatar";
 import { SearchModal } from "@/components/search-modal";
+import { showToast } from "@/lib/toast";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
 
 const navItems = [
   { href: "/", label: "blog" },
   { href: "/tags", label: "tags" },
-  { href: "/about", label: "about" },
+  { href: "/about", label: "about", comingSoon: true },
 ];
 
 export function Header() {
@@ -61,6 +62,19 @@ export function Header() {
                 item.href === "/"
                   ? pathname === "/"
                   : pathname.startsWith(item.href);
+
+              if (item.comingSoon) {
+                return (
+                  <button
+                    key={item.href}
+                    onClick={() => showToast("준비중인 기능입니다.")}
+                    className="font-mono text-[13px] transition-colors duration-200 text-muted hover:text-foreground cursor-pointer"
+                  >
+                    {item.label}
+                  </button>
+                );
+              }
+
               return (
                 <Link
                   key={item.href}

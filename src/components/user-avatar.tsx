@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { showToast } from "@/lib/toast";
 
 interface UserAvatarProps {
   name: string;
@@ -93,6 +94,11 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
                 onClick={() => setOpen(false)}
               />
               <MenuLink
+                href="/admin/posts"
+                label="@ manage posts"
+                onClick={() => setOpen(false)}
+              />
+              <MenuLink
                 href="/admin/tags"
                 label="# manage tags"
                 onClick={() => setOpen(false)}
@@ -102,9 +108,9 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
 
           {/* User menu */}
           <div className="py-1">
-            <MenuLink href="/profile" label="profile" onClick={() => setOpen(false)} />
-            <MenuLink href="/bookmarks" label="bookmarks" onClick={() => setOpen(false)} />
-            <MenuLink href="/settings" label="settings" onClick={() => setOpen(false)} />
+            <ComingSoonButton label="profile" onClick={() => setOpen(false)} />
+            <ComingSoonButton label="bookmarks" onClick={() => setOpen(false)} />
+            <ComingSoonButton label="settings" onClick={() => setOpen(false)} />
           </div>
 
           <div className="border-t border-border py-1">
@@ -138,5 +144,25 @@ function MenuLink({
     >
       {label}
     </Link>
+  );
+}
+
+function ComingSoonButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={() => {
+        onClick();
+        showToast("준비중인 기능입니다.");
+      }}
+      className="w-full flex items-center px-4 py-2 text-xs font-mono text-muted-foreground hover:text-accent hover:bg-card-hover transition-colors cursor-pointer"
+    >
+      {label}
+    </button>
   );
 }
