@@ -1,5 +1,6 @@
 import { getPosts, POSTS_PER_PAGE } from "@/lib/queries";
 import { PostGrid } from "@/components/post-grid";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 export default async function HomePage() {
   const initialPosts = await getPosts({ offset: 0, limit: POSTS_PER_PAGE });
@@ -37,6 +38,8 @@ export default async function HomePage() {
           </p>
         )}
       </section>
+
+      <ScrollToTop />
     </div>
   );
 }
