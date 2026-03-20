@@ -28,7 +28,7 @@ pnpm lint         # Run ESLint
 
 All routes live in `src/app/`. Dynamic routes use `generateStaticParams` for full static generation:
 
-- `/` — Home (featured posts + latest grid)
+- `/` — Home (infinite scroll post grid with scroll-to-top)
 - `/posts/[slug]` — Post detail with prose content
 - `/tags` — Tag directory
 - `/tags/[slug]` — Tag detail with filtered posts
@@ -46,12 +46,12 @@ Middleware (`src/middleware.ts`) runs on all routes except static assets, refres
 
 ### Data Layer
 
-`src/lib/data.ts` — Static in-memory mock data. All posts and tags are hardcoded arrays with typed interfaces (`Post`, `Tag`). Helper functions: `getPostBySlug`, `getPostsByTag`, `getTagBySlug`, `getFeaturedPosts`, `formatDate`.
+`src/lib/data.ts` — Type definitions (`Post`, `Tag`) and mapper functions (`mapPost`, `mapTag`, `formatDate`). `src/lib/queries.ts` — Supabase query functions with pagination support (`getPosts`, `getPostBySlug`, `getPostsByTag`, `getTags`, etc.).
 
 ### Component Conventions
 
 - **Server components by default** — pages, footer, post-card, tag-badge
-- **Client components** (`"use client"`) — header (uses `usePathname`), auth-buttons, user-avatar
+- **Client components** (`"use client"`) — header, auth-buttons, user-avatar, post-grid (infinite scroll), scroll-to-top
 - Components live in `src/components/`, one component per file
 
 ### Auth State

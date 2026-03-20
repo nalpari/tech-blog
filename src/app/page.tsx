@@ -3,7 +3,9 @@ import { PostGrid } from "@/components/post-grid";
 import { ScrollToTop } from "@/components/scroll-to-top";
 
 export default async function HomePage() {
-  const initialPosts = await getPosts({ offset: 0, limit: POSTS_PER_PAGE });
+  const fetched = await getPosts({ offset: 0, limit: POSTS_PER_PAGE + 1 });
+  const hasMore = fetched.length > POSTS_PER_PAGE;
+  const initialPosts = hasMore ? fetched.slice(0, POSTS_PER_PAGE) : fetched;
 
   return (
     <div className="pt-14">
@@ -31,7 +33,7 @@ export default async function HomePage() {
         </p>
 
         {initialPosts.length > 0 ? (
-          <PostGrid initialPosts={initialPosts} pageSize={POSTS_PER_PAGE} />
+          <PostGrid initialPosts={initialPosts} initialHasMore={hasMore} pageSize={POSTS_PER_PAGE} />
         ) : (
           <p className="text-center text-muted-foreground py-20 font-sans text-sm">
             {"// no posts published yet"}

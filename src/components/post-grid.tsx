@@ -6,12 +6,13 @@ import type { Post } from "@/lib/data";
 
 interface PostGridProps {
   initialPosts: Post[];
+  initialHasMore: boolean;
   pageSize: number;
 }
 
-export function PostGrid({ initialPosts, pageSize }: PostGridProps) {
+export function PostGrid({ initialPosts, initialHasMore, pageSize }: PostGridProps) {
   const [posts, setPosts] = useState(initialPosts);
-  const [hasMore, setHasMore] = useState(initialPosts.length === pageSize);
+  const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
