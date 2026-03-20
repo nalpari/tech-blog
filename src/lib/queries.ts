@@ -1,14 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
 import { mapPost, mapTag, type Post, type Tag } from "@/lib/data";
 
-export async function getPosts(): Promise<Post[]> {
+export const POSTS_PER_PAGE = 6;
+
+export async function getPosts(options?: { offset?: number; limit?: number }): Promise<Post[]> {
   const supabase = await createClient();
+  const offset = options?.offset ?? 0;
+  const limit = options?.limit ?? POSTS_PER_PAGE;
 
   const { data: posts } = await supabase
     .from("posts")
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (!posts) return [];
 

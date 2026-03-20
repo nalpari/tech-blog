@@ -1,8 +1,8 @@
-import { getPosts } from "@/lib/queries";
-import { PostCard } from "@/components/post-card";
+import { getPosts, POSTS_PER_PAGE } from "@/lib/queries";
+import { PostGrid } from "@/components/post-grid";
 
 export default async function HomePage() {
-  const allPosts = await getPosts();
+  const initialPosts = await getPosts({ offset: 0, limit: POSTS_PER_PAGE });
 
   return (
     <div className="pt-14">
@@ -29,12 +29,8 @@ export default async function HomePage() {
           {"// latest_posts"}
         </p>
 
-        {allPosts.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
-            {allPosts.map((post, i) => (
-              <PostCard key={post.slug} post={post} index={i} />
-            ))}
-          </div>
+        {initialPosts.length > 0 ? (
+          <PostGrid initialPosts={initialPosts} pageSize={POSTS_PER_PAGE} />
         ) : (
           <p className="text-center text-muted-foreground py-20 font-sans text-sm">
             {"// no posts published yet"}
