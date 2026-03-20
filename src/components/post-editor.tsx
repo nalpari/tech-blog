@@ -58,11 +58,11 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [featured, setFeatured] = useState(editMode?.featured ?? false);
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(editMode?.coverImage || null);
-  const [existingCoverImage, setExistingCoverImage] = useState(editMode?.coverImage ?? "");
+  const [coverImageUrl, setCoverImageUrl] = useState(editMode?.coverImage ?? "");
   const coverImageUrlRef = useRef<string | null>(null);
-  const coverImageInputRef = useRef<HTMLInputElement>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,7 +94,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
     );
   }
 
-  function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -111,19 +111,32 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
     }
 
     setUploadError(null);
-    setExistingCoverImage("");
+
+    // Show local preview immediately
     if (coverImageUrlRef.current) {
       URL.revokeObjectURL(coverImageUrlRef.current);
     }
-    const url = URL.createObjectURL(file);
-    coverImageUrlRef.current = url;
-    setCoverImagePreview(url);
+    const previewUrl = URL.createObjectURL(file);
+    coverImageUrlRef.current = previewUrl;
+    setCoverImagePreview(previewUrl);
+    e.target.value = "";
 
-    // Copy file to persistent hidden input so it survives re-renders
-    if (coverImageInputRef.current) {
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      coverImageInputRef.current.files = dt.files;
+    // Upload directly to Supabase Storage from client
+    setCoverUploading(true);
+    try {
+      const { uploadImage } = await import("@/lib/upload-image");
+      const { url } = await uploadImage(file, "covers/");
+      setCoverImageUrl(url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "커버 이미지 업로드 실패");
+      setCoverImagePreview(null);
+      setCoverImageUrl("");
+      if (coverImageUrlRef.current) {
+        URL.revokeObjectURL(coverImageUrlRef.current);
+        coverImageUrlRef.current = null;
+      }
+    } finally {
+      setCoverUploading(false);
     }
   }
 
@@ -133,10 +146,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       coverImageUrlRef.current = null;
     }
     setCoverImagePreview(null);
-    setExistingCoverImage("");
-    if (coverImageInputRef.current) {
-      coverImageInputRef.current.value = "";
-    }
+    setCoverImageUrl("");
   }
 
   function insertAtCursor(text: string) {
@@ -223,17 +233,8 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
         </div>
       )}
 
-      {/* Cover Image - persistent hidden input for form submission */}
-      <input
-        ref={coverImageInputRef}
-        type="file"
-        name="coverImage"
-        accept="image/*"
-        className="hidden"
-        tabIndex={-1}
-        aria-hidden="true"
-      />
-      <input type="hidden" name="existingCoverImage" value={existingCoverImage} />
+      {/* Cover Image URL (uploaded client-side to Supabase Storage) */}
+      <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
       <div className="space-y-2">
         <label className="text-sm font-medium text-muted-foreground">
           커버 이미지
@@ -248,6 +249,11 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
               className="w-full h-48 sm:h-64 object-cover"
               unoptimized
             />
+            {coverUploading && (
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                <span className="size-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <label className="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm text-white text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors">
                 변경
@@ -529,7 +535,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             type="submit"
             name="status"
             value="draft"
-            disabled={isPending}
+            disabled={isPending || coverUploading}
             className="px-3 py-1.5 text-xs font-mono text-foreground border border-border hover:border-accent/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending ? "saving..." : "save draft"}
@@ -538,7 +544,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             type="submit"
             name="status"
             value="published"
-            disabled={isPending}
+            disabled={isPending || coverUploading}
             className="px-4 py-1.5 text-xs font-mono border border-accent bg-accent text-background hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending

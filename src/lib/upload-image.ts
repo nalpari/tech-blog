@@ -9,7 +9,7 @@ export interface UploadResult {
   path: string;
 }
 
-export async function uploadImage(file: File): Promise<UploadResult> {
+export async function uploadImage(file: File, pathPrefix = ""): Promise<UploadResult> {
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error("지원하지 않는 파일 형식입니다. (jpg, png, gif, webp)");
   }
@@ -23,7 +23,7 @@ export async function uploadImage(file: File): Promise<UploadResult> {
   const ext = file.name.split(".").pop() || "png";
   const timestamp = Date.now();
   const random = Math.random().toString(36).slice(2, 8);
-  const path = `${timestamp}-${random}.${ext}`;
+  const path = `${pathPrefix}${timestamp}-${random}.${ext}`;
 
   const { error } = await supabase.storage
     .from(BUCKET)
