@@ -17,13 +17,27 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["400", "500", "700"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://techlog.dev";
+const SITE_NAME = "techlog";
+const SITE_DESCRIPTION =
+  "where engineers share professional knowledge and technical insights";
+
 export const metadata: Metadata = {
   title: {
-    default: "techlog",
-    template: "%s — techlog",
+    default: SITE_NAME,
+    template: `%s — ${SITE_NAME}`,
   },
-  description:
-    "where engineers share professional knowledge and technical insights",
+  description: SITE_DESCRIPTION,
+  metadataBase: new URL(SITE_URL),
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "ko_KR",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
