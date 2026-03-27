@@ -56,7 +56,10 @@ src/
 │   ├── tags/
 │   │   ├── page.tsx            # Tag directory
 │   │   └── [slug]/             # Tag detail — filtered posts
-│   ├── admin/posts/            # Admin post management
+│   ├── admin/
+│   │   ├── dashboard/           # Admin dashboard overview
+│   │   ├── posts/               # Admin post management
+│   │   └── tags/                # Admin tag management
 │   ├── (auth)/                 # Auth route group
 │   │   ├── sign-in/            # Sign in page
 │   │   └── sign-up/            # Sign up page

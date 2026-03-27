@@ -39,7 +39,9 @@ All routes live in `src/app/`:
 - `/tags` — Tag directory
 - `/tags/[slug]` — Tag detail with filtered posts
 - `/about` — About page
+- `/admin/dashboard` — Admin dashboard overview
 - `/admin/posts` — Admin post management
+- `/admin/tags` — Admin tag management
 - `/(auth)/sign-in`, `/(auth)/sign-up` — Auth pages (route group)
 - `/auth/callback` — OAuth callback handler
 
