@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { togglePostStatus, deletePost } from "./actions";
+import { showToast } from "@/lib/toast";
 
 interface PostItem {
   id: string;
@@ -26,20 +27,45 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
   const [isPending, startTransition] = useTransition();
   const dialogRef = useRef<HTMLDivElement>(null);
   const savedTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const deletedRef = useRef(false);
 
   useEffect(() => {
     if (deleteTarget) {
       dialogRef.current?.focus();
+    } else if (deletedRef.current) {
+      deletedRef.current = false;
+      savedTriggerRef.current = null;
     } else {
-      savedTriggerRef.current?.focus();
+      if (savedTriggerRef.current?.isConnected) {
+        savedTriggerRef.current.focus();
+      }
       savedTriggerRef.current = null;
     }
   }, [deleteTarget]);
 
-  const handleEscapeKey = useCallback(
+  const handleDialogKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Escape" && !isPending) {
         setDeleteTarget(null);
+        return;
+      }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) {
+        e.preventDefault();
+        dialogRef.current.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     },
     [isPending],
@@ -60,7 +86,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
     startTransition(async () => {
       const result = await togglePostStatus(postId);
       if (result.error) {
-        alert(result.error);
+        showToast(result.error);
       }
       router.refresh();
     });
@@ -71,9 +97,10 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
     startTransition(async () => {
       const result = await deletePost(deleteTarget.id);
       if (result.error) {
-        alert(result.error);
+        showToast(result.error);
         return;
       }
+      deletedRef.current = true;
       setDeleteTarget(null);
       router.refresh();
     });
@@ -241,7 +268,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
       {deleteTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
-          onKeyDown={handleEscapeKey}
+          onKeyDown={handleDialogKeyDown}
         >
           <div
             ref={dialogRef}

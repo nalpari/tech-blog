@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/data";
@@ -28,11 +28,15 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
   const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const allResults = [
-    ...titleResults.map((r) => ({ ...r, section: "title" as const })),
-    ...contentResults.map((r) => ({ ...r, section: "content" as const })),
-  ];
+  const allResults = useMemo(
+    () => [
+      ...titleResults.map((r) => ({ ...r, section: "title" as const })),
+      ...contentResults.map((r) => ({ ...r, section: "content" as const })),
+    ],
+    [titleResults, contentResults],
+  );
 
   // 모달 열릴 때 포커스 및 상태 초기화
   useEffect(() => {
@@ -72,6 +76,8 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
   }, [open]);
 
   const search = useCallback(async (searchQuery: string) => {
+    abortRef.current?.abort();
+
     if (searchQuery.trim().length < 2) {
       setTitleResults([]);
       setContentResults([]);
@@ -79,10 +85,14 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
       return;
     }
 
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setIsSearching(true);
     try {
       const supabase = createClient();
-      const term = `%${searchQuery.trim()}%`;
+      const escaped = searchQuery.trim().replace(/%/g, "\\%").replace(/_/g, "\\_");
+      const term = `%${escaped}%`;
 
       const [titleRes, contentRes] = await Promise.all([
         supabase
@@ -91,15 +101,19 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
           .eq("status", "published")
           .ilike("title", term)
           .order("published_at", { ascending: false })
-          .limit(5),
+          .limit(5)
+          .abortSignal(controller.signal),
         supabase
           .from("posts")
           .select("slug, title, excerpt, content, published_at")
           .eq("status", "published")
           .ilike("content", term)
           .order("published_at", { ascending: false })
-          .limit(5),
+          .limit(5)
+          .abortSignal(controller.signal),
       ]);
+
+      if (controller.signal.aborted) return;
 
       const mapRow = (row: {
         slug: string;
@@ -123,8 +137,13 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
       setTitleResults(titleHits);
       setContentResults(contentHits);
       setActiveIndex(-1);
+    } catch (e) {
+      if (e instanceof DOMException && e.name === "AbortError") return;
+      throw e;
     } finally {
-      setIsSearching(false);
+      if (!controller.signal.aborted) {
+        setIsSearching(false);
+      }
     }
   }, []);
 
@@ -189,8 +208,6 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
     return (start > 0 ? "..." : "") + plain.slice(start, end) + (end < plain.length ? "..." : "");
   }
 
-  let flatIndex = -1;
-
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
       {/* Backdrop */}
@@ -249,9 +266,8 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                   <div className="px-4 py-2 text-[11px] font-mono text-muted-foreground uppercase tracking-wider bg-background/50 border-b border-border">
                     타이틀 검색 결과
                   </div>
-                  {titleResults.map((result) => {
-                    flatIndex++;
-                    const idx = flatIndex;
+                  {titleResults.map((result, i) => {
+                    const idx = i;
                     return (
                       <button
                         key={result.slug}
@@ -283,9 +299,8 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                   <div className="px-4 py-2 text-[11px] font-mono text-muted-foreground uppercase tracking-wider bg-background/50 border-b border-border">
                     본문 검색 결과
                   </div>
-                  {contentResults.map((result) => {
-                    flatIndex++;
-                    const idx = flatIndex;
+                  {contentResults.map((result, i) => {
+                    const idx = titleResults.length + i;
                     return (
                       <button
                         key={result.slug}
