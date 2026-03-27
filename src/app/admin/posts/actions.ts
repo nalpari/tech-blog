@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-const ADMIN_EMAIL = "yoo32767@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 async function assertAdmin() {
   const supabase = await createClient();

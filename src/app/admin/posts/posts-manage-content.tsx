@@ -36,13 +36,46 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
     }
   }, [deleteTarget]);
 
-  const handleEscapeKey = useCallback(
-    (e: React.KeyboardEvent) => {
+  // Escape key via document listener (works even if focus escapes the dialog)
+  useEffect(() => {
+    if (!deleteTarget) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape" && !isPending) {
         setDeleteTarget(null);
       }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [deleteTarget, isPending]);
+
+  // Focus trap: cycle focus within the dialog
+  const handleDialogKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key !== "Tab" || !dialogRef.current) return;
+
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     },
-    [isPending],
+    [],
   );
 
   const filtered = posts.filter((p) => {
@@ -241,7 +274,9 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
       {deleteTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
-          onKeyDown={handleEscapeKey}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isPending) setDeleteTarget(null);
+          }}
         >
           <div
             ref={dialogRef}
@@ -250,6 +285,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
             aria-labelledby="delete-dialog-title"
             aria-describedby="delete-dialog-desc"
             tabIndex={-1}
+            onKeyDown={handleDialogKeyDown}
             className="w-full max-w-md mx-4 border border-border bg-background p-6 shadow-2xl shadow-black/40 outline-none"
           >
             <p className="text-xs font-mono text-red-400 mb-2">

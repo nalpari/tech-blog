@@ -11,7 +11,7 @@ import { DeletePostButton } from "@/components/delete-post-button";
 import { ViewCounter } from "@/components/view-counter";
 import { LikeButton } from "@/components/like-button";
 
-const ADMIN_EMAIL = "yoo32767@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 export async function generateMetadata({
   params,

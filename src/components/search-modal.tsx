@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/data";
@@ -29,10 +29,13 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
   const router = useRouter();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const allResults = [
-    ...titleResults.map((r) => ({ ...r, section: "title" as const })),
-    ...contentResults.map((r) => ({ ...r, section: "content" as const })),
-  ];
+  const allResults = useMemo(
+    () => [
+      ...titleResults.map((r) => ({ ...r, section: "title" as const })),
+      ...contentResults.map((r) => ({ ...r, section: "content" as const })),
+    ],
+    [titleResults, contentResults],
+  );
 
   // 모달 열릴 때 포커스 및 상태 초기화
   useEffect(() => {
@@ -122,6 +125,11 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
 
       setTitleResults(titleHits);
       setContentResults(contentHits);
+      setActiveIndex(-1);
+    } catch (err) {
+      console.error("Search failed:", err);
+      setTitleResults([]);
+      setContentResults([]);
       setActiveIndex(-1);
     } finally {
       setIsSearching(false);

@@ -5,7 +5,7 @@ import { generateSlug } from "@/lib/slug";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
-const ADMIN_EMAIL = "yoo32767@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 function estimateReadTime(content: string): string {
   const words = content.trim().split(/\s+/).length;
