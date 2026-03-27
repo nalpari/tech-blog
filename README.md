@@ -101,7 +101,7 @@ src/
 ## Features
 
 - **Infinite scroll** — Post grid with IntersectionObserver-based pagination
-- **Authentication** — Supabase Auth with Google/GitHub OAuth and email/password
+- **Authentication** — Supabase Auth with Google OAuth and email/password
 - **Admin dashboard** — Post creation, editing, and management
 - **Markdown editor** — Write posts in markdown with live preview
 - **Full-text search** — Search posts by title and content

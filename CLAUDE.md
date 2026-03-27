@@ -77,7 +77,7 @@ Middleware (`src/middleware.ts`) runs on all routes except static assets, refres
 
 ### Auth
 
-- Real Supabase auth with OAuth (Google, GitHub) and email/password
+- Real Supabase auth with OAuth (Google) and email/password
 - Admin check: `user?.email === "yoo32767@gmail.com"`
 - User metadata: `full_name`, `name`, `avatar_url`, `picture` from `user.user_metadata`
 
