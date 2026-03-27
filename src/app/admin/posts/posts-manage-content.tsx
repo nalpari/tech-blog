@@ -72,6 +72,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
       const result = await deletePost(deleteTarget.id);
       if (result.error) {
         alert(result.error);
+        return;
       }
       setDeleteTarget(null);
       router.refresh();
