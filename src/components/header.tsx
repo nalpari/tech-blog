@@ -9,7 +9,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { SearchModal } from "@/components/search-modal";
 import { showToast } from "@/lib/toast";
 
-const ADMIN_EMAIL = "yoo32767@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/constants";
 
 const navItems = [
   { href: "/", label: "blog" },

@@ -68,7 +68,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
         first.focus();
       }
     },
-    [isPending],
+    [],
   );
 
   const filtered = posts.filter((p) => {
@@ -268,7 +268,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
       {deleteTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
-          onKeyDown={handleDialogKeyDown}
+          onKeyDown={handleEscapeKey}
         >
           <div
             ref={dialogRef}
@@ -277,6 +277,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
             aria-labelledby="delete-dialog-title"
             aria-describedby="delete-dialog-desc"
             tabIndex={-1}
+            onKeyDown={handleDialogKeyDown}
             className="w-full max-w-md mx-4 border border-border bg-background p-6 shadow-2xl shadow-black/40 outline-none"
           >
             <p className="text-xs font-mono text-red-400 mb-2">
