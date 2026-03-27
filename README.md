@@ -1,6 +1,6 @@
 # Spectra
 
-Dark-themed tech blog inspired by [Linear](https://linear.app)'s design language. Built with Next.js, Tailwind CSS, and Supabase.
+Dark-themed tech blog built with Next.js, Tailwind CSS, and Supabase.
 
 ## Tech Stack
 
@@ -9,8 +9,10 @@ Dark-themed tech blog inspired by [Linear](https://linear.app)'s design language
 | Framework | Next.js 16 (App Router, React Compiler) |
 | Language | TypeScript 5 (strict) |
 | Styling | Tailwind CSS v4 |
-| Backend | Supabase (Auth, Database) |
-| Fonts | Geist Sans, Geist Mono, Instrument Serif |
+| Backend | Supabase (Auth, Database, Storage) |
+| State | Zustand (auth), TanStack React Query (data) |
+| Markdown | react-markdown + rehype-highlight + remark-gfm |
+| Fonts | JetBrains Mono, IBM Plex Mono, Pretendard Variable |
 | Package Manager | pnpm |
 
 ## Getting Started
@@ -44,29 +46,70 @@ pnpm lint       # Run ESLint
 
 ```
 src/
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx          # Root layout (fonts, header, footer)
-│   ├── page.tsx            # Home — featured + latest posts
-│   ├── about/              # About — team, values, origin story
-│   ├── posts/[slug]/       # Post detail — prose content
-│   └── tags/
-│       ├── page.tsx        # Tag directory
-│       └── [slug]/         # Tag detail — filtered posts
-├── components/             # Shared UI components
-│   ├── header.tsx          # Fixed nav with auth state
-│   ├── footer.tsx          # Site footer
-│   ├── post-card.tsx       # PostCard + FeaturedPostCard
-│   ├── tag-badge.tsx       # Tag link badge
-│   ├── auth-buttons.tsx    # Sign in / Sign up buttons
-│   └── user-avatar.tsx     # Avatar with dropdown menu
+├── app/                        # Next.js App Router pages
+│   ├── layout.tsx              # Root layout (fonts, providers, metadata)
+│   ├── page.tsx                # Home — infinite scroll post grid
+│   ├── about/                  # About page
+│   ├── posts/
+│   │   ├── [slug]/             # Post detail — markdown prose content
+│   │   └── new/                # New post creation (admin)
+│   ├── tags/
+│   │   ├── page.tsx            # Tag directory
+│   │   └── [slug]/             # Tag detail — filtered posts
+│   ├── admin/posts/            # Admin post management
+│   ├── (auth)/                 # Auth route group
+│   │   ├── sign-in/            # Sign in page
+│   │   └── sign-up/            # Sign up page
+│   ├── auth/callback/          # OAuth callback handler
+│   └── api/
+│       └── posts/              # Post pagination, view & like APIs
+├── components/                 # Shared UI components
+│   ├── header.tsx              # Fixed nav with search & auth state
+│   ├── footer.tsx              # Site footer
+│   ├── post-card.tsx           # PostCard + FeaturedPostCard
+│   ├── post-grid.tsx           # Infinite scroll with IntersectionObserver
+│   ├── post-editor.tsx         # Markdown post editor
+│   ├── search-modal.tsx        # Full-text search modal
+│   ├── markdown-content.tsx    # Markdown renderer with syntax highlight
+│   ├── like-button.tsx         # Post like interaction
+│   ├── view-counter.tsx        # Post view counter
+│   ├── scroll-to-top.tsx       # Floating scroll-to-top button
+│   ├── tag-badge.tsx           # Tag link badge
+│   ├── auth-buttons.tsx        # Sign in / Sign up buttons
+│   └── user-avatar.tsx         # Avatar with dropdown menu
 ├── lib/
-│   ├── data.ts             # Mock post & tag data
-│   └── supabase/           # Supabase client utilities
-│       ├── client.ts       # Browser client
-│       ├── server.ts       # Server client
-│       └── middleware.ts   # Session refresh logic
-└── middleware.ts           # Auth token refresh on all routes
+│   ├── data.ts                 # Type definitions & mapper functions
+│   ├── queries.ts              # Supabase query functions with pagination
+│   ├── post-actions.ts         # Server actions for post CRUD
+│   ├── slug.ts                 # Slug generation utility
+│   ├── toast.ts                # Custom toast notification system
+│   ├── upload-image.ts         # Image upload to Supabase Storage
+│   ├── utils.ts                # cn() — clsx + tailwind-merge
+│   └── supabase/
+│       ├── client.ts           # Browser client
+│       ├── server.ts           # Server client
+│       ├── middleware.ts        # Session refresh logic
+│       └── database.types.ts   # Generated TypeScript types
+├── stores/
+│   └── auth-store.ts           # Zustand auth state store
+├── providers/
+│   ├── auth-provider.tsx       # Supabase auth state listener
+│   └── query-provider.tsx      # React Query provider
+└── middleware.ts               # Auth token refresh on all routes
 ```
+
+## Features
+
+- **Infinite scroll** — Post grid with IntersectionObserver-based pagination
+- **Authentication** — Supabase Auth with Google/GitHub OAuth and email/password
+- **Admin dashboard** — Post creation, editing, and management
+- **Markdown editor** — Write posts in markdown with live preview
+- **Full-text search** — Search posts by title and content
+- **View & Like counters** — Real-time engagement tracking
+- **Syntax highlighting** — Code blocks with highlight.js
+- **Scroll-to-top** — Floating button on long pages
+- **Toast notifications** — Custom vanilla DOM toast system
+- **SEO** — Open Graph and Twitter Card metadata
 
 ## Environment Variables
 
@@ -74,12 +117,13 @@ src/
 |----------|-------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `NEXT_PUBLIC_SITE_URL` | Site URL for metadata (default: `https://techlog.dev`) |
 
 ## Design
 
-- **Theme**: Dark-first with indigo/violet gradient accents
-- **Typography**: Geist Sans (body), Instrument Serif (display accents)
-- **Effects**: Glass morphism cards, noise overlay, stagger animations
+- **Theme**: Dark-only with green (`#10b981`) and cyan (`#06b6d4`) accents
+- **Typography**: JetBrains Mono (headings/nav), IBM Plex Mono (body), Pretendard Variable (prose)
+- **Effects**: Fade-in-up animations, stagger children, custom scrollbar
 
 ## Deploy
 

@@ -8,31 +8,46 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm dev          # Start dev server (Turbopack)
 pnpm build        # Production build
 pnpm start        # Start production server
-pnpm lint         # Run ESLint
+pnpm lint         # Run ESLint (flat config)
 ```
+
+No test framework is currently configured.
 
 ## Tech Stack
 
 - **Next.js 16.1.6** — App Router, React Compiler enabled (`reactCompiler: true`)
 - **React 19** with TypeScript 5 (strict mode)
 - **Tailwind CSS v4** via `@tailwindcss/postcss` — uses `@import "tailwindcss"` and `@theme inline` syntax, NOT v3 config files
-- **Fonts**: Geist Sans, Geist Mono, Instrument Serif (all via `next/font/google`)
-- **Supabase** — backend & database (`@supabase/supabase-js`, `@supabase/ssr`)
+- **Fonts**: JetBrains Mono (headings/nav), IBM Plex Mono (body), Pretendard Variable (prose, loaded from CDN)
+- **Supabase** — backend, auth & database (`@supabase/supabase-js`, `@supabase/ssr`)
+- **Zustand** — auth state management (`src/stores/auth-store.ts`)
+- **TanStack React Query** — data fetching/caching (60s stale time)
+- **react-markdown** + rehype-highlight + remark-gfm — markdown rendering with syntax highlighting
 - **Package manager**: pnpm
 
 ## Architecture
 
-**Blog name**: Spectra — dark-themed tech blog inspired by Linear.app's design language.
+**Blog name**: Spectra — dark-themed tech blog.
 
 ### Routing (App Router)
 
-All routes live in `src/app/`. Dynamic routes use `generateStaticParams` for full static generation:
+All routes live in `src/app/`:
 
 - `/` — Home (infinite scroll post grid with scroll-to-top)
-- `/posts/[slug]` — Post detail with prose content
+- `/posts/[slug]` — Post detail with markdown prose content
+- `/posts/new` — New post creation (admin)
 - `/tags` — Tag directory
 - `/tags/[slug]` — Tag detail with filtered posts
-- `/about` — Team, values, origin story
+- `/about` — About page
+- `/admin/posts` — Admin post management
+- `/(auth)/sign-in`, `/(auth)/sign-up` — Auth pages (route group)
+- `/auth/callback` — OAuth callback handler
+
+### API Routes
+
+- `GET /api/posts?offset=N&limit=N` — Paginated post list for infinite scroll
+- `POST /api/posts/[slug]/view` — Increment view counter
+- `POST /api/posts/[slug]/like` — Increment like count
 
 ### Supabase
 
@@ -41,38 +56,51 @@ Client utilities in `src/lib/supabase/`:
 - `client.ts` — Browser client (`createBrowserClient`) for client components
 - `server.ts` — Server client (`createServerClient`) for server components and route handlers
 - `middleware.ts` — Session refresh logic used by `src/middleware.ts`
+- `database.types.ts` — Generated TypeScript types
 
 Middleware (`src/middleware.ts`) runs on all routes except static assets, refreshing the auth token on every request.
 
+**Tables**: `posts`, `tags`, `post_tags` (junction), `bookmarks`, `comments`, `profiles`
+
 ### Data Layer
 
-`src/lib/data.ts` — Type definitions (`Post`, `Tag`) and mapper functions (`mapPost`, `mapTag`, `formatDate`). `src/lib/queries.ts` — Supabase query functions with pagination support (`getPosts`, `getPostBySlug`, `getPostsByTag`, `getTags`, etc.).
+- `src/lib/data.ts` — Type definitions (`Post`, `Tag`) and mapper functions (`mapPost`, `mapTag`, `formatDate`)
+- `src/lib/queries.ts` — Supabase query functions with pagination (`getPosts`, `getPostBySlug`, `getPostsByTag`, `getTags`, etc.)
+- `src/lib/post-actions.ts` — Server actions for post CRUD (validation, slug uniqueness, tag management)
+
+### State Management & Providers
+
+- `src/stores/auth-store.ts` — Zustand store (`useAuthStore`) for auth state
+- `src/providers/auth-provider.tsx` — Listens to Supabase `onAuthStateChange`, hydrates auth store
+- `src/providers/query-provider.tsx` — React Query provider
+- Both providers wrap the app in `src/app/layout.tsx`
+
+### Auth
+
+- Real Supabase auth with OAuth (Google, GitHub) and email/password
+- Admin check: `user?.email === "yoo32767@gmail.com"`
+- User metadata: `full_name`, `name`, `avatar_url`, `picture` from `user.user_metadata`
 
 ### Component Conventions
 
 - **Server components by default** — pages, footer, post-card, tag-badge
-- **Client components** (`"use client"`) — header, auth-buttons, user-avatar, post-grid (infinite scroll), scroll-to-top
+- **Client components** (`"use client"`) — header, auth-buttons, user-avatar, post-grid (infinite scroll), scroll-to-top, search-modal
 - Components live in `src/components/`, one component per file
-
-### Auth State
-
-`src/components/header.tsx` has a `MOCK_USER` variable that toggles between:
-
-- `null` → renders `<AuthButtons />` (Sign in / Sign up)
-- User object → renders `<UserAvatar />` with dropdown menu
-
-Replace `MOCK_USER` with real auth state when implementing authentication.
 
 ### Styling
 
-Dark-first design using CSS custom properties defined in `globals.css`. Key design tokens:
+Dark-only design using CSS custom properties defined in `globals.css`. Key design tokens:
 
-- Background `#09090b`, Card `#111113`, Accent `#818cf8` (indigo), Accent Secondary `#a78bfa` (violet)
-- Gradient accent: indigo → violet (used in buttons, badges, avatar fallbacks)
-- Custom utility classes: `.gradient-text`, `.glass-card`, `.glow-line`, `.noise-overlay`, `.prose-blog`
-- Stagger animations: `.stagger-children` applies `fade-in-up` with 60ms incremental delays
+- Background `#0a0a0a`, Card `#0f0f0f`, Accent `#10b981` (green), Accent Cyan `#06b6d4`
+- Custom utility classes: `.prose-blog` (markdown content styling), `.stagger-children`, `.animate-fade-in-up`
+- Toast system: Custom vanilla DOM implementation in `src/lib/toast.ts`
 
 Path alias: `@/*` maps to `./src/*`.
+
+### Image Handling
+
+- Remote image patterns: `lh3.googleusercontent.com`, `avatars.githubusercontent.com`, `*.supabase.co`
+- Image upload utility: `src/lib/upload-image.ts` (Supabase Storage)
 
 ## Memo
 
