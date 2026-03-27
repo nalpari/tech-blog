@@ -80,49 +80,52 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
     }
 
     setIsSearching(true);
-    const supabase = createClient();
-    const term = `%${searchQuery.trim()}%`;
+    try {
+      const supabase = createClient();
+      const term = `%${searchQuery.trim()}%`;
 
-    const [titleRes, contentRes] = await Promise.all([
-      supabase
-        .from("posts")
-        .select("slug, title, excerpt, content, published_at")
-        .eq("status", "published")
-        .ilike("title", term)
-        .order("published_at", { ascending: false })
-        .limit(5),
-      supabase
-        .from("posts")
-        .select("slug, title, excerpt, content, published_at")
-        .eq("status", "published")
-        .ilike("content", term)
-        .order("published_at", { ascending: false })
-        .limit(5),
-    ]);
+      const [titleRes, contentRes] = await Promise.all([
+        supabase
+          .from("posts")
+          .select("slug, title, excerpt, content, published_at")
+          .eq("status", "published")
+          .ilike("title", term)
+          .order("published_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("posts")
+          .select("slug, title, excerpt, content, published_at")
+          .eq("status", "published")
+          .ilike("content", term)
+          .order("published_at", { ascending: false })
+          .limit(5),
+      ]);
 
-    const mapRow = (row: {
-      slug: string;
-      title: string;
-      excerpt: string | null;
-      content: string | null;
-      published_at: string | null;
-    }): SearchResult => ({
-      slug: row.slug,
-      title: row.title,
-      excerpt: row.excerpt,
-      content: row.content,
-      date: row.published_at ?? "",
-    });
+      const mapRow = (row: {
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        content: string | null;
+        published_at: string | null;
+      }): SearchResult => ({
+        slug: row.slug,
+        title: row.title,
+        excerpt: row.excerpt,
+        content: row.content,
+        date: row.published_at ?? "",
+      });
 
-    const titleHits = (titleRes.data ?? []).map(mapRow);
-    const contentHits = (contentRes.data ?? [])
-      .map(mapRow)
-      .filter((c) => !titleHits.some((t) => t.slug === c.slug));
+      const titleHits = (titleRes.data ?? []).map(mapRow);
+      const contentHits = (contentRes.data ?? [])
+        .map(mapRow)
+        .filter((c) => !titleHits.some((t) => t.slug === c.slug));
 
-    setTitleResults(titleHits);
-    setContentResults(contentHits);
-    setActiveIndex(-1);
-    setIsSearching(false);
+      setTitleResults(titleHits);
+      setContentResults(contentHits);
+      setActiveIndex(-1);
+    } finally {
+      setIsSearching(false);
+    }
   }, []);
 
   const handleInputChange = (value: string) => {

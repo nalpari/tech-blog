@@ -15,7 +15,7 @@ No test framework is currently configured.
 
 ## Tech Stack
 
-- **Next.js 16.1.6** — App Router, React Compiler enabled (`reactCompiler: true`)
+- **Next.js 16.1.7** — App Router, React Compiler enabled (`reactCompiler: true`)
 - **React 19** with TypeScript 5 (strict mode)
 - **Tailwind CSS v4** via `@tailwindcss/postcss` — uses `@import "tailwindcss"` and `@theme inline` syntax, NOT v3 config files
 - **Fonts**: JetBrains Mono (headings/nav), IBM Plex Mono (body), Pretendard Variable (prose, loaded from CDN)

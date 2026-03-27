@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { togglePostStatus, deletePost } from "./actions";
@@ -24,6 +24,25 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [deleteTarget, setDeleteTarget] = useState<PostItem | null>(null);
   const [isPending, startTransition] = useTransition();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (deleteTarget) {
+      dialogRef.current?.focus();
+    } else {
+      triggerRef.current?.focus();
+    }
+  }, [deleteTarget]);
+
+  const handleEscapeKey = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Escape" && !isPending) {
+        setDeleteTarget(null);
+      }
+    },
+    [isPending],
+  );
 
   const filtered = posts.filter((p) => {
     if (filter === "all") return true;
@@ -198,6 +217,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
                         edit
                       </Link>
                       <button
+                        ref={deleteTarget?.id === post.id ? triggerRef : undefined}
                         onClick={() => setDeleteTarget(post)}
                         disabled={isPending}
                         className="px-2 py-1 text-[11px] font-mono text-red-400 border border-red-400/30 hover:bg-red-400/10 transition-colors cursor-pointer disabled:opacity-50"
@@ -215,12 +235,26 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
 
       {/* Delete confirmation modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in">
-          <div className="w-full max-w-md mx-4 border border-border bg-background p-6 shadow-2xl shadow-black/40">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
+          onKeyDown={handleEscapeKey}
+        >
+          <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+            aria-describedby="delete-dialog-desc"
+            tabIndex={-1}
+            className="w-full max-w-md mx-4 border border-border bg-background p-6 shadow-2xl shadow-black/40 outline-none"
+          >
             <p className="text-xs font-mono text-red-400 mb-2">
               {"// confirm delete"}
             </p>
-            <h3 className="text-sm font-mono font-bold text-foreground mb-4">
+            <h3
+              id="delete-dialog-title"
+              className="text-sm font-mono font-bold text-foreground mb-4"
+            >
               이 포스트를 삭제하시겠습니까?
             </h3>
             <p className="text-sm text-muted-foreground mb-1 truncate">
@@ -229,7 +263,10 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
             <p className="text-[11px] font-mono text-muted-foreground mb-6">
               /{deleteTarget.slug}
             </p>
-            <p className="text-xs text-red-400/70 mb-6">
+            <p
+              id="delete-dialog-desc"
+              className="text-xs text-red-400/70 mb-6"
+            >
               관련된 태그, 좋아요, 조회수, 북마크도 함께 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
             </p>
             <div className="flex justify-end gap-3">
