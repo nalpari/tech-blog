@@ -68,7 +68,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
         first.focus();
       }
     },
-    [],
+    [isPending],
   );
 
   const filtered = posts.filter((p) => {
@@ -268,7 +268,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
       {deleteTarget && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
-          onKeyDown={handleEscapeKey}
+          onKeyDown={handleDialogKeyDown}
         >
           <div
             ref={dialogRef}
