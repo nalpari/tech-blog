@@ -6,11 +6,11 @@ Dark-themed tech blog built with Next.js, Tailwind CSS, and Supabase.
 
 | Category | Technology |
 |----------|------------|
-| Framework | Next.js 16 (App Router, React Compiler) |
-| Language | TypeScript 5 (strict) |
-| Styling | Tailwind CSS v4 |
+| Framework | Next.js 16 (App Router, React Compiler enabled) |
+| Language | TypeScript 5 (strict mode) |
+| Styling | Tailwind CSS v4 (`@import "tailwindcss"`, `@theme inline`) |
 | Backend | Supabase (Auth, Database, Storage) |
-| State | Zustand (auth), TanStack React Query (data) |
+| State | Zustand (auth), TanStack React Query (60s stale time) |
 | Markdown | react-markdown + rehype-highlight + remark-gfm |
 | Fonts | JetBrains Mono, IBM Plex Mono, Pretendard Variable |
 | Package Manager | pnpm |
@@ -36,11 +36,13 @@ cp .env.local.example .env.local
 ### Development
 
 ```bash
-pnpm dev        # Start dev server at http://localhost:3000
+pnpm dev        # Start dev server with Turbopack (localhost:3000)
 pnpm build      # Production build
 pnpm start      # Start production server
-pnpm lint       # Run ESLint
+pnpm lint       # Run ESLint (flat config)
 ```
+
+> **Note:** No test framework is configured. Use Vitest with `*.test.ts` pattern if adding tests.
 
 ## Project Structure
 
@@ -100,6 +102,64 @@ src/
 │   └── query-provider.tsx      # React Query provider
 └── middleware.ts               # Auth token refresh on all routes
 ```
+
+### Code Style Guidelines
+
+#### Naming Conventions
+- Components: PascalCase (`PostCard`, `Header`)
+- Functions/variables: camelCase (`getPosts`, `formatDate`)
+- Types/Interfaces: PascalCase
+- Files: kebab-case (`post-card.tsx`)
+
+#### TypeScript
+- Strict mode enabled; avoid `any`
+- Explicit return types on exported functions
+- Use `type` for shapes, `interface` for extensible contracts
+- Import types explicitly: `import type { Post } from "@/lib/data"`
+
+#### Import Order
+1. External libraries (alphabetical)
+2. Internal absolute imports (alphabetical by path)
+3. Relative imports
+
+#### Component Patterns
+- Server components by default (no directive)
+- Client components: `"use client"` at file top
+- One component per file in `src/components/`
+
+```typescript
+// Server component (default)
+export function PostCard({ post }: { post: Post }) {
+  return <article>...</article>;
+}
+
+// Client component
+"use client";
+export function Header() {
+  const user = useAuthStore((s) => s.user);
+  return <header>...</header>;
+}
+```
+
+#### Error Handling
+- Server Actions: return `{ error?: string; fieldErrors?: Record<string, string> }`
+- Use `isRedirectError` from Next.js for redirect handling
+- Wrap async operations in try/catch with Korean error messages
+
+#### Admin Privileges
+- Check: `user?.email === ADMIN_EMAIL`
+- Only admin can create/edit posts and manage tags
+
+#### Key Files
+| File | Purpose |
+|------|---------|
+| `src/lib/data.ts` | Types (`Post`, `Tag`) and mapper functions |
+| `src/lib/queries.ts` | Supabase query functions |
+| `src/lib/post-actions.ts` | Server actions for post CRUD |
+| `src/lib/utils.ts` | `cn()` utility (clsx + tailwind-merge) |
+| `src/lib/constants.ts` | `ADMIN_EMAIL` constant |
+| `src/stores/auth-store.ts` | Zustand auth state store |
+| `src/middleware.ts` | Auth token refresh |
 
 ## Features
 
