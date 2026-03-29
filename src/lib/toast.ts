@@ -6,6 +6,9 @@ export function showToast(message: string, duration = 2500) {
 
   const el = document.createElement("div");
   el.id = "global-toast";
+  el.setAttribute("role", "status");
+  el.setAttribute("aria-live", "polite");
+  el.setAttribute("aria-atomic", "true");
   el.textContent = message;
   Object.assign(el.style, {
     position: "fixed",

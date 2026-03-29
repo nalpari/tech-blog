@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { togglePostStatus, deletePost } from "./actions";
+import { showToast } from "@/lib/toast";
 
 interface PostItem {
   id: string;
@@ -24,6 +25,51 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [deleteTarget, setDeleteTarget] = useState<PostItem | null>(null);
   const [isPending, startTransition] = useTransition();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const savedTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const deletedRef = useRef(false);
+
+  useEffect(() => {
+    if (deleteTarget) {
+      dialogRef.current?.focus();
+    } else if (deletedRef.current) {
+      deletedRef.current = false;
+      savedTriggerRef.current = null;
+    } else {
+      if (savedTriggerRef.current?.isConnected) {
+        savedTriggerRef.current.focus();
+      }
+      savedTriggerRef.current = null;
+    }
+  }, [deleteTarget]);
+
+  const handleDialogKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Escape" && !isPending) {
+        setDeleteTarget(null);
+        return;
+      }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) {
+        e.preventDefault();
+        dialogRef.current.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [isPending],
+  );
 
   const filtered = posts.filter((p) => {
     if (filter === "all") return true;
@@ -40,7 +86,7 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
     startTransition(async () => {
       const result = await togglePostStatus(postId);
       if (result.error) {
-        alert(result.error);
+        showToast(result.error);
       }
       router.refresh();
     });
@@ -51,8 +97,10 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
     startTransition(async () => {
       const result = await deletePost(deleteTarget.id);
       if (result.error) {
-        alert(result.error);
+        showToast(result.error);
+        return;
       }
+      deletedRef.current = true;
       setDeleteTarget(null);
       router.refresh();
     });
@@ -198,7 +246,10 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
                         edit
                       </Link>
                       <button
-                        onClick={() => setDeleteTarget(post)}
+                        onClick={(e) => {
+                          savedTriggerRef.current = e.currentTarget;
+                          setDeleteTarget(post);
+                        }}
                         disabled={isPending}
                         className="px-2 py-1 text-[11px] font-mono text-red-400 border border-red-400/30 hover:bg-red-400/10 transition-colors cursor-pointer disabled:opacity-50"
                       >
@@ -215,12 +266,27 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
 
       {/* Delete confirmation modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in">
-          <div className="w-full max-w-md mx-4 border border-border bg-background p-6 shadow-2xl shadow-black/40">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in"
+          onKeyDown={handleDialogKeyDown}
+        >
+          <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+            aria-describedby="delete-dialog-desc"
+            tabIndex={-1}
+            onKeyDown={handleDialogKeyDown}
+            className="w-full max-w-md mx-4 border border-border bg-background p-6 shadow-2xl shadow-black/40 outline-none"
+          >
             <p className="text-xs font-mono text-red-400 mb-2">
               {"// confirm delete"}
             </p>
-            <h3 className="text-sm font-mono font-bold text-foreground mb-4">
+            <h3
+              id="delete-dialog-title"
+              className="text-sm font-mono font-bold text-foreground mb-4"
+            >
               이 포스트를 삭제하시겠습니까?
             </h3>
             <p className="text-sm text-muted-foreground mb-1 truncate">
@@ -229,7 +295,10 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
             <p className="text-[11px] font-mono text-muted-foreground mb-6">
               /{deleteTarget.slug}
             </p>
-            <p className="text-xs text-red-400/70 mb-6">
+            <p
+              id="delete-dialog-desc"
+              className="text-xs text-red-400/70 mb-6"
+            >
               관련된 태그, 좋아요, 조회수, 북마크도 함께 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
             </p>
             <div className="flex justify-end gap-3">
