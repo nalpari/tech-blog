@@ -12,7 +12,7 @@ export async function getPosts(options?: { offset?: number; limit?: number }): P
     .from("posts")
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
-    .order("updated_at", { ascending: false })
+    .order("sort_date", { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (!posts) return [];
@@ -33,7 +33,7 @@ export async function getFeaturedPosts(): Promise<Post[]> {
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
     .eq("featured", true)
-    .order("updated_at", { ascending: false });
+    .order("sort_date", { ascending: false });
 
   if (!posts) return [];
 
@@ -97,7 +97,7 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
     .in("id", postIds)
-    .order("updated_at", { ascending: false });
+    .order("sort_date", { ascending: false });
 
   if (!posts) return [];
 
