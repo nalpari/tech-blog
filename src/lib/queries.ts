@@ -3,6 +3,16 @@ import { mapPost, mapTag, type Post, type Tag } from "@/lib/data";
 
 export const POSTS_PER_PAGE = 6;
 
+// posts.sort_date는 Supabase의 generated column으로
+// COALESCE(published_at, created_at) 결과를 담는다.
+// - mapPost()의 `date: published_at ?? created_at`와 의미가 일치해야 함
+// - Insert/Update에 값을 넣어도 DB가 거부한다 (GENERATED ALWAYS)
+// 정의 동기화가 깨지면 "카드 표시일 != 정렬일" 불일치가 재발한다.
+const POSTS_ORDER_COLUMN = "sort_date" as const;
+const POSTS_ORDER_OPTIONS = { ascending: false } as const;
+// 동일 sort_date 시 페이지네이션 중복/누락 방지를 위한 결정적 2차 키.
+const POSTS_TIE_BREAKER_COLUMN = "id" as const;
+
 export async function getPosts(options?: { offset?: number; limit?: number }): Promise<Post[]> {
   const supabase = await createClient();
   const offset = options?.offset ?? 0;
@@ -12,7 +22,8 @@ export async function getPosts(options?: { offset?: number; limit?: number }): P
     .from("posts")
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
-    .order("updated_at", { ascending: false })
+    .order(POSTS_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS)
     .range(offset, offset + limit - 1);
 
   if (!posts) return [];
@@ -33,7 +44,8 @@ export async function getFeaturedPosts(): Promise<Post[]> {
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
     .eq("featured", true)
-    .order("updated_at", { ascending: false });
+    .order(POSTS_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS);
 
   if (!posts) return [];
 
@@ -97,7 +109,8 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
     .in("id", postIds)
-    .order("updated_at", { ascending: false });
+    .order(POSTS_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS);
 
   if (!posts) return [];
 
