@@ -124,7 +124,7 @@ Path alias: `@/*` maps to `./src/*`.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **tech-blog** (801 symbols, 1094 relationships, 27 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **tech-blog** (863 symbols, 1322 relationships, 58 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
