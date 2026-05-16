@@ -1,0 +1,68 @@
+# .understandignore — patterns for files/dirs to exclude from analysis
+# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)
+# Lines below are suggestions — uncomment to activate.
+# Use ! prefix to force-include something excluded by defaults.
+#
+# Built-in defaults (always excluded unless negated):
+#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.
+#
+# --- From .gitignore (uncomment to exclude) ---
+
+# /node_modules
+# /.pnp
+# .pnp.*
+# .yarn/*
+# !.yarn/patches
+# !.yarn/plugins
+# !.yarn/releases
+# !.yarn/versions
+# /coverage
+# /.next/
+# /out/
+# /build
+# .DS_Store
+# *.pem
+# .mcp.json
+# .bkit
+# .1code
+# docs/.bkit-memory.json
+# docs/.pdca-status.json
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
+# .pnpm-debug.log*
+# .env*
+# .vercel
+# *.tsbuildinfo
+# next-env.d.ts
+# .claude/worktrees/
+# .gitnexus
+
+# --- Detected directories (uncomment to exclude) ---
+
+# docs/
+
+# --- Test file patterns (uncomment to exclude) ---
+
+# *.test.*
+# *.spec.*
+# *.snap
+
+# --- User-selected exclusions ---
+
+notion-posts-export.json
+spectra-data-explorer.html
+.claude/
+supabase/migrations/
+supabase/seed.sql
+
+# Third-party CLI plugin skill docs (not part of this project)
+.agents/
+
+# Our own output dir (avoid recursive analysis of generated files)
+.understand-anything/
+
+# Other tool artifacts
+.gitnexus/
+skills-lock.json
+pen.pen
