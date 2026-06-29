@@ -1,0 +1,2776 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "e4daaa4a3d909baec5dfcd39c16fce0c9668ef9e",
+  "generatedAt": "2026-05-16T11:38:25.552Z",
+  "files": {
+    "AGENTS.md": {
+      "filePath": "AGENTS.md",
+      "contentHash": "6b7d8abb87be106000326d4ad9ff4047d27df07dd9d8a32316bb3b30c156b61e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "CLAUDE.md": {
+      "filePath": "CLAUDE.md",
+      "contentHash": "9894e53c0e33fc27e0edf828dd1b1f22bdea2bc6f4901dc539031147eeda5398",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 167,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "076967d9b68702d7ec4c6f4ec7a0c134cbbe0cc68f290d9a74a9d7e7f7574f4f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 129,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-plan/features/database-schema.plan.md": {
+      "filePath": "docs/01-plan/features/database-schema.plan.md",
+      "contentHash": "04033f94f5dd3bafd6c480c3d889240e495a2cdac3123a62179b1d6577b712b6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 171,
+      "hasStructuralAnalysis": true
+    },
+    "docs/02-design/architecture.md": {
+      "filePath": "docs/02-design/architecture.md",
+      "contentHash": "ee5568b183bbb7416c68aa9cbe8be9a15619a1814cb4b997e911e17dee3e4f64",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 364,
+      "hasStructuralAnalysis": true
+    },
+    "docs/02-design/features/database-schema.design.md": {
+      "filePath": "docs/02-design/features/database-schema.design.md",
+      "contentHash": "11162a5403eac9418e7b7c2a5fd7abb729e0649c039dbda4919616a8ebbc2b62",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 319,
+      "hasStructuralAnalysis": true
+    },
+    "docs/02-design/sequence-diagrams.md": {
+      "filePath": "docs/02-design/sequence-diagrams.md",
+      "contentHash": "039868f24250d476752687d21721f065aedb8bed47734139c3f1b832ae1a0ec5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 534,
+      "hasStructuralAnalysis": true
+    },
+    "docs/02-design/system-diagram.md": {
+      "filePath": "docs/02-design/system-diagram.md",
+      "contentHash": "425b8890610c027c807003b830defbccb48eb6a68cc5209ba17096017f499805",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 416,
+      "hasStructuralAnalysis": true
+    },
+    "docs/03-analysis/database-schema.analysis.md": {
+      "filePath": "docs/03-analysis/database-schema.analysis.md",
+      "contentHash": "9366f1f313870398111f8b0b017a9294930b7da756188985e11a7b8752f11f5c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 373,
+      "hasStructuralAnalysis": true
+    },
+    "docs/04-report/database-schema.report.md": {
+      "filePath": "docs/04-report/database-schema.report.md",
+      "contentHash": "9f161e39725200ea4d2960555c7294a8a7b26e69b563aa7d813c5726c59c16bb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 993,
+      "hasStructuralAnalysis": true
+    },
+    "eslint.config.mjs": {
+      "filePath": "eslint.config.mjs",
+      "contentHash": "4d94ad7bdc8d4f644867d1107a2bbbdb7d11a46c2832d3a5d18b816d5eff33c0",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "eslint/config",
+          "specifiers": [
+            "defineConfig",
+            "globalIgnores"
+          ]
+        },
+        {
+          "source": "eslint-config-next/core-web-vitals",
+          "specifiers": [
+            "nextVitals"
+          ]
+        },
+        {
+          "source": "eslint-config-next/typescript",
+          "specifiers": [
+            "nextTs"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "next.config.ts": {
+      "filePath": "next.config.ts",
+      "contentHash": "f5c1d261b2409c5bdcf1022b068a405715a59dee3a17c3c619f5ca402f40bed6",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next",
+          "specifiers": [
+            "NextConfig"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "90b666ec809c43079f9f1dcbf7a3f530826fad30a8230cf799caae533f6496f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "postcss.config.mjs": {
+      "filePath": "postcss.config.mjs",
+      "contentHash": "dfac7ac2d86d326a0e5adb024e7943c181393ed17a5fcb8f0315b24c7da6ddde",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/(auth)/sign-in/page.tsx": {
+      "filePath": "src/app/(auth)/sign-in/page.tsx",
+      "contentHash": "4f641fcda6c158393cf00360f4d43a89f0f7a11c88f8b321f5d60ecd6892a5bc",
+      "functions": [
+        {
+          "name": "SignInPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "Suspense"
+          ]
+        },
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        },
+        {
+          "source": "./sign-in-form",
+          "specifiers": [
+            "SignInForm"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "SignInPage"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/(auth)/sign-in/sign-in-form.tsx": {
+      "filePath": "src/app/(auth)/sign-in/sign-in-form.tsx",
+      "contentHash": "154ae65f188aba9d0c2691d98d98fb413efdb99c48bc5a192742f1041a9edf8a",
+      "functions": [
+        {
+          "name": "SignInForm",
+          "params": [],
+          "exported": true,
+          "lineCount": 140
+        },
+        {
+          "name": "GitHubIcon",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "GoogleIcon",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter",
+            "useSearchParams"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/client",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [
+        "SignInForm"
+      ],
+      "totalLines": 167,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/(auth)/sign-up/page.tsx": {
+      "filePath": "src/app/(auth)/sign-up/page.tsx",
+      "contentHash": "54f7944b6aec448aef75b62265a91ba91dc77374878c8c9824f3350d6684ca20",
+      "functions": [
+        {
+          "name": "SignUpPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        },
+        {
+          "source": "./sign-up-form",
+          "specifiers": [
+            "SignUpForm"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "SignUpPage"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/(auth)/sign-up/sign-up-form.tsx": {
+      "filePath": "src/app/(auth)/sign-up/sign-up-form.tsx",
+      "contentHash": "298a260ef930678e2ebfa53eac920bbdc2fc17528a6d84e80cbe7b13d1658f45",
+      "functions": [
+        {
+          "name": "SignUpForm",
+          "params": [],
+          "exported": true,
+          "lineCount": 186
+        },
+        {
+          "name": "GitHubIcon",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "GoogleIcon",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/client",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [
+        "SignUpForm"
+      ],
+      "totalLines": 213,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/about/page.tsx": {
+      "filePath": "src/app/about/page.tsx",
+      "contentHash": "dee7c286d461694ace9bf305646eeb572a3da73b43812452eaebd2a8417a8254",
+      "functions": [
+        {
+          "name": "AboutPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 90
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "AboutPage"
+      ],
+      "totalLines": 149,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/dashboard/dashboard-content.tsx": {
+      "filePath": "src/app/admin/dashboard/dashboard-content.tsx",
+      "contentHash": "5421184ee0b582f83e1ac0e1d2dc1e925b96bccacc5fa3db2c28f250fbfee103",
+      "functions": [
+        {
+          "name": "DashboardContent",
+          "params": [
+            "{\n  posts,\n  likes,\n  views,\n}"
+          ],
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "SummaryCard",
+          "params": [
+            "{ label, value }"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "TabButton",
+          "params": [
+            "{\n  active,\n  onClick,\n  children,\n}"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "OverviewTab",
+          "params": [
+            "{ posts }"
+          ],
+          "exported": false,
+          "lineCount": 77
+        },
+        {
+          "name": "ActivityTab",
+          "params": [
+            "{\n  records,\n  type,\n}"
+          ],
+          "exported": false,
+          "lineCount": 85
+        },
+        {
+          "name": "formatDateTime",
+          "params": [
+            "iso"
+          ],
+          "exported": false,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "next/image",
+          "specifiers": [
+            "Image"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        }
+      ],
+      "exports": [
+        "DashboardContent"
+      ],
+      "totalLines": 295,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/dashboard/page.tsx": {
+      "filePath": "src/app/admin/dashboard/page.tsx",
+      "contentHash": "9b52362739fe6db228765e57a44f5411422df15c4cd1b85d6914d5bb7681437a",
+      "functions": [
+        {
+          "name": "AdminDashboardPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 52
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "./dashboard-content",
+          "specifiers": [
+            "DashboardContent"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "AdminDashboardPage"
+      ],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/posts/actions.ts": {
+      "filePath": "src/app/admin/posts/actions.ts",
+      "contentHash": "10574436332cd985473ad453fd80fed5a5bf530bcd1fc47b54557099532ee353",
+      "functions": [
+        {
+          "name": "assertAdmin",
+          "params": [],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "togglePostStatus",
+          "params": [
+            "postId"
+          ],
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "deletePost",
+          "params": [
+            "postId"
+          ],
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "next/cache",
+          "specifiers": [
+            "revalidatePath"
+          ]
+        }
+      ],
+      "exports": [
+        "togglePostStatus",
+        "deletePost"
+      ],
+      "totalLines": 81,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/posts/page.tsx": {
+      "filePath": "src/app/admin/posts/page.tsx",
+      "contentHash": "11aa9c9704b3ad0e7ecde707f85bbc37a2c88a804f68c6e309cf80a3e71f167d",
+      "functions": [
+        {
+          "name": "AdminPostsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 33
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "./posts-manage-content",
+          "specifiers": [
+            "PostsManageContent"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "AdminPostsPage"
+      ],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/posts/posts-manage-content.tsx": {
+      "filePath": "src/app/admin/posts/posts-manage-content.tsx",
+      "contentHash": "8289aedd48aff36023c50fc008e07edf7dfe94afe97939b766a6144fca438d01",
+      "functions": [
+        {
+          "name": "PostsManageContent",
+          "params": [
+            "{ posts }"
+          ],
+          "exported": true,
+          "lineCount": 235
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useTransition"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "./actions",
+          "specifiers": [
+            "togglePostStatus",
+            "deletePost"
+          ]
+        }
+      ],
+      "exports": [
+        "PostsManageContent"
+      ],
+      "totalLines": 257,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/tags/actions.ts": {
+      "filePath": "src/app/admin/tags/actions.ts",
+      "contentHash": "bdd48bed4934e4c3a10f2e7f801f08675f11e9a00952ae0b3891d9b85f337d09",
+      "functions": [
+        {
+          "name": "checkAdmin",
+          "params": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "createTag",
+          "params": [
+            "formData"
+          ],
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "updateTag",
+          "params": [
+            "formData"
+          ],
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "deleteTag",
+          "params": [
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "next/cache",
+          "specifiers": [
+            "revalidatePath"
+          ]
+        }
+      ],
+      "exports": [
+        "createTag",
+        "updateTag",
+        "deleteTag"
+      ],
+      "totalLines": 88,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/tags/page.tsx": {
+      "filePath": "src/app/admin/tags/page.tsx",
+      "contentHash": "6243dda33a947105aec3eeb20781ce9c21a6b9a03ff3ecc35b33018c06128513",
+      "functions": [
+        {
+          "name": "AdminTagsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "./tag-manager",
+          "specifiers": [
+            "TagManager"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "AdminTagsPage"
+      ],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/admin/tags/tag-manager.tsx": {
+      "filePath": "src/app/admin/tags/tag-manager.tsx",
+      "contentHash": "7e802f060a78a42156efe26bb76bca784126a9dc6ddeb984b2a14c154ba0bf64",
+      "functions": [
+        {
+          "name": "TagManager",
+          "params": [
+            "{ initialTags }"
+          ],
+          "exported": true,
+          "lineCount": 131
+        },
+        {
+          "name": "TagForm",
+          "params": [
+            "{\n  tag,\n  onSubmit,\n  onCancel,\n  loading,\n}"
+          ],
+          "exported": false,
+          "lineCount": 91
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "./actions",
+          "specifiers": [
+            "createTag",
+            "updateTag",
+            "deleteTag"
+          ]
+        }
+      ],
+      "exports": [
+        "TagManager"
+      ],
+      "totalLines": 242,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/api/posts/[slug]/like/route.ts": {
+      "filePath": "src/app/api/posts/[slug]/like/route.ts",
+      "contentHash": "c69df21cc3788b566d54d0625797ba2df50129d1769536b9e9106187af2193a0",
+      "functions": [
+        {
+          "name": "POST",
+          "params": [
+            "_request",
+            "{ params }"
+          ],
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "GET",
+          "params": [
+            "_request",
+            "{ params }"
+          ],
+          "exported": true,
+          "lineCount": 48
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/server",
+          "specifiers": [
+            "NextResponse"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [
+        "POST",
+        "GET"
+      ],
+      "totalLines": 102,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/api/posts/[slug]/view/route.ts": {
+      "filePath": "src/app/api/posts/[slug]/view/route.ts",
+      "contentHash": "844cae840e375c15126e31e49177fde39c1b9d219cc21d28fcdfbdd7ac6e9e7c",
+      "functions": [
+        {
+          "name": "POST",
+          "params": [
+            "_request",
+            "{ params }"
+          ],
+          "exported": true,
+          "lineCount": 40
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/server",
+          "specifiers": [
+            "NextResponse"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [
+        "POST"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/api/posts/route.ts": {
+      "filePath": "src/app/api/posts/route.ts",
+      "contentHash": "90aea88efea3395b05d4fdf9226a67105e2314908eb44ad5bd86acfb1a2cabb4",
+      "functions": [
+        {
+          "name": "GET",
+          "params": [
+            "request"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/server",
+          "specifiers": [
+            "NextRequest",
+            "NextResponse"
+          ]
+        },
+        {
+          "source": "@/lib/queries",
+          "specifiers": [
+            "getPosts",
+            "POSTS_PER_PAGE"
+          ]
+        }
+      ],
+      "exports": [
+        "GET"
+      ],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/auth/callback/route.ts": {
+      "filePath": "src/app/auth/callback/route.ts",
+      "contentHash": "b529ca3fd1403b98ab6ce0b6ba25dbf572469834df162de32fec514cfc5c4d05",
+      "functions": [
+        {
+          "name": "GET",
+          "params": [
+            "request"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/server",
+          "specifiers": [
+            "NextResponse"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [
+        "GET"
+      ],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/globals.css": {
+      "filePath": "src/app/globals.css",
+      "contentHash": "30a9c8c07250fb1ca1dbd47fe387bd9bd6b8181843c075d8900c30f7919d8bdf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 295,
+      "hasStructuralAnalysis": false
+    },
+    "src/app/layout.tsx": {
+      "filePath": "src/app/layout.tsx",
+      "contentHash": "1155a02ecd64724632e2bd4576d13895a0a81df97e02135863ee17c780e6389e",
+      "functions": [
+        {
+          "name": "RootLayout",
+          "params": [
+            "{\n  children,\n}"
+          ],
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        },
+        {
+          "source": "next/font/google",
+          "specifiers": [
+            "JetBrains_Mono",
+            "IBM_Plex_Mono"
+          ]
+        },
+        {
+          "source": "@/components/header",
+          "specifiers": [
+            "Header"
+          ]
+        },
+        {
+          "source": "@/components/footer",
+          "specifiers": [
+            "Footer"
+          ]
+        },
+        {
+          "source": "@/providers/query-provider",
+          "specifiers": [
+            "QueryProvider"
+          ]
+        },
+        {
+          "source": "@/providers/auth-provider",
+          "specifiers": [
+            "AuthProvider"
+          ]
+        },
+        {
+          "source": "./globals.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "metadata",
+        "RootLayout"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/page.tsx": {
+      "filePath": "src/app/page.tsx",
+      "contentHash": "0e110cd36d03df13693fa0fad555db0cb373ac9bce7d9cfc56ab71e9f7609893",
+      "functions": [
+        {
+          "name": "HomePage",
+          "params": [],
+          "exported": true,
+          "lineCount": 43
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/queries",
+          "specifiers": [
+            "getPosts",
+            "POSTS_PER_PAGE"
+          ]
+        },
+        {
+          "source": "@/components/post-grid",
+          "specifiers": [
+            "PostGrid"
+          ]
+        },
+        {
+          "source": "@/components/scroll-to-top",
+          "specifiers": [
+            "ScrollToTop"
+          ]
+        }
+      ],
+      "exports": [
+        "HomePage"
+      ],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/posts/[slug]/actions.ts": {
+      "filePath": "src/app/posts/[slug]/actions.ts",
+      "contentHash": "a9d231694d1f048237e3e97eea46b166a94f2df4d2edf03374e26d9183b15e8e",
+      "functions": [
+        {
+          "name": "deletePost",
+          "params": [
+            "postId"
+          ],
+          "exported": true,
+          "lineCount": 64
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        },
+        {
+          "source": "next/dist/client/components/redirect-error",
+          "specifiers": [
+            "isRedirectError"
+          ]
+        }
+      ],
+      "exports": [
+        "deletePost"
+      ],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/posts/[slug]/edit/actions.ts": {
+      "filePath": "src/app/posts/[slug]/edit/actions.ts",
+      "contentHash": "3d18c1754862c58666155cdc4385ed81f429662847e0ab721d4ea08815826d09",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "updatePost",
+        "UpdatePostState"
+      ],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/posts/[slug]/edit/page.tsx": {
+      "filePath": "src/app/posts/[slug]/edit/page.tsx",
+      "contentHash": "c6a4d15bd6471837c95fbb141cd508a3d05449de4b1d31ccb5bd95e740ee18da",
+      "functions": [
+        {
+          "name": "generateMetadata",
+          "params": [
+            "{\n  params,\n}"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "EditPostPage",
+          "params": [
+            "{\n  params,\n}"
+          ],
+          "exported": true,
+          "lineCount": 62
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect",
+            "notFound"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@/components/post-editor",
+          "specifiers": [
+            "PostEditor"
+          ]
+        }
+      ],
+      "exports": [
+        "generateMetadata",
+        "EditPostPage"
+      ],
+      "totalLines": 76,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/posts/[slug]/page.tsx": {
+      "filePath": "src/app/posts/[slug]/page.tsx",
+      "contentHash": "4ba5500e9b3a12c0a9869db187844b7220c3a531b911e06bb4eb0ed192336ab6",
+      "functions": [
+        {
+          "name": "generateMetadata",
+          "params": [
+            "{\n  params,\n}"
+          ],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "PostPage",
+          "params": [
+            "{\n  params,\n}"
+          ],
+          "exported": true,
+          "lineCount": 178
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/image",
+          "specifiers": [
+            "Image"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "notFound"
+          ]
+        },
+        {
+          "source": "@/lib/data",
+          "specifiers": [
+            "formatDate"
+          ]
+        },
+        {
+          "source": "@/lib/queries",
+          "specifiers": [
+            "getPostBySlug",
+            "getPostsByTag"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@/components/tag-badge",
+          "specifiers": [
+            "TagBadge"
+          ]
+        },
+        {
+          "source": "@/components/post-card",
+          "specifiers": [
+            "PostCard"
+          ]
+        },
+        {
+          "source": "@/components/markdown-content",
+          "specifiers": [
+            "MarkdownContent"
+          ]
+        },
+        {
+          "source": "@/components/delete-post-button",
+          "specifiers": [
+            "DeletePostButton"
+          ]
+        },
+        {
+          "source": "@/components/view-counter",
+          "specifiers": [
+            "ViewCounter"
+          ]
+        },
+        {
+          "source": "@/components/like-button",
+          "specifiers": [
+            "LikeButton"
+          ]
+        }
+      ],
+      "exports": [
+        "generateMetadata",
+        "PostPage"
+      ],
+      "totalLines": 224,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/posts/new/actions.ts": {
+      "filePath": "src/app/posts/new/actions.ts",
+      "contentHash": "1f69a741825bec8adbfb97a5db850bea79b32af57333158e50ee1eac5bfb4af0",
+      "functions": [
+        {
+          "name": "estimateReadTime",
+          "params": [
+            "content"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "createPost",
+          "params": [
+            "_prev",
+            "formData"
+          ],
+          "returnType": "Promise<CreatePostState>",
+          "exported": true,
+          "lineCount": 108
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@/lib/slug",
+          "specifiers": [
+            "generateSlug"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        },
+        {
+          "source": "next/dist/client/components/redirect-error",
+          "specifiers": [
+            "isRedirectError"
+          ]
+        }
+      ],
+      "exports": [
+        "createPost"
+      ],
+      "totalLines": 129,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/posts/new/page.tsx": {
+      "filePath": "src/app/posts/new/page.tsx",
+      "contentHash": "24b5373849648b2bfbc1747e6bccb6a2f27d92dbb7cfc61c99ae3b30a4fafa7d",
+      "functions": [
+        {
+          "name": "NewPostPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 37
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@/components/post-editor",
+          "specifiers": [
+            "PostEditor"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "NewPostPage"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/tags/[slug]/page.tsx": {
+      "filePath": "src/app/tags/[slug]/page.tsx",
+      "contentHash": "55b66fea5d4668223494391427a47af1f22084e8e78489ce1eb062d12bd32dbb",
+      "functions": [
+        {
+          "name": "generateMetadata",
+          "params": [
+            "{\n  params,\n}"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "TagDetailPage",
+          "params": [
+            "{\n  params,\n}"
+          ],
+          "exported": true,
+          "lineCount": 114
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "notFound"
+          ]
+        },
+        {
+          "source": "@/lib/queries",
+          "specifiers": [
+            "getTags",
+            "getTagBySlug",
+            "getPostsByTag"
+          ]
+        },
+        {
+          "source": "@/lib/data",
+          "specifiers": [
+            "formatDate"
+          ]
+        }
+      ],
+      "exports": [
+        "generateMetadata",
+        "TagDetailPage"
+      ],
+      "totalLines": 138,
+      "hasStructuralAnalysis": true
+    },
+    "src/app/tags/page.tsx": {
+      "filePath": "src/app/tags/page.tsx",
+      "contentHash": "be2c654b6468c3686b07b8ab5a34ffe5b6888bd0d49c968e86b5c82cf8720044",
+      "functions": [
+        {
+          "name": "TagsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 56
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "@/lib/queries",
+          "specifiers": [
+            "getTags"
+          ]
+        },
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        }
+      ],
+      "exports": [
+        "metadata",
+        "TagsPage"
+      ],
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/auth-buttons.tsx": {
+      "filePath": "src/components/auth-buttons.tsx",
+      "contentHash": "d3dbd64f0ba28a7afe95576de2819ea4e283a3afc5cf71ecaee9a5c1847deef4",
+      "functions": [
+        {
+          "name": "AuthButtons",
+          "params": [],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthButtons"
+      ],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/delete-post-button.tsx": {
+      "filePath": "src/components/delete-post-button.tsx",
+      "contentHash": "b2232bce9586486bdba46758224102ab1e8300a52d61a22ae318c4500c416773",
+      "functions": [
+        {
+          "name": "DeletePostButton",
+          "params": [
+            "{ postId }"
+          ],
+          "exported": true,
+          "lineCount": 57
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "@/app/posts/[slug]/actions",
+          "specifiers": [
+            "deletePost"
+          ]
+        }
+      ],
+      "exports": [
+        "DeletePostButton"
+      ],
+      "totalLines": 67,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/footer.tsx": {
+      "filePath": "src/components/footer.tsx",
+      "contentHash": "dae7ff0087c730d77efd8c1e2b9390f3dcedfd667c0e981e8cca1240ba81fb92",
+      "functions": [
+        {
+          "name": "Footer",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "Footer"
+      ],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/header.tsx": {
+      "filePath": "src/components/header.tsx",
+      "contentHash": "fcb2727f0b42675a0117375c5362fdcf0b4025b6d05c00a2a01b3191a5347461",
+      "functions": [
+        {
+          "name": "Header",
+          "params": [],
+          "exported": true,
+          "lineCount": 105
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "usePathname"
+          ]
+        },
+        {
+          "source": "@/stores/auth-store",
+          "specifiers": [
+            "useAuthStore"
+          ]
+        },
+        {
+          "source": "@/components/auth-buttons",
+          "specifiers": [
+            "AuthButtons"
+          ]
+        },
+        {
+          "source": "@/components/user-avatar",
+          "specifiers": [
+            "UserAvatar"
+          ]
+        },
+        {
+          "source": "@/components/search-modal",
+          "specifiers": [
+            "SearchModal"
+          ]
+        },
+        {
+          "source": "@/lib/toast",
+          "specifiers": [
+            "showToast"
+          ]
+        }
+      ],
+      "exports": [
+        "Header"
+      ],
+      "totalLines": 125,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/like-button.tsx": {
+      "filePath": "src/components/like-button.tsx",
+      "contentHash": "1a19d1914c6d1ff26336f67120ee9ea20215f9e95db964b45646abaacedd7321",
+      "functions": [
+        {
+          "name": "HeartIcon",
+          "params": [
+            "{\n  size = 16,\n  filled = false,\n}"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "LikeButton",
+          "params": [
+            "{\n  slug,\n  initialCount,\n  compact = false,\n}"
+          ],
+          "exported": true,
+          "lineCount": 109
+        },
+        {
+          "name": "LikeCount",
+          "params": [
+            "{ count }"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useRef",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "@/stores/auth-store",
+          "specifiers": [
+            "useAuthStore"
+          ]
+        }
+      ],
+      "exports": [
+        "LikeButton",
+        "LikeCount"
+      ],
+      "totalLines": 148,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/loading.tsx": {
+      "filePath": "src/components/loading.tsx",
+      "contentHash": "0c1bc54fb2caa1477eba0788d31a61723b0ce88986ee45dd2dda08e70f3a4502",
+      "functions": [
+        {
+          "name": "Loading",
+          "params": [
+            "{ size = \"md\", className }"
+          ],
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "LoadingScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/utils",
+          "specifiers": [
+            "cn"
+          ]
+        }
+      ],
+      "exports": [
+        "Loading",
+        "LoadingScreen"
+      ],
+      "totalLines": 72,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/markdown-content.tsx": {
+      "filePath": "src/components/markdown-content.tsx",
+      "contentHash": "556a07db4c81c5fc62f68f7feb2b4101d18f34d02abf4f0afa1de213f6e2ba07",
+      "functions": [
+        {
+          "name": "CopyButton",
+          "params": [
+            "{ code }"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "extractText",
+          "params": [
+            "node"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "Pre",
+          "params": [
+            "{ children, ...props }"
+          ],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "MarkdownContent",
+          "params": [
+            "{ content }"
+          ],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "ComponentProps"
+          ]
+        },
+        {
+          "source": "react-markdown",
+          "specifiers": [
+            "Markdown"
+          ]
+        },
+        {
+          "source": "remark-gfm",
+          "specifiers": [
+            "remarkGfm"
+          ]
+        },
+        {
+          "source": "rehype-highlight",
+          "specifiers": [
+            "rehypeHighlight"
+          ]
+        },
+        {
+          "source": "highlight.js/styles/github-dark-dimmed.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "MarkdownContent"
+      ],
+      "totalLines": 67,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/post-card.tsx": {
+      "filePath": "src/components/post-card.tsx",
+      "contentHash": "51d61c2523d65db7055b42131125ed3567aaf4c32dc1e1081d00182e9570466f",
+      "functions": [
+        {
+          "name": "PostCard",
+          "params": [
+            "{ post, index = 0 }"
+          ],
+          "exported": true,
+          "lineCount": 86
+        },
+        {
+          "name": "FeaturedPostCard",
+          "params": [
+            "{ post }"
+          ],
+          "exported": true,
+          "lineCount": 66
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/image",
+          "specifiers": [
+            "Image"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "@/lib/data",
+          "specifiers": [
+            "Post",
+            "formatDate"
+          ]
+        },
+        {
+          "source": "@/components/view-counter",
+          "specifiers": [
+            "ViewCount"
+          ]
+        },
+        {
+          "source": "@/components/like-button",
+          "specifiers": [
+            "LikeButton"
+          ]
+        }
+      ],
+      "exports": [
+        "PostCard",
+        "FeaturedPostCard"
+      ],
+      "totalLines": 160,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/post-editor.tsx": {
+      "filePath": "src/components/post-editor.tsx",
+      "contentHash": "c0fba2144394b342662ae179a7b066c62cdaa0df4c4ae7fa593dc4b2508f5238",
+      "functions": [
+        {
+          "name": "PostEditor",
+          "params": [
+            "{ tags, editMode }"
+          ],
+          "exported": true,
+          "lineCount": 524
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useActionState",
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "next/image",
+          "specifiers": [
+            "Image"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "react-markdown",
+          "specifiers": [
+            "Markdown"
+          ]
+        },
+        {
+          "source": "remark-gfm",
+          "specifiers": [
+            "remarkGfm"
+          ]
+        },
+        {
+          "source": "@/app/posts/new/actions",
+          "specifiers": [
+            "createPost",
+            "CreatePostState"
+          ]
+        },
+        {
+          "source": "@/lib/post-actions",
+          "specifiers": [
+            "updatePost",
+            "UpdatePostState"
+          ]
+        },
+        {
+          "source": "@/lib/slug",
+          "specifiers": [
+            "generateSlug"
+          ]
+        }
+      ],
+      "exports": [
+        "PostEditor"
+      ],
+      "totalLines": 559,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/post-grid.tsx": {
+      "filePath": "src/components/post-grid.tsx",
+      "contentHash": "8991476f0d7c7a6cde67cf258cb106b7e951988dc631ff1225a68d8a8805eb0c",
+      "functions": [
+        {
+          "name": "PostGrid",
+          "params": [
+            "{ initialPosts, initialHasMore, pageSize }"
+          ],
+          "exported": true,
+          "lineCount": 59
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useCallback",
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "@/components/post-card",
+          "specifiers": [
+            "PostCard"
+          ]
+        },
+        {
+          "source": "@/lib/data",
+          "specifiers": [
+            "Post"
+          ]
+        }
+      ],
+      "exports": [
+        "PostGrid"
+      ],
+      "totalLines": 72,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/query-loading-indicator.tsx": {
+      "filePath": "src/components/query-loading-indicator.tsx",
+      "contentHash": "63fdfcffebf5b6891f3de0fc8aa9d95de92f41e2aae2d1860102b3c2d1a2a9a0",
+      "functions": [
+        {
+          "name": "QueryLoadingIndicator",
+          "params": [],
+          "exported": true,
+          "lineCount": 21
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useIsFetching"
+          ]
+        }
+      ],
+      "exports": [
+        "QueryLoadingIndicator"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/scroll-to-top.tsx": {
+      "filePath": "src/components/scroll-to-top.tsx",
+      "contentHash": "79babaa9e83a0e79685b91268622f4a69bc26161fe2ea130d3b56883bc0a90ed",
+      "functions": [
+        {
+          "name": "ScrollToTop",
+          "params": [],
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        }
+      ],
+      "exports": [
+        "ScrollToTop"
+      ],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/search-modal.tsx": {
+      "filePath": "src/components/search-modal.tsx",
+      "contentHash": "92cdab5953f2991d469e6301e5d8ba461f2f40e846c074cb2e906ab6d73fd2fc",
+      "functions": [
+        {
+          "name": "SearchModal",
+          "params": [
+            "{ open, onClose }"
+          ],
+          "exported": true,
+          "lineCount": 333
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "useState",
+            "useCallback"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/client",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@/lib/data",
+          "specifiers": [
+            "formatDate"
+          ]
+        }
+      ],
+      "exports": [
+        "SearchModal"
+      ],
+      "totalLines": 354,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/tag-badge.tsx": {
+      "filePath": "src/components/tag-badge.tsx",
+      "contentHash": "4c4adc4090ebc6cfc0733a429db4defece1fca414f8bcf5b87e9fde497aaac06",
+      "functions": [
+        {
+          "name": "TagBadge",
+          "params": [
+            "{\n  slug,\n  name,\n  size = \"sm\",\n  interactive = true,\n}"
+          ],
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        }
+      ],
+      "exports": [
+        "TagBadge"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/user-avatar.tsx": {
+      "filePath": "src/components/user-avatar.tsx",
+      "contentHash": "d061c3a60210ddbd98a43549e32fb66cf65d57c29cfb42fa2757d57d56fbb1cc",
+      "functions": [
+        {
+          "name": "UserAvatar",
+          "params": [
+            "{ name, email, avatarUrl, isAdmin }"
+          ],
+          "exported": true,
+          "lineCount": 112
+        },
+        {
+          "name": "MenuLink",
+          "params": [
+            "{\n  href,\n  label,\n  onClick,\n}"
+          ],
+          "exported": false,
+          "lineCount": 19
+        },
+        {
+          "name": "ComingSoonButton",
+          "params": [
+            "{\n  label,\n  onClick,\n}"
+          ],
+          "exported": false,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "useRef",
+            "useEffect"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "next/image",
+          "specifiers": [
+            "Image"
+          ]
+        },
+        {
+          "source": "next/link",
+          "specifiers": [
+            "Link"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/client",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@/lib/toast",
+          "specifiers": [
+            "showToast"
+          ]
+        }
+      ],
+      "exports": [
+        "UserAvatar"
+      ],
+      "totalLines": 169,
+      "hasStructuralAnalysis": true
+    },
+    "src/components/view-counter.tsx": {
+      "filePath": "src/components/view-counter.tsx",
+      "contentHash": "d9b971d61323c142918466cc4040c060f266606187834a71e97dab32da0e6ccb",
+      "functions": [
+        {
+          "name": "EyeIcon",
+          "params": [
+            "{ size = 14 }"
+          ],
+          "exported": false,
+          "lineCount": 17
+        },
+        {
+          "name": "ViewCounter",
+          "params": [
+            "{\n  slug,\n  initialCount,\n}"
+          ],
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "ViewCount",
+          "params": [
+            "{ count }"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        }
+      ],
+      "exports": [
+        "ViewCounter",
+        "ViewCount"
+      ],
+      "totalLines": 68,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/data.ts": {
+      "filePath": "src/lib/data.ts",
+      "contentHash": "b5b34bc48c44f2df9c20890dbe884888c7bbf39ad2dd2efcb701358106bd471b",
+      "functions": [
+        {
+          "name": "mapPost",
+          "params": [
+            "row",
+            "tagSlugs"
+          ],
+          "returnType": "Post",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "mapTag",
+          "params": [
+            "row",
+            "postCount"
+          ],
+          "returnType": "Tag",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "formatDate",
+          "params": [
+            "dateStr"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/database.types",
+          "specifiers": [
+            "Database"
+          ]
+        }
+      ],
+      "exports": [
+        "mapPost",
+        "mapTag",
+        "formatDate"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/post-actions.ts": {
+      "filePath": "src/lib/post-actions.ts",
+      "contentHash": "8c327e8acda0845fabcdfcec528892e3048411712591329a004af489b916bba1",
+      "functions": [
+        {
+          "name": "estimateReadTime",
+          "params": [
+            "content"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "updatePost",
+          "params": [
+            "_prev",
+            "formData"
+          ],
+          "returnType": "Promise<UpdatePostState>",
+          "exported": true,
+          "lineCount": 128
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        },
+        {
+          "source": "next/dist/client/components/redirect-error",
+          "specifiers": [
+            "isRedirectError"
+          ]
+        }
+      ],
+      "exports": [
+        "updatePost"
+      ],
+      "totalLines": 148,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/queries.ts": {
+      "filePath": "src/lib/queries.ts",
+      "contentHash": "4a807d3be452b1b59e43e4cbc80ed94f76ace0e22f540105bf2eb558690416df",
+      "functions": [
+        {
+          "name": "getPosts",
+          "params": [
+            "options"
+          ],
+          "returnType": "Promise<Post[]>",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "getFeaturedPosts",
+          "params": [],
+          "returnType": "Promise<Post[]>",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "getPostBySlug",
+          "params": [
+            "slug",
+            "options"
+          ],
+          "returnType": "Promise<(Post & { status?: string }) | null>",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "getPostsByTag",
+          "params": [
+            "tagSlug"
+          ],
+          "returnType": "Promise<Post[]>",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "getTags",
+          "params": [],
+          "returnType": "Promise<Tag[]>",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "getTagBySlug",
+          "params": [
+            "slug"
+          ],
+          "returnType": "Promise<Tag | null>",
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/server",
+          "specifiers": [
+            "createClient"
+          ]
+        },
+        {
+          "source": "@/lib/data",
+          "specifiers": [
+            "mapPost",
+            "mapTag",
+            "Post",
+            "Tag"
+          ]
+        }
+      ],
+      "exports": [
+        "POSTS_PER_PAGE",
+        "getPosts",
+        "getFeaturedPosts",
+        "getPostBySlug",
+        "getPostsByTag",
+        "getTags",
+        "getTagBySlug"
+      ],
+      "totalLines": 171,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/slug.ts": {
+      "filePath": "src/lib/slug.ts",
+      "contentHash": "825098fa26aef2814f5299b589f989e4ed199807924478a046bf2c22f77b6f3a",
+      "functions": [
+        {
+          "name": "generateSlug",
+          "params": [
+            "title"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "generateSlug"
+      ],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/supabase/client.ts": {
+      "filePath": "src/lib/supabase/client.ts",
+      "contentHash": "7db403a922c792bddc53262c68f42dd0bd356cb8da8fafbfd1b8322fdfe9482f",
+      "functions": [
+        {
+          "name": "createClient",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@supabase/ssr",
+          "specifiers": [
+            "createBrowserClient"
+          ]
+        },
+        {
+          "source": "./database.types",
+          "specifiers": [
+            "Database"
+          ]
+        }
+      ],
+      "exports": [
+        "createClient"
+      ],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/supabase/database.types.ts": {
+      "filePath": "src/lib/supabase/database.types.ts",
+      "contentHash": "a4ba42a4f817512f3ecad45d4d2d4ffb5f6c06c802648d57dfa4120f3b48bc74",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "Constants"
+      ],
+      "totalLines": 506,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/supabase/middleware.ts": {
+      "filePath": "src/lib/supabase/middleware.ts",
+      "contentHash": "ad85b8eabcf061a9d214038411bc20445d1f9a4661c313354261f29615127b81",
+      "functions": [
+        {
+          "name": "updateSession",
+          "params": [
+            "request"
+          ],
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@supabase/ssr",
+          "specifiers": [
+            "createServerClient"
+          ]
+        },
+        {
+          "source": "next/server",
+          "specifiers": [
+            "NextResponse",
+            "NextRequest"
+          ]
+        }
+      ],
+      "exports": [
+        "updateSession"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/supabase/server.ts": {
+      "filePath": "src/lib/supabase/server.ts",
+      "contentHash": "3f1b8b5447291c095ae9569f721f4394c49a6e613dd22dca732092b72ef60c51",
+      "functions": [
+        {
+          "name": "createClient",
+          "params": [],
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@supabase/ssr",
+          "specifiers": [
+            "createServerClient"
+          ]
+        },
+        {
+          "source": "next/headers",
+          "specifiers": [
+            "cookies"
+          ]
+        },
+        {
+          "source": "./database.types",
+          "specifiers": [
+            "Database"
+          ]
+        }
+      ],
+      "exports": [
+        "createClient"
+      ],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/toast.ts": {
+      "filePath": "src/lib/toast.ts",
+      "contentHash": "4135bd7b00eca71c3b1d145d71989456c3dec6e12bf58aee6bd907b7e1f43675",
+      "functions": [
+        {
+          "name": "showToast",
+          "params": [
+            "message",
+            "duration"
+          ],
+          "exported": true,
+          "lineCount": 38
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "showToast"
+      ],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/upload-image.ts": {
+      "filePath": "src/lib/upload-image.ts",
+      "contentHash": "ca9f3d980680ecd447363d52613335223ded2152b2285a67197d8839376370ce",
+      "functions": [
+        {
+          "name": "uploadImage",
+          "params": [
+            "file",
+            "pathPrefix"
+          ],
+          "returnType": "Promise<UploadResult>",
+          "exported": true,
+          "lineCount": 36
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@/lib/supabase/client",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [
+        "uploadImage"
+      ],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/utils.ts": {
+      "filePath": "src/lib/utils.ts",
+      "contentHash": "d1f1e0d62cb8d8d1e04c26e14de842d8a151f75812d81b046c65b5d1fe8e4b27",
+      "functions": [
+        {
+          "name": "cn",
+          "params": [
+            "...inputs"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "clsx",
+          "specifiers": [
+            "clsx",
+            "ClassValue"
+          ]
+        },
+        {
+          "source": "tailwind-merge",
+          "specifiers": [
+            "twMerge"
+          ]
+        }
+      ],
+      "exports": [
+        "cn"
+      ],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "src/middleware.ts": {
+      "filePath": "src/middleware.ts",
+      "contentHash": "df5e8bfd7fc320fde31ffd22f7992945498b222acced7c1e31e356a135767345",
+      "functions": [
+        {
+          "name": "middleware",
+          "params": [
+            "request"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/server",
+          "specifiers": [
+            "NextRequest"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/middleware",
+          "specifiers": [
+            "updateSession"
+          ]
+        }
+      ],
+      "exports": [
+        "middleware",
+        "config"
+      ],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "src/providers/auth-provider.tsx": {
+      "filePath": "src/providers/auth-provider.tsx",
+      "contentHash": "1338fab3af4a867e77528e6be54dc210f9ef028de936c63aec8b9505595b7d85",
+      "functions": [
+        {
+          "name": "AuthProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect"
+          ]
+        },
+        {
+          "source": "@/stores/auth-store",
+          "specifiers": [
+            "useAuthStore"
+          ]
+        },
+        {
+          "source": "@/lib/supabase/client",
+          "specifiers": [
+            "createClient"
+          ]
+        }
+      ],
+      "exports": [
+        "AuthProvider"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "src/providers/query-provider.tsx": {
+      "filePath": "src/providers/query-provider.tsx",
+      "contentHash": "faf530e3e52fb9ed235ee11495dc91cac10c464130572e6ee265498bb34771fe",
+      "functions": [
+        {
+          "name": "QueryProvider",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "QueryClient",
+            "QueryClientProvider"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "@/components/query-loading-indicator",
+          "specifiers": [
+            "QueryLoadingIndicator"
+          ]
+        }
+      ],
+      "exports": [
+        "QueryProvider"
+      ],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "src/stores/auth-store.ts": {
+      "filePath": "src/stores/auth-store.ts",
+      "contentHash": "f427f0b31fc0b6833e3393b7ae6d0334d87f4e9f1bd0feefc4466192ff855f09",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "zustand",
+          "specifiers": [
+            "create"
+          ]
+        },
+        {
+          "source": "@supabase/supabase-js",
+          "specifiers": [
+            "User"
+          ]
+        }
+      ],
+      "exports": [
+        "useAuthStore"
+      ],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/config.toml": {
+      "filePath": "supabase/config.toml",
+      "contentHash": "81e60c3378ec3e7810a1b3e6ca1d94047807dc68098b56c307451b9d6548fd1e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 389,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.json": {
+      "filePath": "tsconfig.json",
+      "contentHash": "5c51df4c59f4510d8c7dadf07a5c32132228826a3b331da5e286207b4df7ef9c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    }
+  }
+}
