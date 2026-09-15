@@ -10,7 +10,7 @@
 sequenceDiagram
     actor User as 사용자
     participant Browser as 브라우저
-    participant MW as middleware.ts
+    participant MW as proxy.ts
     participant Page as Home (page.tsx)
     participant Queries as lib/queries.ts
     participant Supabase as Supabase (Server)
@@ -56,7 +56,7 @@ sequenceDiagram
 sequenceDiagram
     actor User as 사용자
     participant Browser as 브라우저
-    participant MW as middleware.ts
+    participant MW as proxy.ts
     participant Page as PostDetail (page.tsx)
     participant Queries as lib/queries.ts
     participant Supabase as Supabase (Server)
@@ -459,7 +459,7 @@ sequenceDiagram
 sequenceDiagram
     actor User as 사용자
     participant Browser as 브라우저
-    participant MW as middleware.ts
+    participant MW as proxy.ts
     participant Page as TagDetail (page.tsx)
     participant Queries as lib/queries.ts
     participant Supabase as Supabase (Server)
@@ -503,13 +503,13 @@ sequenceDiagram
 
 ---
 
-## 12. 미들웨어 세션 갱신 (모든 요청)
+## 12. 프록시 세션 갱신 (모든 요청)
 
 ```mermaid
 sequenceDiagram
     participant Browser as 브라우저
-    participant MW as src/middleware.ts
-    participant UpdateSess as lib/supabase/middleware.ts
+    participant MW as src/proxy.ts
+    participant UpdateSess as lib/supabase/proxy.ts
     participant Supabase as Supabase Auth
 
     Browser->>MW: 모든 HTTP 요청 (정적 파일 제외)

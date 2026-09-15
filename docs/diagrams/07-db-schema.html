@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DB 스키마 · techlog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #0a0a0a;   /* techlog --background */
+      --color-ink:     #fafafa;   /* techlog --foreground */
+      --color-muted:   #9ca3af;   /* AA-safe muted (brand #6b7280 → soft) */
+      --color-soft:    #6b7280;
+      --color-rule:    #2a2a2a;   /* techlog --border */
+      --color-accent:  #10b981;   /* techlog --accent (emerald) */
+      --font-sans:     'Geist', 'Noto Sans KR', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif KR', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .frame { max-width: 1200px; width: 100%; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+    .scroll { overflow-x: auto; }
+    svg { width: 100%; min-width: 900px; display: block; }
+    .notes {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-rule);
+      color: var(--color-muted);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      list-style: none;
+    }
+    .notes code { font-family: var(--font-mono); font-size: 0.74rem; color: var(--color-ink); }
+    .back { display: inline-block; margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-muted); text-decoration: none; }
+    .back:hover { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <a class="back" href="index.html">← diagrams</a>
+    <p class="eyebrow">Database schema · techlog</p>
+    <h1>DB 스키마</h1>
+
+    <div class="scroll">
+    <svg viewBox="0 0 1136 528" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="db-schema-title db-schema-desc">
+      <title id="db-schema-title">techlog 핵심 테이블 스키마</title>
+      <desc id="db-schema-desc">posts를 중심으로 profiles, tags, post_tags, post_likes 다섯 테이블의 컬럼 타입, 제약, 정렬 인덱스와 모두 ON DELETE CASCADE인 컬럼 단위 외래키를 보여주는 데이터베이스 스키마 다이어그램.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#9ca3af"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#10b981"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#06b6d4"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#0a0a0a"/>
+
+      <!-- ============ FK CONNECTORS (before tables) ============ -->
+      <!-- FK1 posts.author_id → profiles.id -->
+      <path d="M 456,104 H 432 Q 424,104 424,112 V 272 Q 424,280 416,280 H 304" fill="none" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- FK2 post_tags.post_id → posts.id (focal) -->
+      <path d="M 856,280 H 804 Q 796,280 796,272 V 88 Q 796,80 788,80 H 736" fill="none" stroke="#10b981" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <!-- FK3 post_tags.tag_id → tags.id -->
+      <path d="M 1096,304 H 1108 Q 1116,304 1116,296 V 88 Q 1116,80 1108,80 H 1096" fill="none" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- FK4 post_likes.post_id → posts.id -->
+      <path d="M 304,104 H 372 Q 380,104 380,96 V 88 Q 380,80 388,80 H 456" fill="none" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)"/>
+      <!-- FK5 post_likes.user_id → profiles.id -->
+      <path d="M 64,80 H 52 Q 44,80 44,88 V 272 Q 44,280 52,280 H 64" fill="none" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- ============ FK LABELS ============ -->
+      <rect x="316" y="260" width="88" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="360" y="269" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ON DELETE CASCADE</text>
+
+      <rect x="804" y="196" width="88" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="848" y="205" fill="#10b981" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ON DELETE CASCADE</text>
+
+      <rect x="1016" y="196" width="88" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="1060" y="205" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ON DELETE CASCADE</text>
+
+      <rect x="324" y="56" width="88" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="368" y="65" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ON DELETE CASCADE</text>
+
+      <rect x="56" y="184" width="88" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="100" y="193" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">ON DELETE CASCADE</text>
+
+      <!-- ============ TABLE: public.post_likes ============ -->
+      <rect x="64" y="40" width="240" height="100" rx="6" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <rect x="64" y="40" width="240" height="28" rx="6" fill="rgba(250,250,250,0.04)"/>
+      <rect x="64" y="60" width="240" height="8" fill="rgba(250,250,250,0.04)"/>
+      <line x1="64" y1="68" x2="304" y2="68" stroke="rgba(250,250,250,0.22)" stroke-width="1"/>
+      <text x="76" y="58" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', sans-serif">public.post_likes</text>
+      <rect x="252" y="48" width="40" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.40)" stroke-width="0.8"/>
+      <text x="272" y="57" fill="#fafafa" fill-opacity="0.8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TABLE</text>
+
+      <rect x="64" y="68" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="76" y="84" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">user_id</text>
+      <rect x="180" y="76" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="190" y="85" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PK</text>
+      <rect x="204" y="76" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="214" y="85" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">FK</text>
+      <text x="292" y="84" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <text x="76" y="108" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">post_id</text>
+      <rect x="180" y="100" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="190" y="109" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PK</text>
+      <rect x="204" y="100" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="214" y="109" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">FK</text>
+      <text x="292" y="108" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <rect x="64" y="116" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="76" y="132" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">created_at</text>
+      <rect x="180" y="124" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="190" y="133" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="292" y="132" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">timestamptz</text>
+
+      <!-- ============ TABLE: public.profiles ============ -->
+      <rect x="64" y="240" width="240" height="196" rx="6" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <rect x="64" y="240" width="240" height="28" rx="6" fill="rgba(250,250,250,0.04)"/>
+      <rect x="64" y="260" width="240" height="8" fill="rgba(250,250,250,0.04)"/>
+      <line x1="64" y1="268" x2="304" y2="268" stroke="rgba(250,250,250,0.22)" stroke-width="1"/>
+      <text x="76" y="258" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', sans-serif">public.profiles</text>
+      <rect x="252" y="248" width="40" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.40)" stroke-width="0.8"/>
+      <text x="272" y="257" fill="#fafafa" fill-opacity="0.8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TABLE</text>
+
+      <rect x="64" y="268" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="76" y="284" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">id</text>
+      <rect x="180" y="276" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="190" y="285" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PK</text>
+      <text x="292" y="284" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <text x="76" y="308" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">username</text>
+      <rect x="180" y="300" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="190" y="309" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">UQ</text>
+      <rect x="204" y="300" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="214" y="309" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="292" y="308" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+
+      <rect x="64" y="316" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="76" y="332" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">display_name</text>
+      <text x="292" y="332" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+
+      <text x="76" y="356" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">role</text>
+      <rect x="180" y="348" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="190" y="357" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="292" y="356" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">text · check</text>
+
+      <rect x="64" y="364" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="76" y="380" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">created_at</text>
+      <rect x="180" y="372" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="190" y="381" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="292" y="380" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">timestamptz</text>
+
+      <text x="76" y="404" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace">+ 3 more columns</text>
+      <text x="76" y="424" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace">id → auth.users.id · CASCADE</text>
+
+      <!-- ============ TABLE: public.posts ============ -->
+      <rect x="456" y="40" width="280" height="336" rx="6" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <rect x="456" y="40" width="280" height="28" rx="6" fill="rgba(250,250,250,0.04)"/>
+      <rect x="456" y="60" width="280" height="8" fill="rgba(250,250,250,0.04)"/>
+      <line x1="456" y1="68" x2="736" y2="68" stroke="rgba(250,250,250,0.22)" stroke-width="1"/>
+      <text x="468" y="58" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', sans-serif">public.posts</text>
+      <rect x="684" y="48" width="40" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.40)" stroke-width="0.8"/>
+      <text x="704" y="57" fill="#fafafa" fill-opacity="0.8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TABLE</text>
+
+      <rect x="456" y="68" width="280" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="468" y="84" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">id</text>
+      <rect x="588" y="76" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="598" y="85" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PK</text>
+      <text x="724" y="84" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <text x="468" y="108" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">author_id</text>
+      <rect x="588" y="100" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="598" y="109" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">FK</text>
+      <rect x="612" y="100" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="622" y="109" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="724" y="108" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <rect x="456" y="116" width="280" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="468" y="132" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">slug</text>
+      <rect x="588" y="124" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="598" y="133" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">UQ</text>
+      <rect x="612" y="124" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="622" y="133" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="724" y="132" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+
+      <text x="468" y="156" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">title</text>
+      <rect x="588" y="148" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="598" y="157" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="724" y="156" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+
+      <rect x="456" y="164" width="280" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="468" y="180" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">status</text>
+      <rect x="588" y="172" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="598" y="181" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="724" y="180" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">draft | published</text>
+
+      <text x="468" y="204" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">published_at</text>
+      <text x="724" y="204" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">timestamptz</text>
+
+      <rect x="456" y="212" width="280" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="468" y="228" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">sort_date</text>
+      <rect x="588" y="220" width="24" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="600" y="229" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">GEN</text>
+      <text x="724" y="228" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">timestamptz</text>
+
+      <text x="468" y="252" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">created_at</text>
+      <rect x="588" y="244" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="598" y="253" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="724" y="252" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">timestamptz</text>
+
+      <text x="468" y="276" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace">+ 9 more columns</text>
+
+      <line x1="456" y1="284" x2="736" y2="284" stroke="rgba(250,250,250,0.12)" stroke-width="0.8"/>
+      <text x="468" y="300" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">INDEXES</text>
+      <text x="468" y="316" fill="#fafafa" fill-opacity="0.8" font-size="9" font-family="'Geist Mono', monospace">posts_published_sort_idx</text>
+      <text x="476" y="332" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace">(sort_date, created_at, id) · published</text>
+      <text x="468" y="348" fill="#fafafa" fill-opacity="0.8" font-size="9" font-family="'Geist Mono', monospace">posts_featured_sort_idx</text>
+      <text x="476" y="364" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace">(sort_date) · published ∧ featured</text>
+
+      <!-- ============ TABLE: public.tags ============ -->
+      <rect x="856" y="40" width="240" height="128" rx="6" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <rect x="856" y="40" width="240" height="28" rx="6" fill="rgba(250,250,250,0.04)"/>
+      <rect x="856" y="60" width="240" height="8" fill="rgba(250,250,250,0.04)"/>
+      <line x1="856" y1="68" x2="1096" y2="68" stroke="rgba(250,250,250,0.22)" stroke-width="1"/>
+      <text x="868" y="58" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', sans-serif">public.tags</text>
+      <rect x="1044" y="48" width="40" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.40)" stroke-width="0.8"/>
+      <text x="1064" y="57" fill="#fafafa" fill-opacity="0.8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TABLE</text>
+
+      <rect x="856" y="68" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="868" y="84" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">id</text>
+      <rect x="972" y="76" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="982" y="85" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PK</text>
+      <text x="1084" y="84" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <text x="868" y="108" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">slug</text>
+      <rect x="972" y="100" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="982" y="109" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">UQ</text>
+      <rect x="996" y="100" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="1006" y="109" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="1084" y="108" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+
+      <rect x="856" y="116" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="868" y="132" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">name</text>
+      <rect x="972" y="124" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="982" y="133" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">NN</text>
+      <text x="1084" y="132" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+
+      <text x="868" y="156" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace">+ 2 more columns</text>
+
+      <!-- ============ TABLE: public.post_tags (focal header) ============ -->
+      <rect x="856" y="240" width="240" height="76" rx="6" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <rect x="856" y="240" width="240" height="28" rx="6" fill="rgba(16,185,129,0.10)"/>
+      <rect x="856" y="260" width="240" height="8" fill="rgba(16,185,129,0.10)"/>
+      <line x1="856" y1="268" x2="1096" y2="268" stroke="rgba(250,250,250,0.22)" stroke-width="1"/>
+      <text x="868" y="258" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', sans-serif">public.post_tags</text>
+      <rect x="1044" y="248" width="40" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.40)" stroke-width="0.8"/>
+      <text x="1064" y="257" fill="#fafafa" fill-opacity="0.8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TABLE</text>
+
+      <rect x="856" y="268" width="240" height="24" fill="rgba(250,250,250,0.02)"/>
+      <text x="868" y="284" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">post_id</text>
+      <rect x="972" y="276" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="982" y="285" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PK</text>
+      <rect x="996" y="276" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="1006" y="285" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">FK</text>
+      <text x="1084" y="284" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <text x="868" y="308" fill="#fafafa" font-size="12" font-family="'Geist', sans-serif">tag_id</text>
+      <rect x="972" y="300" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="982" y="309" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">PK</text>
+      <rect x="996" y="300" width="20" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="1006" y="309" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">FK</text>
+      <text x="1084" y="308" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="44" y1="464" x2="1116" y2="464" stroke="rgba(250,250,250,0.10)" stroke-width="0.8"/>
+      <text x="44" y="480" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <line x1="44" y1="502" x2="72" y2="502" stroke="#10b981" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+      <text x="80" y="505" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">포스트 삭제 → 태그 연결 정리 경로</text>
+
+      <line x1="260" y1="502" x2="288" y2="502" stroke="#9ca3af" stroke-width="1" marker-end="url(#arrow)"/>
+      <text x="296" y="505" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">FK (자식 컬럼 → 부모 컬럼)</text>
+
+      <rect x="456" y="496" width="16" height="12" rx="2" fill="rgba(16,185,129,0.10)" stroke="#fafafa" stroke-width="1"/>
+      <text x="480" y="505" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">CASCADE 대상 테이블</text>
+
+      <rect x="616" y="496" width="24" height="12" rx="2" fill="none" stroke="rgba(250,250,250,0.35)" stroke-width="0.8"/>
+      <text x="628" y="505" fill="#fafafa" fill-opacity="0.75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">GEN</text>
+      <text x="648" y="505" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">제약: PK · FK · UQ · NN · GEN(generated)</text>
+    </svg>
+    </div>
+
+    <ul class="notes">
+      <li>생략한 테이블: <code>bookmarks</code>(user_id·post_id 모두 CASCADE), <code>post_views</code>(post_id CASCADE, user_id <code>SET NULL</code>, SELECT는 admin만).</li>
+      <li><code>sort_date</code> = <code>GENERATED ALWAYS AS (COALESCE(published_at, created_at)) STORED</code>. 목록 정렬 <code>(sort_date, created_at, id) desc</code>와 인덱스 키가 일치해야 함.</li>
+      <li>RPC(SECURITY DEFINER): <code>toggle_post_like(post_slug, liker_id)</code> → post_likes 삽입/삭제 + like_count 증감, <code>increment_post_view_count(post_slug, viewer_id)</code> → post_views 기록 + view_count 증가.</li>
+      <li>트리거: <code>on_auth_user_created</code> → <code>handle_new_user()</code>가 auth.users 가입 시 profiles 행 생성. posts·profiles에는 <code>update_updated_at</code> 트리거.</li>
+      <li><code>admin/posts/actions.ts</code>의 <code>deletePost</code>는 CASCADE가 있어도 post_tags·post_likes·post_views·bookmarks를 먼저 수동 삭제함.</li>
+    </ul>
+  </div>
+</body>
+</html>

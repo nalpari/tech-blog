@@ -13,7 +13,7 @@ pnpm lint         # Run ESLint
 
 ## Tech Stack
 
-- **Next.js 16.1.6** — App Router, React Compiler enabled (`reactCompiler: true`)
+- **Next.js 16.3.5** — App Router, React Compiler enabled (`reactCompiler: true`)
 - **React 19** with TypeScript 5 (strict mode)
 - **Tailwind CSS v4** via `@tailwindcss/postcss` — uses `@import "tailwindcss"` and `@theme inline` syntax, NOT v3 config files
 - **Fonts**: JetBrains Mono + IBM Plex Mono via `next/font/google`; Pretendard via CDN `<link>` in `layout.tsx`
@@ -47,9 +47,9 @@ Client utilities in `src/lib/supabase/`:
 
 - `client.ts` — Browser client (`createBrowserClient`) for client components
 - `server.ts` — Server client (`createServerClient`) for server components and route handlers
-- `middleware.ts` — Session refresh logic used by `src/middleware.ts`
+- `proxy.ts` — Session refresh logic used by `src/proxy.ts`
 
-Middleware (`src/middleware.ts`) runs on all routes except static assets, refreshing the auth token on every request.
+Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs on all routes except static assets, refreshing the auth token on every request.
 
 ### Data Layer
 
@@ -65,6 +65,8 @@ Middleware (`src/middleware.ts`) runs on all routes except static assets, refres
 
 **DB schema/types**: 마이그레이션은 `supabase/migrations/` (Supabase CLI 워크플로우). 타입은 `src/lib/supabase/database.types.ts`에서 자동 생성.
 
+**Diagrams**: `docs/diagrams/`에 시스템 아키텍처, 시퀀스(OAuth·무한 스크롤·좋아요), 흐름도, 상태 머신, DB 스키마, 권한 계층 다이어그램이 단일 HTML로 있음 (`index.html`에서 시작). 라우팅·인증·스키마를 바꾸면 해당 다이어그램도 함께 갱신.
+
 ### Component Conventions
 
 - **Server components by default** — pages, footer, post-card, tag-badge
@@ -77,9 +79,9 @@ Middleware (`src/middleware.ts`) runs on all routes except static assets, refres
 
 - `src/providers/auth-provider.tsx` — `onAuthStateChange` 구독, zustand 스토어 동기화
 - `src/stores/auth-store.ts` — `{ user, isLoading, setUser, setLoading }` (zustand)
-- `src/lib/supabase/middleware.ts` — 모든 요청에서 `getUser()`로 토큰 갱신
+- `src/lib/supabase/proxy.ts` — 모든 요청에서 `getUser()`로 토큰 갱신
 
-**Admin gate**: `ADMIN_EMAIL = "yoo32767@gmail.com"`이 `header.tsx`, `lib/post-actions.ts`, `app/admin/*/actions.ts`에 하드코딩되어 권한 분기로 사용됨. 변경 시 모든 위치 동기화 필요.
+**Admin gate**: `ADMIN_EMAIL = "yoo32767@gmail.com"`이 10개 파일(`components/header.tsx`, `lib/post-actions.ts`, `app/posts/new/actions.ts`, `app/posts/[slug]/{page,actions}.ts(x)`, `app/admin/{dashboard,posts,tags}/page.tsx`, `app/admin/{posts,tags}/actions.ts`)에 하드코딩되어 권한 분기로 사용됨 (`rg "ADMIN_EMAIL = " src`로 확인). 변경 시 모든 위치 동기화 필요.
 
 ### Styling
 

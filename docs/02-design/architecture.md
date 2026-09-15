@@ -6,7 +6,7 @@
 |------|------|
 | 프로젝트명 | Spectra |
 | 설명 | 다크 테마 기반 기술 블로그 |
-| 프레임워크 | Next.js 16.1.6 (App Router) |
+| 프레임워크 | Next.js 16.3.5 (App Router) |
 | 언어 | TypeScript 5 (strict mode) |
 | UI | React 19 + Tailwind CSS v4 |
 | 백엔드 | Supabase (PostgreSQL + Auth + Storage) |
@@ -20,7 +20,7 @@
 
 | 기술 | 버전 | 용도 |
 |------|------|------|
-| Next.js | 16.1.6 | App Router, SSR/SSG, React Compiler |
+| Next.js | 16.3.5 | App Router, SSR/SSG, React Compiler |
 | React | 19.2.3 | UI 렌더링 |
 | TypeScript | 5.x | 타입 안전성 |
 | Tailwind CSS | v4 | `@theme inline` 방식, `@tailwindcss/postcss` |
@@ -89,7 +89,7 @@ src/
 │   ├── supabase/
 │   │   ├── client.ts             # 브라우저 Supabase 클라이언트
 │   │   ├── server.ts             # 서버 Supabase 클라이언트
-│   │   ├── middleware.ts         # 세션 갱신 로직
+│   │   ├── proxy.ts              # 세션 갱신 로직
 │   │   └── database.types.ts     # DB 스키마 타입 (자동 생성)
 │   ├── queries.ts                # 데이터 페칭 함수
 │   ├── data.ts                   # 타입 정의, 매퍼, 유틸리티
@@ -105,7 +105,7 @@ src/
 ├── stores/
 │   └── auth-store.ts             # Zustand 인증 스토어
 │
-└── middleware.ts                  # Next.js 미들웨어 (세션 토큰 갱신)
+└── proxy.ts                       # Next.js 프록시 (세션 토큰 갱신)
 ```
 
 ---
@@ -126,7 +126,7 @@ src/
 │  lib/queries.ts + Server Actions                │
 ├─────────────────────────────────────────────────┤
 │                  Supabase Client Layer           │
-│  Browser Client | Server Client | Middleware     │
+│  Browser Client | Server Client | Proxy          │
 ├─────────────────────────────────────────────────┤
 │                  Supabase Backend                │
 │  PostgreSQL | Auth | Storage                     │
@@ -285,10 +285,10 @@ profiles ──1:N──► posts ──N:M──► tags
 ### 7.2 세션 관리
 
 ```
-[요청] → middleware.ts → updateSession()
-                            ├── Supabase Server Client 생성
-                            ├── supabase.auth.getUser() (토큰 갱신)
-                            └── 응답 쿠키에 갱신된 세션 설정
+[요청] → proxy.ts → updateSession()
+                       ├── Supabase Server Client 생성
+                       ├── supabase.auth.getUser() (토큰 갱신)
+                       └── 응답 쿠키에 갱신된 세션 설정
 ```
 
 ### 7.3 인증 상태 흐름

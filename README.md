@@ -19,7 +19,7 @@ Dark-themed tech blog inspired by [Linear](https://linear.app)'s design language
 
 - **Posts**: Markdown content with syntax highlighting (highlight.js), GFM support, generated cover images
 - **Tags**: Multi-tag posts, dedicated tag directory and filtered tag pages
-- **Auth**: Email/social sign-in via Supabase, session refresh via middleware
+- **Auth**: Email/social sign-in via Supabase, session refresh via proxy
 - **Admin**: Post & tag management UI, draft/publish workflow, featured flag (admin email-gated)
 - **Engagement**: View counter, like button (auth-required)
 - **Search**: `Ctrl/Cmd + K` quick search modal
@@ -79,13 +79,16 @@ src/
 │   └── supabase/           # Supabase client utilities
 │       ├── client.ts       # Browser client
 │       ├── server.ts       # Server client
-│       ├── middleware.ts   # Session refresh logic
+│       ├── proxy.ts        # Session refresh logic
 │       └── database.types.ts  # Generated DB types
-└── middleware.ts           # Auth token refresh on all routes
+└── proxy.ts                # Auth token refresh on all routes
 
 supabase/
 ├── migrations/             # SQL migrations (Supabase CLI)
 └── config.toml
+
+docs/
+└── diagrams/               # 아키텍처·시퀀스·흐름도·DB 스키마 다이어그램 (index.html)
 ```
 
 ## Environment Variables

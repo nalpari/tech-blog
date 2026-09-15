@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>좋아요 토글과 조회수 · techlog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #0a0a0a;   /* techlog --background */
+      --color-ink:     #fafafa;   /* techlog --foreground */
+      --color-muted:   #9ca3af;   /* AA-safe muted (brand #6b7280 → soft) */
+      --color-soft:    #6b7280;
+      --color-rule:    #2a2a2a;   /* techlog --border */
+      --color-accent:  #10b981;   /* techlog --accent (emerald) */
+      --font-sans:     'Geist', 'Noto Sans KR', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif KR', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .frame { max-width: 1200px; width: 100%; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+    .scroll { overflow-x: auto; }
+    svg { width: 100%; min-width: 900px; display: block; }
+    .notes {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-rule);
+      color: var(--color-muted);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      list-style: none;
+    }
+    .notes code { font-family: var(--font-mono); font-size: 0.74rem; color: var(--color-ink); }
+    .back { display: inline-block; margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-muted); text-decoration: none; }
+    .back:hover { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <a class="back" href="index.html">← diagrams</a>
+    <p class="eyebrow">Sequence · techlog</p>
+    <h1>좋아요 토글과 조회수</h1>
+
+    <div class="scroll">
+    <svg viewBox="0 0 1000 816" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="04-sequence-like-toggle-title 04-sequence-like-toggle-desc">
+      <title id="04-sequence-like-toggle-title">좋아요 토글과 조회수</title>
+      <desc id="04-sequence-like-toggle-desc">좋아요 버튼 요청이 Route Handler에서 slug 검증과 로그인 확인을 거쳐 toggle_post_like RPC로 처리되고, 조회수는 increment_post_view_count RPC로 증가하는 시퀀스 다이어그램.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#9ca3af"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#10b981"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#06b6d4"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#0a0a0a"/>
+
+      <!-- ============ LIFELINES ============ -->
+      <line x1="128" y1="128" x2="128" y2="732" stroke="rgba(250,250,250,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="376" y1="128" x2="376" y2="732" stroke="rgba(250,250,250,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="624" y1="128" x2="624" y2="732" stroke="rgba(250,250,250,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="872" y1="128" x2="872" y2="732" stroke="rgba(250,250,250,0.20)" stroke-width="1" stroke-dasharray="3,3"/>
+
+      <!-- ============ ALT FRAME ============ -->
+      <rect x="104" y="324" width="792" height="224" rx="4" fill="rgba(250,250,250,0.02)" stroke="rgba(250,250,250,0.22)" stroke-width="1"/>
+      <rect x="104" y="324" width="40" height="16" rx="2" fill="#0a0a0a" stroke="rgba(250,250,250,0.22)" stroke-width="1"/>
+      <text x="124" y="336" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">ALT</text>
+      <text x="116" y="356" fill="#9ca3af" font-size="8" font-family="'Geist Mono', 'Noto Sans KR', monospace" letter-spacing="0.04em">[user 없음]</text>
+      <line x1="112" y1="404" x2="888" y2="404" stroke="rgba(250,250,250,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="116" y="424" fill="#9ca3af" font-size="8" font-family="'Geist Mono', 'Noto Sans KR', monospace" letter-spacing="0.04em">[로그인]</text>
+
+      <!-- Phase marker -->
+      <text x="392" y="580" fill="#9ca3af" font-size="8" font-family="'Geist Mono', 'Noto Sans KR', monospace" letter-spacing="0.08em">VIEW · 상세 진입 시 1회</text>
+
+      <!-- ============ ACTIVATION BARS ============ -->
+      <rect x="372" y="176" width="8" height="372" fill="rgba(250,250,250,0.06)" stroke="#9ca3af" stroke-width="0.8"/>
+      <rect x="372" y="592" width="8" height="120" fill="rgba(250,250,250,0.06)" stroke="#9ca3af" stroke-width="0.8"/>
+      <rect x="620" y="264" width="8" height="40" fill="rgba(250,250,250,0.06)" stroke="#9ca3af" stroke-width="0.8"/>
+      <rect x="868" y="448" width="8" height="80" fill="rgba(250,250,250,0.06)" stroke="#9ca3af" stroke-width="0.8"/>
+      <rect x="868" y="632" width="8" height="40" fill="rgba(250,250,250,0.06)" stroke="#9ca3af" stroke-width="0.8"/>
+
+      <!-- ============ MESSAGES ============ -->
+      <line x1="128" y1="176" x2="372" y2="176" stroke="#06b6d4" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <path d="M 380 208 H 416 V 232 H 380" fill="none" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="380" y1="264" x2="620" y2="264" stroke="#06b6d4" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <line x1="620" y1="304" x2="380" y2="304" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <line x1="372" y1="380" x2="128" y2="380" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <line x1="380" y1="452" x2="868" y2="452" stroke="#06b6d4" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <line x1="868" y1="492" x2="380" y2="492" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <line x1="372" y1="532" x2="128" y2="532" stroke="#10b981" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <line x1="128" y1="600" x2="372" y2="600" stroke="#06b6d4" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <line x1="380" y1="640" x2="868" y2="640" stroke="#06b6d4" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <line x1="868" y1="672" x2="380" y2="672" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <line x1="372" y1="708" x2="128" y2="708" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+
+      <!-- ============ MESSAGE LABELS ============ -->
+      <rect x="220" y="156" width="64" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="252" y="165" fill="#06b6d4" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST /LIKE</text>
+
+      <rect x="428" y="212" width="80" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="468" y="221" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SLUG_PATTERN</text>
+
+      <rect x="460" y="244" width="80" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="500" y="253" fill="#06b6d4" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">AUTH.GETUSER</text>
+
+      <rect x="464" y="284" width="72" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="500" y="293" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">USER | NULL</text>
+
+      <rect x="212" y="360" width="80" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="252" y="369" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">401 → SIGN-IN</text>
+
+      <rect x="716" y="432" width="64" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="748" y="441" fill="#06b6d4" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RPC TOGGLE</text>
+
+      <rect x="704" y="472" width="88" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="748" y="481" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">{LIKED, COUNT}</text>
+
+      <rect x="216" y="512" width="72" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="252" y="521" fill="#10b981" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">200 · LIKED</text>
+
+      <rect x="220" y="580" width="64" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="252" y="589" fill="#06b6d4" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST /VIEW</text>
+
+      <rect x="712" y="620" width="72" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="748" y="629" fill="#06b6d4" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RPC +1 VIEW</text>
+
+      <rect x="720" y="652" width="56" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="748" y="661" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">VIEWCOUNT</text>
+
+      <rect x="216" y="688" width="72" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="252" y="697" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">{VIEWCOUNT}</text>
+
+      <!-- ============ ACTORS ============ -->
+      <!-- LikeButton / ViewCounter (UI) -->
+      <rect x="40" y="72" width="176" height="56" rx="6" fill="#0a0a0a"/>
+      <rect x="40" y="72" width="176" height="56" rx="6" fill="rgba(156,163,175,0.10)" stroke="#6b7280" stroke-width="1"/>
+      <rect x="48" y="80" width="24" height="12" rx="2" fill="transparent" stroke="rgba(156,163,175,0.40)" stroke-width="0.8"/>
+      <text x="60" y="89" fill="#9ca3af" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">UI</text>
+      <text x="128" y="104" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">LikeButton</text>
+      <text x="128" y="120" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ ViewCounter</text>
+
+      <!-- Route Handler (focal) -->
+      <rect x="288" y="72" width="176" height="56" rx="6" fill="#0a0a0a"/>
+      <rect x="288" y="72" width="176" height="56" rx="6" fill="rgba(16,185,129,0.10)" stroke="#10b981" stroke-width="1"/>
+      <rect x="296" y="80" width="28" height="12" rx="2" fill="transparent" stroke="rgba(16,185,129,0.50)" stroke-width="0.8"/>
+      <text x="310" y="89" fill="#10b981" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="376" y="104" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">Route Handler</text>
+      <text x="376" y="120" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">/api/posts/[slug]/*</text>
+
+      <!-- Supabase Auth (cloud) -->
+      <rect x="536" y="72" width="176" height="56" rx="6" fill="#0a0a0a"/>
+      <rect x="536" y="72" width="176" height="56" rx="6" fill="rgba(250,250,250,0.03)" stroke="rgba(250,250,250,0.30)" stroke-width="1"/>
+      <rect x="544" y="80" width="32" height="12" rx="2" fill="transparent" stroke="rgba(250,250,250,0.22)" stroke-width="0.8"/>
+      <text x="560" y="89" fill="#9ca3af" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">AUTH</text>
+      <text x="624" y="104" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">Supabase Auth</text>
+      <text x="624" y="120" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">cookie session</text>
+
+      <!-- Postgres RPC (store) -->
+      <rect x="784" y="72" width="176" height="56" rx="6" fill="#0a0a0a"/>
+      <rect x="784" y="72" width="176" height="56" rx="6" fill="rgba(250,250,250,0.05)" stroke="#9ca3af" stroke-width="1"/>
+      <rect x="792" y="80" width="24" height="12" rx="2" fill="transparent" stroke="rgba(156,163,175,0.50)" stroke-width="0.8"/>
+      <text x="804" y="89" fill="#9ca3af" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DB</text>
+      <text x="872" y="104" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">Postgres RPC</text>
+      <text x="872" y="120" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">SECURITY DEFINER</text>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="24" y1="756" x2="976" y2="756" stroke="rgba(250,250,250,0.10)" stroke-width="0.8"/>
+      <text x="24" y="772" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <line x1="24" y1="788" x2="52" y2="788" stroke="#10b981" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="60" y="794" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">토글 성공 응답</text>
+
+      <line x1="172" y1="788" x2="200" y2="788" stroke="#06b6d4" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <text x="208" y="794" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">HTTP · RPC 호출</text>
+
+      <line x1="324" y1="788" x2="352" y2="788" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="360" y="794" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">내부 검증</text>
+
+      <line x1="444" y1="788" x2="472" y2="788" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+      <text x="480" y="794" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">응답</text>
+
+      <rect x="544" y="784" width="4" height="12" fill="rgba(250,250,250,0.06)" stroke="#9ca3af" stroke-width="0.8"/>
+      <text x="556" y="794" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">활성 구간</text>
+
+      <rect x="644" y="784" width="16" height="12" rx="2" fill="rgba(16,185,129,0.10)" stroke="#10b981" stroke-width="1"/>
+      <text x="668" y="794" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">권한·검증 경계</text>
+    </svg>
+    </div>
+
+    <ul class="notes">
+      <li><code>LikeButton</code>은 비로그인이면 요청 없이 <code>/sign-in</code>으로 이동하고, 로그인 상태면 낙관적 업데이트 후 POST를 보냄. 401이나 오류가 오면 되돌림.</li>
+      <li>slug가 <code>SLUG_PATTERN</code>과 맞지 않거나 200자를 넘으면 400. RPC 결과가 <code>null</code>이면 404, RPC 오류는 500.</li>
+      <li><code>toggle_post_like(post_slug, liker_id)</code>는 <code>post_likes</code>에 행이 있으면 delete하고 <code>like_count - 1</code>(최소 0), 없으면 insert하고 <code>like_count + 1</code>. 반환값은 <code>{liked, likeCount}</code>.</li>
+      <li><code>increment_post_view_count(post_slug, viewer_id)</code>는 <code>post_views</code>에 행을 넣고 <code>view_count + 1</code>. view 라우트도 <code>auth.getUser()</code>로 <code>viewer_id</code>를 채우지만(비로그인은 <code>null</code>) 메시지 예산 때문에 다이어그램에서는 뺐음.</li>
+      <li>마운트 시 <code>GET /like</code>로 <code>{likeCount, liked}</code>를 동기화하는 흐름도 생략함.</li>
+    </ul>
+  </div>
+</body>
+</html>

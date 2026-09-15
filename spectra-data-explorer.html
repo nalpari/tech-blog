@@ -247,12 +247,12 @@ const nodes = [
   { id: 'api-view',    label: 'POST /view',    sub: 'api/posts/[slug]/view/route.ts', x: 140, y: 475, w: 140, h: 42, layer: 'api', desc: 'view_count +1, post_views에 기록. viewer_id 전달' },
   { id: 'api-like',    label: 'GET|POST /like', sub: 'api/posts/[slug]/like/route.ts', x: 340, y: 475, w: 150, h: 42, layer: 'api', desc: 'GET: 상태 조회. POST: 인증 필수 토글 (post_likes)' },
   { id: 'api-callback',label: 'OAuth Callback', sub: 'app/auth/callback/route.ts',    x: 550, y: 475, w: 140, h: 42, layer: 'api', desc: 'exchangeCodeForSession → 홈 리다이렉트' },
-  { id: 'middleware',   label: 'Middleware',    sub: 'src/middleware.ts',              x: 750, y: 475, w: 120, h: 42, layer: 'api', desc: '모든 요청에서 세션 토큰 갱신 (updateSession)' },
+  { id: 'proxy',        label: 'Proxy',         sub: 'src/proxy.ts',                   x: 750, y: 475, w: 120, h: 42, layer: 'api', desc: '모든 요청에서 세션 토큰 갱신 (updateSession)' },
 
   // Supabase (y: 555-590)
   { id: 'sb-server',   label: 'Server Client', sub: 'lib/supabase/server.ts',       x: 80,  y: 560, w: 140, h: 42, layer: 'supabase', desc: '서버 컴포넌트/액션용. 쿠키 기반 인증' },
   { id: 'sb-browser',  label: 'Browser Client',sub: 'lib/supabase/client.ts',       x: 260, y: 560, w: 140, h: 42, layer: 'supabase', desc: '클라이언트 컴포넌트용. OAuth, 검색 쿼리' },
-  { id: 'sb-mw',       label: 'MW Helper',     sub: 'lib/supabase/middleware.ts',    x: 440, y: 560, w: 140, h: 42, layer: 'supabase', desc: 'updateSession(): getUser() → 쿠키 갱신' },
+  { id: 'sb-mw',       label: 'Proxy Helper',  sub: 'lib/supabase/proxy.ts',         x: 440, y: 560, w: 140, h: 42, layer: 'supabase', desc: 'updateSession(): getUser() → 쿠키 갱신' },
   { id: 'db',          label: 'PostgreSQL',    sub: 'Supabase Database',             x: 620, y: 560, w: 130, h: 42, layer: 'supabase', desc: 'posts, tags, post_tags, post_likes, post_views, profiles, comments, bookmarks' },
   { id: 'sb-storage',  label: 'Storage',       sub: 'Supabase Storage',             x: 790, y: 560, w: 110, h: 42, layer: 'supabase', desc: '커버 이미지 버킷' },
 
@@ -294,7 +294,7 @@ const connections = [
   { from: 'api-like',   to: 'sb-server',   type: 'data-flow', label: 'RPC: toggle_post_like' },
   { from: 'sb-server',  to: 'db',          type: 'data-flow', label: 'REST API' },
   { from: 'sb-browser', to: 'db',          type: 'data-flow', label: 'REST API' },
-  { from: 'middleware',  to: 'sb-mw',       type: 'imports', label: 'updateSession()' },
+  { from: 'proxy',       to: 'sb-mw',       type: 'imports', label: 'updateSession()' },
   { from: 'sb-mw',      to: 'sb-auth',     type: 'auth-flow', label: 'getUser()' },
   // Auth flow
   { from: 'sign-in',    to: 'sb-browser',  type: 'auth-flow', label: 'signInWithOAuth/Password' },

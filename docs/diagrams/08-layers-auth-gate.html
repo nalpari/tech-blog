@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>권한 검사 계층 · techlog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #0a0a0a;   /* techlog --background */
+      --color-ink:     #fafafa;   /* techlog --foreground */
+      --color-muted:   #9ca3af;   /* AA-safe muted (brand #6b7280 → soft) */
+      --color-soft:    #6b7280;
+      --color-rule:    #2a2a2a;   /* techlog --border */
+      --color-accent:  #10b981;   /* techlog --accent (emerald) */
+      --font-sans:     'Geist', 'Noto Sans KR', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif KR', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .frame { max-width: 1200px; width: 100%; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+    .scroll { overflow-x: auto; }
+    svg { width: 100%; min-width: 900px; display: block; }
+    .notes {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-rule);
+      color: var(--color-muted);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      list-style: none;
+    }
+    .notes code { font-family: var(--font-mono); font-size: 0.74rem; color: var(--color-ink); }
+    .back { display: inline-block; margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-muted); text-decoration: none; }
+    .back:hover { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <a class="back" href="index.html">← diagrams</a>
+    <p class="eyebrow">Layer stack · techlog</p>
+    <h1>권한 검사 계층</h1>
+
+    <div class="scroll">
+    <svg viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="layers-auth-gate-title layers-auth-gate-desc">
+      <title id="layers-auth-gate-title">techlog 권한 검사 계층</title>
+      <desc id="layers-auth-gate-desc">요청이 UI 노출 제어, 페이지 게이트, Server Action과 Route Handler 검사, Postgres RLS, SECURITY DEFINER RPC 순으로 통과하는 다섯 강제 지점과 각 층의 강제 주체, 시점, 우회 가능성을 보여주는 레이어 스택.</desc>
+
+      <rect width="100%" height="100%" fill="#0a0a0a"/>
+
+      <!-- Direction column -->
+      <text x="40" y="68" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">REQUEST</text>
+      <line x1="72" y1="80" x2="72" y2="432" stroke="rgba(250,250,250,0.30)" stroke-width="1"/>
+      <polygon points="68,432 76,432 72,440" fill="#9ca3af"/>
+      <text x="52" y="460" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">DATA</text>
+
+      <!-- Stack edges -->
+      <line x1="120" y1="80" x2="960" y2="80" stroke="rgba(250,250,250,0.12)" stroke-width="1"/>
+      <line x1="120" y1="440" x2="960" y2="440" stroke="rgba(250,250,250,0.12)" stroke-width="1"/>
+
+      <!-- L1 — UI 노출 제어 -->
+      <rect x="120" y="80" width="840" height="72" fill="#0f0f0f"/>
+      <line x1="120" y1="152" x2="960" y2="152" stroke="rgba(250,250,250,0.12)" stroke-width="1"/>
+      <text x="140" y="120" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">L1</text>
+      <text x="200" y="112" fill="#fafafa" font-size="16" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif">UI 노출 제어</text>
+      <text x="200" y="132" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">header.tsx · posts/[slug]/page.tsx — isAdmin = email === ADMIN_EMAIL</text>
+      <text x="940" y="112" fill="#9ca3af" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.08em">code · render</text>
+      <text x="940" y="132" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="end">우회 가능 · 표시만 숨김</text>
+
+      <!-- L2 — 페이지 게이트 -->
+      <rect x="120" y="152" width="840" height="72" fill="#0a0a0a"/>
+      <line x1="120" y1="224" x2="960" y2="224" stroke="rgba(250,250,250,0.12)" stroke-width="1"/>
+      <text x="140" y="192" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">L2</text>
+      <text x="200" y="184" fill="#fafafa" font-size="16" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif">페이지 게이트</text>
+      <text x="200" y="204" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">admin/*/page.tsx: 비관리자 → redirect("/") · posts/new, edit: 비로그인 → /sign-in</text>
+      <text x="940" y="184" fill="#9ca3af" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.08em">code · request</text>
+      <text x="940" y="204" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="end">편집 페이지는 로그인만 확인</text>
+
+      <!-- L3 — Server Action · Route Handler -->
+      <rect x="120" y="224" width="840" height="72" fill="#0f0f0f"/>
+      <line x1="120" y1="296" x2="960" y2="296" stroke="rgba(250,250,250,0.12)" stroke-width="1"/>
+      <text x="140" y="264" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">L3</text>
+      <text x="200" y="256" fill="#fafafa" font-size="16" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif">Server Action · Route Handler</text>
+      <text x="200" y="276" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">assertAdmin · checkAdmin · create/update/deletePost 이메일 비교 · like POST 비로그인 → 401</text>
+      <text x="940" y="256" fill="#9ca3af" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.08em">code · mutation</text>
+      <text x="940" y="276" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="end">직접 호출에도 재검사</text>
+
+      <!-- L4 — Postgres RLS (FOCAL) -->
+      <rect x="120" y="296" width="840" height="72" fill="rgba(16,185,129,0.10)"/>
+      <rect x="120" y="296" width="840" height="72" fill="none" stroke="#10b981" stroke-width="1"/>
+      <text x="140" y="336" fill="#10b981" font-size="8" font-weight="600" font-family="'Geist Mono', monospace" letter-spacing="0.14em">L4</text>
+      <text x="200" y="328" fill="#fafafa" font-size="16" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif">Postgres RLS</text>
+      <text x="200" y="348" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">get_user_role() · posts 쓰기 작성자|admin · tags_delete admin · likes auth.uid() = user_id</text>
+      <text x="940" y="328" fill="#10b981" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.08em">platform · query</text>
+      <text x="940" y="348" fill="#10b981" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="end">최종 방어선 · 우회 불가</text>
+
+      <!-- L5 — SECURITY DEFINER RPC -->
+      <rect x="120" y="368" width="840" height="72" fill="#0f0f0f"/>
+      <text x="140" y="408" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">L5</text>
+      <text x="200" y="400" fill="#fafafa" font-size="16" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif">SECURITY DEFINER RPC</text>
+      <rect x="400" y="388" width="32" height="12" rx="2" fill="none" stroke="#9ca3af" stroke-width="0.8" stroke-dasharray="4,3"/>
+      <text x="416" y="397" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">GAP</text>
+      <text x="200" y="420" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">toggle_post_like · increment_post_view_count — RLS 우회, liker_id / viewer_id 인자를 신뢰</text>
+      <text x="940" y="400" fill="#9ca3af" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end" letter-spacing="0.08em">platform · rpc</text>
+      <text x="940" y="420" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="end">L3 검증에 의존</text>
+
+      <!-- Caption strip -->
+      <line x1="120" y1="472" x2="960" y2="472" stroke="rgba(250,250,250,0.10)" stroke-width="0.8"/>
+      <rect x="120" y="488" width="16" height="12" rx="2" fill="rgba(16,185,129,0.10)" stroke="#10b981" stroke-width="1"/>
+      <text x="144" y="497" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">최종 방어선 — 앱 코드를 거치지 않은 SDK 직접 호출도 여기서 막힘</text>
+      <rect x="536" y="488" width="32" height="12" rx="2" fill="none" stroke="#9ca3af" stroke-width="0.8" stroke-dasharray="4,3"/>
+      <text x="552" y="497" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">GAP</text>
+      <text x="576" y="497" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">보완이 필요한 강제 지점</text>
+    </svg>
+    </div>
+
+    <ul class="notes">
+      <li>판정 기준 불일치: L1–L3은 <code>user.email === ADMIN_EMAIL</code>, L4는 <code>profiles.role</code>(<code>get_user_role()</code>). 관리자 이메일 계정의 role이 admin이 아니면 앱은 통과시키고 RLS가 막으며, role이 author/admin인 다른 사용자는 SDK 직접 호출로 RLS 범위 안에서 쓰기가 가능함.</li>
+      <li>GAP: 마이그레이션에 두 RPC에 대한 <code>REVOKE EXECUTE</code>가 없음. PostgREST로 직접 호출하면 <code>liker_id</code> / <code>viewer_id</code>를 호출자가 지정할 수 있는지 확인 필요.</li>
+      <li><code>ADMIN_EMAIL</code> 하드코딩 10곳: <code>components/header.tsx</code>, <code>app/posts/[slug]/page.tsx</code>, <code>app/admin/{dashboard,posts,tags}/page.tsx</code>, <code>app/admin/{posts,tags}/actions.ts</code>, <code>app/posts/new/actions.ts</code>, <code>app/posts/[slug]/actions.ts</code>, <code>lib/post-actions.ts</code>. (<code>user-avatar.tsx</code>는 header에서 <code>isAdmin</code> prop만 받음)</li>
+    </ul>
+  </div>
+</body>
+</html>

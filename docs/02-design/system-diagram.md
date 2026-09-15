@@ -23,8 +23,8 @@ graph TB
     end
 
     subgraph NextServer["Next.js 16 서버"]
-        subgraph Middleware["미들웨어 레이어"]
-            MW["middleware.ts<br/>(세션 토큰 갱신)"]
+        subgraph Proxy["프록시 레이어"]
+            MW["proxy.ts<br/>(세션 토큰 갱신)"]
         end
         subgraph ServerComponents["Server Components"]
             HomePage["/ (Home)"]
@@ -257,7 +257,7 @@ flowchart TD
 
     subgraph SessionRefresh["세션 갱신 흐름"]
         SA["모든 HTTP 요청"]
-        SB["middleware.ts"]
+        SB["proxy.ts"]
         SC["updateSession()"]
         SD["supabase.auth.getUser()"]
         SE["갱신된 쿠키 설정"]
@@ -393,7 +393,7 @@ graph LR
 
     subgraph Runtime["런타임"]
         Server["Next.js 서버"]
-        MW["미들웨어<br/>(세션 갱신)"]
+        MW["프록시<br/>(세션 갱신)"]
         SC["Server Components"]
         SA["Server Actions"]
     end

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>포스트 저장 흐름 · techlog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #0a0a0a;   /* techlog --background */
+      --color-ink:     #fafafa;   /* techlog --foreground */
+      --color-muted:   #9ca3af;   /* AA-safe muted (brand #6b7280 → soft) */
+      --color-soft:    #6b7280;
+      --color-rule:    #2a2a2a;   /* techlog --border */
+      --color-accent:  #10b981;   /* techlog --accent (emerald) */
+      --font-sans:     'Geist', 'Noto Sans KR', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif KR', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+    .frame { max-width: 1200px; width: 100%; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+    .scroll { overflow-x: auto; }
+    svg { width: 100%; min-width: 900px; display: block; }
+    .notes {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-rule);
+      color: var(--color-muted);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      list-style: none;
+    }
+    .notes code { font-family: var(--font-mono); font-size: 0.74rem; color: var(--color-ink); }
+    .back { display: inline-block; margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-muted); text-decoration: none; }
+    .back:hover { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <a class="back" href="index.html">← diagrams</a>
+    <p class="eyebrow">Flowchart · techlog</p>
+    <h1>포스트 저장 Server Action 흐름</h1>
+
+    <div class="scroll">
+    <svg viewBox="0 0 920 944" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="flowchart-post-save-title flowchart-post-save-desc">
+      <title id="flowchart-post-save-title">포스트 저장 Server Action 흐름</title>
+      <desc id="flowchart-post-save-desc">createPost가 로그인, 관리자 이메일, 필수 입력, 슬러그 중복을 차례로 검사한 뒤 posts와 post_tags를 저장하고 리다이렉트하며, 각 실패 지점은 error 또는 fieldErrors를 반환하는 흐름도.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#9ca3af"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#10b981"/></marker>
+        <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#06b6d4"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#0a0a0a"/>
+
+      <!-- ============ ARROWS (before nodes) ============ -->
+      <!-- main column x=360 -->
+      <line x1="360" y1="96" x2="360" y2="128" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="360" y1="208" x2="360" y2="240" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="360" y1="320" x2="360" y2="352" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="360" y1="432" x2="360" y2="464" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="360" y1="544" x2="360" y2="576" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="360" y1="640" x2="360" y2="672" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- happy path end -->
+      <line x1="360" y1="752" x2="360" y2="784" stroke="#10b981" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+      <!-- failure exits → error end (distinct attach points on its left edge) -->
+      <line x1="480" y1="168" x2="640" y2="168" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="480" y1="280" x2="640" y2="280" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="480" y1="392" x2="640" y2="392" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="480" y1="504" x2="640" y2="504" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="480" y1="712" x2="640" y2="712" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- ============ ARROW LABELS ============ -->
+      <rect x="368" y="218" width="28" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="382" y="227" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+      <rect x="368" y="330" width="28" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="382" y="339" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+      <rect x="368" y="442" width="28" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="382" y="451" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+      <rect x="368" y="554" width="28" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="382" y="563" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+      <rect x="368" y="762" width="28" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="382" y="771" fill="#10b981" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">YES</text>
+
+      <rect x="548" y="148" width="24" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="560" y="157" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+      <rect x="548" y="260" width="24" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="560" y="269" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+      <rect x="548" y="372" width="24" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="560" y="381" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+      <rect x="548" y="484" width="24" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="560" y="493" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO</text>
+      <rect x="520" y="692" width="80" height="12" rx="2" fill="#0a0a0a"/>
+      <text x="560" y="701" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">NO · ROLLBACK</text>
+
+      <!-- ============ NODES ============ -->
+      <!-- Start -->
+      <rect x="260" y="40" width="200" height="56" rx="20" fill="#0a0a0a"/>
+      <rect x="260" y="40" width="200" height="56" rx="20" fill="rgba(250,250,250,0.03)" stroke="rgba(250,250,250,0.30)" stroke-width="1"/>
+      <text x="360" y="64" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">FormData 제출</text>
+      <text x="360" y="80" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">createPost(prev, formData)</text>
+
+      <!-- D1 -->
+      <polygon points="360,128 480,168 360,208 240,168" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="360" y="164" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">auth.getUser()</text>
+      <text x="360" y="180" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">성공?</text>
+
+      <!-- D2 -->
+      <polygon points="360,240 480,280 360,320 240,280" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="360" y="276" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">email ===</text>
+      <text x="360" y="292" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">ADMIN_EMAIL?</text>
+
+      <!-- D3 -->
+      <polygon points="360,352 480,392 360,432 240,392" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="360" y="388" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">title · content</text>
+      <text x="360" y="404" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">입력됨?</text>
+
+      <!-- D4 -->
+      <polygon points="360,464 480,504 360,544 240,504" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="360" y="500" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">slug</text>
+      <text x="360" y="516" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">사용 가능?</text>
+
+      <!-- Step: posts insert -->
+      <rect x="240" y="576" width="240" height="64" rx="6" fill="#0a0a0a"/>
+      <rect x="240" y="576" width="240" height="64" rx="6" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="360" y="604" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">posts insert</text>
+      <text x="360" y="620" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="middle">published면 published_at = now()</text>
+
+      <!-- D5 -->
+      <polygon points="360,672 480,712 360,752 240,712" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="360" y="708" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">post_tags insert</text>
+      <text x="360" y="724" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">성공?</text>
+
+      <!-- End: redirect (focal) -->
+      <rect x="240" y="784" width="240" height="64" rx="20" fill="#0a0a0a"/>
+      <rect x="240" y="784" width="240" height="64" rx="20" fill="rgba(16,185,129,0.10)" stroke="#10b981" stroke-width="1"/>
+      <text x="360" y="812" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">redirect()</text>
+      <text x="360" y="828" fill="#9ca3af" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">published ? /posts/[slug] : /</text>
+
+      <!-- End: error / fieldErrors (merged failure exits) -->
+      <rect x="640" y="120" width="240" height="640" rx="20" fill="#0a0a0a"/>
+      <rect x="640" y="120" width="240" height="640" rx="20" fill="rgba(250,250,250,0.03)" stroke="rgba(250,250,250,0.30)" stroke-width="1"/>
+      <text x="760" y="144" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">error / fieldErrors 반환</text>
+      <text x="656" y="172" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ error: 로그인이 필요합니다 }</text>
+      <text x="656" y="284" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ error: 작성 권한이 없습니다 }</text>
+      <text x="656" y="396" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ fieldErrors: title, content }</text>
+      <text x="656" y="508" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ fieldErrors: slug } | 조회 error</text>
+      <text x="656" y="716" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ error: 태그 저장 실패 }</text>
+      <text x="656" y="732" fill="#6b7280" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">고아 post delete 후 반환</text>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="24" y1="880" x2="896" y2="880" stroke="rgba(250,250,250,0.10)" stroke-width="0.8"/>
+      <text x="24" y="896" fill="#9ca3af" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="24" y="912" width="24" height="12" rx="6" fill="rgba(250,250,250,0.03)" stroke="rgba(250,250,250,0.30)" stroke-width="1"/>
+      <text x="56" y="922" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">시작 / 종료</text>
+
+      <rect x="136" y="912" width="24" height="12" rx="2" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="168" y="922" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">처리 단계</text>
+
+      <polygon points="248,910 260,918 248,926 236,918" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
+      <text x="268" y="922" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">분기</text>
+
+      <line x1="328" y1="918" x2="356" y2="918" stroke="#10b981" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="364" y="922" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">성공 경로</text>
+
+      <line x1="448" y1="918" x2="476" y2="918" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="484" y="922" fill="#9ca3af" font-size="8" font-family="'Geist', 'Noto Sans KR', sans-serif">검증 흐름 / 실패 반환</text>
+    </svg>
+    </div>
+
+    <ul class="notes">
+      <li>근거: <code>src/app/posts/new/actions.ts</code>의 <code>createPost</code>. slug는 입력값이 없으면 <code>generateSlug(title)</code>로 만들고, 중복 조회에서 <code>PGRST116</code>(행 없음) 외의 오류는 <code>error</code>로 반환함.</li>
+      <li>그림에서 뺀 경로: <code>posts insert</code> 실패 시 <code>{ error: 포스트 저장에 실패했습니다 }</code> 반환, 예상 못 한 예외는 catch에서 <code>error</code>로 변환(<code>isRedirectError</code>는 다시 throw).</li>
+      <li><code>updatePost</code>(<code>src/lib/post-actions.ts</code>)와의 차이: 자기 자신(<code>neq("id", postId)</code>)을 빼고 slug 중복을 검사함 · 태그는 <code>post_tags</code> delete 후 insert로 교체 · 태그 실패 시 정리 로직 없음 · draft→published로 바뀔 때만 <code>published_at</code>을 설정 · draft로 저장하면 <code>/admin/posts</code>로 redirect.</li>
+    </ul>
+  </div>
+</body>
+</html>
