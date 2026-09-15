@@ -46,5 +46,7 @@ yarn-error.log*
 next-env.d.ts
 
 .claude/worktrees/
-.gitnexus
 .understand-anything/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
