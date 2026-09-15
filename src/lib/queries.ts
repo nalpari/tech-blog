@@ -10,7 +10,9 @@ export const POSTS_PER_PAGE = 6;
 // 정의 동기화가 깨지면 "카드 표시일 != 정렬일" 불일치가 재발한다.
 const POSTS_ORDER_COLUMN = "sort_date" as const;
 const POSTS_ORDER_OPTIONS = { ascending: false } as const;
-// 동일 sort_date 시 페이지네이션 중복/누락 방지를 위한 결정적 2차 키.
+// 동일 sort_date(일괄 발행 등) 시 작성일 역순으로 보조 정렬.
+const POSTS_SECONDARY_ORDER_COLUMN = "created_at" as const;
+// created_at까지 같을 때 페이지네이션 중복/누락 방지를 위한 결정적 최종 키.
 const POSTS_TIE_BREAKER_COLUMN = "id" as const;
 
 export async function getPosts(options?: { offset?: number; limit?: number }): Promise<Post[]> {
@@ -23,6 +25,7 @@ export async function getPosts(options?: { offset?: number; limit?: number }): P
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("status", "published")
     .order(POSTS_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_SECONDARY_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
     .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS)
     .range(offset, offset + limit - 1);
 
@@ -45,6 +48,7 @@ export async function getFeaturedPosts(): Promise<Post[]> {
     .eq("status", "published")
     .eq("featured", true)
     .order(POSTS_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_SECONDARY_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
     .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS);
 
   if (!posts) return [];
@@ -110,6 +114,7 @@ export async function getPostsByTag(tagSlug: string): Promise<Post[]> {
     .eq("status", "published")
     .in("id", postIds)
     .order(POSTS_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_SECONDARY_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
     .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS);
 
   if (!posts) return [];
