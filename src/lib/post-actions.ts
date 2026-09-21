@@ -114,37 +114,49 @@ export async function updatePost(
       return { error: `포스트 수정에 실패했습니다: ${updateError.message}` };
     }
 
-    // posts 쓰기가 커밋된 직후에 무효화한다. 아래 태그 저장이 실패해 early
+    // slug가 바뀌었을 수 있으므로 변경 전/후 양쪽을 버린다.
+    const invalidatePost = () => {
+      updateTag(POST_CACHE_TAG(currentPost.slug));
+      if (finalSlug !== currentPost.slug) {
+        updateTag(POST_CACHE_TAG(finalSlug));
+      }
+      revalidatePath(`/posts/${finalSlug}`);
+      revalidatePath("/");
+    };
+
+    // posts 쓰기가 커밋된 직후에 한 번. 아래 태그 저장이 실패해 early
     // return하더라도 본문 변경은 이미 반영됐으므로, 옛 캐시를 남겨두면
     // "저장했는데 60초 동안 안 바뀌는" 화면이 된다.
-    // slug가 바뀌었을 수 있으므로 변경 전/후 양쪽을 버린다.
-    updateTag(POST_CACHE_TAG(currentPost.slug));
-    if (finalSlug !== currentPost.slug) {
-      updateTag(POST_CACHE_TAG(finalSlug));
-    }
-    revalidatePath(`/posts/${finalSlug}`);
-    revalidatePath("/");
+    invalidatePost();
 
-    // Update tags: delete existing, insert new
-    const { error: deleteTagError } = await supabase.from("post_tags").delete().eq("post_id", postId);
+    try {
+      // Update tags: delete existing, insert new
+      const { error: deleteTagError } = await supabase.from("post_tags").delete().eq("post_id", postId);
 
-    if (deleteTagError) {
-      return { error: "기존 태그 삭제에 실패했습니다. 다시 시도해주세요." };
-    }
-
-    if (tagIds.length > 0) {
-      const postTags = tagIds.map((tagId) => ({
-        post_id: postId,
-        tag_id: tagId,
-      }));
-
-      const { error: tagError } = await supabase
-        .from("post_tags")
-        .insert(postTags);
-
-      if (tagError) {
-        return { error: "태그 저장에 실패했습니다." };
+      if (deleteTagError) {
+        return { error: "기존 태그 삭제에 실패했습니다. 다시 시도해주세요." };
       }
+
+      if (tagIds.length > 0) {
+        const postTags = tagIds.map((tagId) => ({
+          post_id: postId,
+          tag_id: tagId,
+        }));
+
+        const { error: tagError } = await supabase
+          .from("post_tags")
+          .insert(postTags);
+
+        if (tagError) {
+          return { error: "태그 저장에 실패했습니다." };
+        }
+      }
+    } finally {
+      // 태그 작업이 끝난 뒤 한 번 더. 무효화는 호출 시각까지 생성된 항목만
+      // 버리므로, 위 1차 무효화 이후 delete와 insert 사이에 캐시 미스 요청이
+      // 들어와 "태그가 빈" 중간 상태를 캐싱했다면 그 항목은 살아남는다.
+      // 성공·부분 실패 어느 쪽으로 끝나든 그 중간 상태를 다시 버린다.
+      invalidatePost();
     }
 
     const finalStatus = status === "published" ? "published" : "draft";
