@@ -29,7 +29,7 @@ pnpm lint         # Run ESLint
 
 ### Routing (App Router)
 
-All routes live in `src/app/`. 모든 라우트는 요청 시 동적 렌더링된다 (`generateStaticParams` 없음 — 쿠키/`auth.getUser()` 의존). 대신 발행 포스트 조회를 쿼리 레벨에서 캐싱한다 (아래 Data Layer 참고):
+All routes live in `src/app/`. 데이터나 인증을 쓰는 라우트는 전부 요청 시 동적 렌더링된다 (`generateStaticParams`가 `src/app` 전체에 0건이고, 쿠키/`auth.getUser()`에 의존). 정적 프리렌더되는 건 데이터를 읽지 않는 `/about`, `/sign-in`, `/sign-up`, `/_not-found`뿐이다. 동적 라우트는 대신 발행 포스트 조회를 쿼리 레벨에서 캐싱한다 (아래 Data Layer 참고):
 
 - `/` — Home (infinite scroll post grid with scroll-to-top)
 - `/posts/[slug]` — Post detail with prose content
@@ -39,7 +39,7 @@ All routes live in `src/app/`. 모든 라우트는 요청 시 동적 렌더링�
 - `(auth)/sign-in`, `(auth)/sign-up` — Supabase Auth UI (route group, URL에서 `(auth)` 표기 안 됨)
 - `/auth/callback` — OAuth 콜백 핸들러
 - `/admin/dashboard`, `/admin/posts`, `/admin/tags` — 관리자 전용 (admin email gate)
-- `/api/posts/[slug]` — REST 엔드포인트
+- `/api/posts` — 무한 스크롤용 목록. `/api/posts/[slug]/like`(POST), `/api/posts/[slug]/view`(POST)
 
 ### Supabase
 
@@ -64,7 +64,9 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 **캐싱/무효화 (중요)**: 발행 포스트 상세는 `unstable_cache`(`revalidate: 60`, 태그 `POST_CACHE_TAG(slug)` = `post:<slug>`)로 요청 간 재사용된다.
 - 캐시 콜백은 쿠키를 읽을 수 없으므로 **반드시** `src/lib/supabase/public.ts`의 `getPublicClient()`(세션 없는 anon 클라이언트)를 쓴다 (RLS `posts_select`가 published를 anon에 허용). 모듈 최상위가 아니라 첫 호출에 생성하는 이유는 env가 없는 CI/프리뷰에서 import만으로 빌드가 죽지 않게 하기 위함이다.
 - draft 조회(`includeDraft: true`)는 권한에 따라 결과가 달라지므로 캐시를 타지 않는다.
-- 포스트를 변경하는 Server Action은 **모두** `updateTag(POST_CACHE_TAG(slug))`를 호출해야 한다 (`post-actions.ts`, `posts/new/actions.ts`, `posts/[slug]/actions.ts`, `admin/posts/actions.ts`). slug를 바꾸는 `updatePost`는 변경 전/후 양쪽을 무효화한다. Next 16의 `revalidateTag`는 인자가 2개이고 지연 만료이므로, Server Action에서는 즉시 반영되는 `updateTag`를 쓴다.
+- 포스트를 변경하는 Server Action은 **모두** `updateTag(POST_CACHE_TAG(slug))`를 호출해야 한다 (`post-actions.ts`, `posts/new/actions.ts`, `posts/[slug]/actions.ts`, `admin/posts/actions.ts`). slug를 바꾸는 `updatePost`는 변경 전/후 양쪽을 무효화한다. Next 16의 `revalidateTag`는 인자가 2개(`revalidateTag(tag, profile)`)이고 지연 만료이므로, Server Action에서는 즉시 반영되는 `updateTag`를 쓴다.
+  - ⚠️ **`updateTag`는 Server Action 전용이다.** Route Handler(`app/api/**/route.ts`)에서 호출하면 `E872`가 던져져 요청이 500이 된다. 그쪽에서 캐시를 버려야 하면 `revalidateTag(tag, "max")`를 쓴다. (아래 카운트 stale 항목을 고치러 `like/route.ts`에 손대는 경우가 바로 여기 해당한다.)
+  - 무효화는 **쓰기가 성공한 직후**에 호출해야 한다. `revalidate`는 호출 시점 타임스탬프를 찍고 그때까지 생성된 항목만 버리므로, DB 쓰기 전에 부르면 그 사이에 다시 캐싱된 옛 값이 살아남는다.
 - `view_count`/`like_count`도 이 캐시를 타므로 최대 60초 stale할 수 있다 (의도된 트레이드오프). 토글·조회 **직후 그 화면에서만** API 응답으로 보정되고, **새로고침하면 캐시된 옛 카운트로 되돌아간다** (예: 하트는 채워져 있는데 숫자는 1 적음). 정확한 카운트가 필요해지면 캐시 쿼리에서 카운터를 빼고 따로 읽어야 한다.
 - 쿼리 실패를 `null`로 반환하면 그 `null`이 캐싱돼 일시적 DB 장애가 60초짜리 404로 굳는다. `fetchPublishedPost`는 error를 받으면 던진다 — 이 가드를 제거하지 말 것.
 - **태그를 바꾸는 액션도 포스트 캐시를 무효화해야 한다.** 캐시된 포스트 row는 태그 slug를 embed하고 있어서, 태그 slug 변경/삭제 시 `admin/tags/actions.ts`의 `invalidatePostsOfTag`로 해당 포스트들을 함께 버린다 (삭제는 cascade 전에 호출). 이 파일은 자체 `updateTag` Server Action을 export하므로 `next/cache`의 것은 `updateCacheTag` 별칭으로 import한다.
@@ -78,7 +80,7 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 
 **Server state**: React Query (`src/providers/query-provider.tsx`) — 기본값 `staleTime: 60_000`, `refetchOnWindowFocus: false`. `<QueryLoadingIndicator />`가 전역 로딩 상태 표시.
 
-**Sort 불변식 (중요)**: `posts.sort_date`는 `COALESCE(published_at, created_at)`을 담는 generated column. 모든 목록 쿼리는 `(sort_date desc, created_at desc, id desc)`로 정렬해야 페이지네이션 중복/누락이 없음. mapper의 `date` 필드 의미가 `sort_date`와 어긋나면 "카드 표시일 ≠ 정렬일" 회귀가 재발함. 자세한 주석은 `src/lib/queries.ts:6-16`.
+**Sort 불변식 (중요)**: `posts.sort_date`는 `COALESCE(published_at, created_at)`을 담는 generated column. 모든 목록 쿼리는 `(sort_date desc, created_at desc, id desc)`로 정렬해야 페이지네이션 중복/누락이 없음. mapper의 `date` 필드 의미가 `sort_date`와 어긋나면 "카드 표시일 ≠ 정렬일" 회귀가 재발함. 자세한 주석은 `src/lib/queries.ts`의 `POSTS_ORDER_COLUMN` 선언부 (라인 참조는 쉽게 어긋나므로 심볼로 적는다).
 
 **DB schema/types**: 마이그레이션은 `supabase/migrations/` (Supabase CLI 워크플로우). 타입은 `src/lib/supabase/database.types.ts`에서 자동 생성.
 
@@ -99,7 +101,7 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 - `src/stores/auth-store.ts` — `{ user, isLoading, setUser, setLoading }` (zustand)
 - `src/lib/supabase/proxy.ts` — 모든 요청에서 `getUser()`로 토큰 갱신
 
-**Admin gate**: 정식 헬퍼는 `src/lib/auth.ts`의 `ADMIN_EMAIL` / `isAdmin()` / `getCurrentUser()`다 (`getCurrentUser`는 `react.cache()`로 감싸져 요청당 Auth 왕복 1회). 현재 `app/posts/[slug]/page.tsx`만 이 헬퍼를 쓰고, 나머지 9개 파일은 여전히 각자 상수를 하드코딩한다 — `components/header.tsx`, `lib/post-actions.ts`, `app/posts/new/actions.ts`, `app/posts/[slug]/actions.ts`, `app/admin/{dashboard,posts,tags}/page.tsx`, `app/admin/{posts,tags}/actions.ts` (`rg "ADMIN_EMAIL = " src`로 확인, 총 10곳). 값 변경 시 모든 위치 동기화 필요. **새 코드는 `lib/auth.ts`를 import할 것** — 상수를 또 만들면 동기화 지점만 늘어난다.
+**Admin gate**: 정식 헬퍼는 `src/lib/auth.ts`의 `ADMIN_EMAIL` / `isAdmin()` / `getCurrentUser()`다 (`getCurrentUser`는 `react.cache()`로 감싸져 요청당 Auth 왕복 1회). 현재 이 헬퍼를 쓰는 건 `app/posts/[slug]/page.tsx`(`isAdmin`)와 `lib/queries.ts`(`getCurrentUser`) 둘뿐이고, 나머지 9개 파일은 여전히 각자 상수를 하드코딩한다 — `components/header.tsx`, `lib/post-actions.ts`, `app/posts/new/actions.ts`, `app/posts/[slug]/actions.ts`, `app/admin/{dashboard,posts,tags}/page.tsx`, `app/admin/{posts,tags}/actions.ts` (`rg "ADMIN_EMAIL = " src`로 확인, 총 10곳). 값 변경 시 모든 위치 동기화 필요. **새 코드는 `lib/auth.ts`를 import할 것** — 상수를 또 만들면 동기화 지점만 늘어난다.
 
 ### Styling
 

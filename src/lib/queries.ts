@@ -46,11 +46,18 @@ export async function getLikedPostIds(postIds: string[]): Promise<Set<string>> {
   if (!user) return new Set();
 
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("post_likes")
     .select("post_id")
     .eq("user_id", user.id)
     .in("post_id", postIds);
+
+  // 실패를 빈 Set으로 대체하면 이미 좋아요한 글이 빈 하트로 렌더되고,
+  // 사용자가 누르는 순간 toggle_post_like가 DB 상태 기준으로 토글하므로
+  // 기존 좋아요가 삭제된다. 조용한 실패가 곧 데이터 손실이라 던진다.
+  if (error) {
+    throw new Error(`[getLikedPostIds] query failed: ${error.message}`);
+  }
 
   return new Set(data?.map((row) => row.post_id) ?? []);
 }
@@ -146,11 +153,18 @@ export const getPostBySlug = cache(async function getPostBySlug(
   }
 
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("posts")
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("slug", slug)
     .maybeSingle();
+
+  // published 경로와 같은 이유로 던진다. 여기서 null을 반환하면 page.tsx가
+  // notFound()로 떨어져, 장애를 가장 먼저 알아야 할 관리자만 "글이 없음"을
+  // 보게 되는 비대칭이 생긴다.
+  if (error) {
+    throw new Error(`[getPostBySlug] draft query failed for "${slug}": ${error.message}`);
+  }
 
   return toPostDetail(data);
 });

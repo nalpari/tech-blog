@@ -218,7 +218,8 @@
       <li>slug가 <code>SLUG_PATTERN</code>과 맞지 않거나 200자를 넘으면 400. RPC 결과가 <code>null</code>이면 404, RPC 오류는 500.</li>
       <li><code>toggle_post_like(post_slug, liker_id)</code>는 <code>post_likes</code>에 행이 있으면 delete하고 <code>like_count - 1</code>(최소 0), 없으면 insert하고 <code>like_count + 1</code>. 반환값은 <code>{liked, likeCount}</code>.</li>
       <li><code>increment_post_view_count(post_slug, viewer_id)</code>는 <code>post_views</code>에 행을 넣고 <code>view_count + 1</code>. view 라우트도 <code>auth.getUser()</code>로 <code>viewer_id</code>를 채우지만(비로그인은 <code>null</code>) 메시지 예산 때문에 다이어그램에서는 뺐음.</li>
-      <li>마운트 시 <code>GET /like</code>로 <code>{likeCount, liked}</code>를 동기화하는 흐름도 생략함.</li>
+      <li>마운트 시 좋아요 상태를 조회하던 <code>GET /like</code>는 제거됐음. <code>liked</code>는 서버 렌더가 <code>getLikedPostIds</code>로 채워 <code>initialLiked</code>로 내려주므로 클라이언트는 토글 시에만 요청을 보냄.</li>
+      <li><code>like_count</code>는 <code>post:&lt;slug&gt;</code> 캐시(60초)를 타므로, 토글 직후 새로고침하면 하트는 채워진 채 숫자만 옛 값일 수 있음. Route Handler에서는 <code>updateTag</code>를 쓸 수 없다(E872).</li>
     </ul>
   </div>
 </body>
