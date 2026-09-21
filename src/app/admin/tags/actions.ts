@@ -1,7 +1,11 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+// 이 파일도 updateTag라는 Server Action을 export하므로 별칭으로 가져온다.
+import { revalidatePath, updateTag as updateCacheTag } from "next/cache";
+import { POST_CACHE_TAG } from "@/lib/queries";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/supabase/database.types";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
 
@@ -12,6 +16,24 @@ async function checkAdmin() {
     return { error: "권한이 없습니다.", supabase: null };
   }
   return { error: null, supabase };
+}
+
+// 포스트 상세 캐시는 태그 slug를 embed한 채 저장돼 있다. 태그 slug가 바뀌거나
+// 태그가 사라지면 그 태그를 단 포스트의 캐시도 함께 버려야 죽은 /tags/<slug>
+// 링크가 남지 않는다. 삭제의 경우 cascade 전에 호출해야 한다.
+async function invalidatePostsOfTag(
+  supabase: SupabaseClient<Database>,
+  tagId: string,
+) {
+  const { data } = await supabase
+    .from("post_tags")
+    .select("posts(slug)")
+    .eq("tag_id", tagId);
+
+  for (const row of data ?? []) {
+    const slug = (row.posts as { slug: string } | null)?.slug;
+    if (slug) updateCacheTag(POST_CACHE_TAG(slug));
+  }
 }
 
 export async function createTag(formData: FormData) {
@@ -67,13 +89,18 @@ export async function updateTag(formData: FormData) {
     return { error: updateError.message };
   }
 
+  await invalidatePostsOfTag(supabase, id);
   revalidatePath("/admin/tags");
+  revalidatePath("/");
   return { error: null };
 }
 
 export async function deleteTag(id: string) {
   const { error, supabase } = await checkAdmin();
   if (error || !supabase) return { error };
+
+  // post_tags가 cascade로 지워지기 전에 대상 포스트를 확보해 무효화한다.
+  await invalidatePostsOfTag(supabase, id);
 
   const { error: deleteError } = await supabase
     .from("tags")
@@ -83,5 +110,6 @@ export async function deleteTag(id: string) {
   if (deleteError) return { error: deleteError.message };
 
   revalidatePath("/admin/tags");
+  revalidatePath("/");
   return { error: null };
 }

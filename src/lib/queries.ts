@@ -2,7 +2,7 @@ import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { publicClient } from "@/lib/supabase/public";
+import { getPublicClient } from "@/lib/supabase/public";
 import type { Database } from "@/lib/supabase/database.types";
 import {
   mapPost,
@@ -114,12 +114,19 @@ function toPostDetail(post: PostRowWithTags | null): PostDetail {
 // 써야 unstable_cache 안에서 동작한다. 무효화는 POST_CACHE_TAG로.
 // view_count/like_count는 이 캐시를 타므로 최대 60초까지 stale할 수 있다.
 async function fetchPublishedPost(slug: string): Promise<PostDetail> {
-  const { data } = await publicClient
+  const { data, error } = await getPublicClient()
     .from("posts")
     .select("*, post_tags(tag_id, tags(slug))")
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();
+
+  // 쿼리 실패를 null로 반환하면 unstable_cache가 그 null을 캐싱해
+  // 일시적 DB 장애가 60초짜리 404로 굳는다. 던져서 캐싱을 막는다.
+  // (행이 없을 때는 maybeSingle이 error 없이 data=null을 주므로 구분된다.)
+  if (error) {
+    throw new Error(`[getPostBySlug] query failed for "${slug}": ${error.message}`);
+  }
 
   return toPostDetail(data);
 }
