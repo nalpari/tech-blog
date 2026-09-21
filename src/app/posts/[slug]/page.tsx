@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/data";
-import { getPostBySlug, getPostsByTag } from "@/lib/queries";
+import { isAdmin } from "@/lib/auth";
+import { getLikedPostIds, getPostBySlug, getRelatedPosts } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { TagBadge } from "@/components/tag-badge";
 import { PostCard } from "@/components/post-card";
@@ -11,15 +12,14 @@ import { DeletePostButton } from "@/components/delete-post-button";
 import { ViewCounter } from "@/components/view-counter";
 import { LikeButton } from "@/components/like-button";
 
-const ADMIN_EMAIL = "yoo32767@gmail.com";
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  // PostPage와 동일한 인자로 호출해야 cache()가 적중해 쿼리가 1회로 합쳐진다.
+  const post = await getPostBySlug(slug, await isAdmin());
   if (!post) return { title: "Post Not Found" };
   return {
     title: post.title,
@@ -50,14 +50,12 @@ export default async function PostPage({
 }) {
   const { slug } = await params;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const isAdmin = user?.email === ADMIN_EMAIL;
-
-  const post = await getPostBySlug(slug, { includeDraft: isAdmin });
+  const isAdminUser = await isAdmin();
+  const post = await getPostBySlug(slug, isAdminUser);
 
   if (!post) {
     // draft 포스트가 존재하는지 확인하여 적절한 안내 제공
+    const supabase = await createClient();
     const { data: draftExists } = await supabase
       .from("posts")
       .select("id")
@@ -92,11 +90,11 @@ export default async function PostPage({
 
   const isDraft = post.status === "draft";
 
-  const relatedPosts = post.tags[0]
-    ? (await getPostsByTag(post.tags[0]))
-        .filter((p) => p.slug !== post.slug)
-        .slice(0, 3)
-    : [];
+  // 관련 포스트 조회와 좋아요 상태 조회는 서로 의존하지 않으므로 병렬로 실행한다.
+  const [relatedPosts, likedIds] = await Promise.all([
+    post.tags[0] ? getRelatedPosts(post.tags[0], post.slug) : [],
+    getLikedPostIds([post.id]),
+  ]);
 
   return (
     <div className="pt-14">
@@ -129,7 +127,7 @@ export default async function PostPage({
               <TagBadge key={tag} slug={tag} size="sm" />
             ))}
             </div>
-            {isAdmin && (
+            {isAdminUser && (
               <div className="flex items-center gap-2">
                 <Link
                   href={`/posts/${post.slug}/edit`}
@@ -159,7 +157,7 @@ export default async function PostPage({
             <span className="text-muted-foreground">·</span>
             <ViewCounter slug={post.slug} initialCount={post.viewCount} />
             <span className="text-muted-foreground">·</span>
-            <LikeButton slug={post.slug} initialCount={post.likeCount} />
+            <LikeButton slug={post.slug} initialCount={post.likeCount} initialLiked={likedIds.has(post.id)} />
           </div>
         </header>
 

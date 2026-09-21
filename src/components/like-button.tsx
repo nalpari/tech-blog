@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -30,38 +30,21 @@ function HeartIcon({
 export function LikeButton({
   slug,
   initialCount,
+  initialLiked = false,
   compact = false,
 }: {
   slug: string;
   initialCount: number;
+  initialLiked?: boolean;
   compact?: boolean;
 }) {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const [count, setCount] = useState(initialCount);
-  const [liked, setLiked] = useState(false);
+  // 좋아요 상태는 서버 렌더 시점에 주입된다. 마운트 후 별도 fetch를 하지 않는다.
+  const [liked, setLiked] = useState(initialLiked);
   const [isAnimating, setIsAnimating] = useState(false);
-  const lastSyncedSlug = useRef<string | null>(null);
   const isToggling = useRef(false);
-
-  // 서버에서 좋아요 상태 동기화
-  useEffect(() => {
-    if (lastSyncedSlug.current === slug) return;
-    lastSyncedSlug.current = slug;
-
-    fetch(`/api/posts/${slug}/like`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`Like status API returned ${res.status}`);
-        return res.json();
-      })
-      .then((data: Record<string, unknown>) => {
-        if (typeof data.liked === "boolean") setLiked(data.liked);
-        if (typeof data.likeCount === "number") setCount(data.likeCount);
-      })
-      .catch((err) => {
-        console.error("[LikeButton] Failed to fetch like status:", slug, err);
-      });
-  }, [slug]);
 
   async function handleToggle() {
     if (!user) {

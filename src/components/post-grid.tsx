@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PostCard } from "@/components/post-card";
-import type { Post } from "@/lib/data";
+import type { PostSummary } from "@/lib/data";
 
 interface PostGridProps {
-  initialPosts: Post[];
+  initialPosts: PostSummary[];
   initialHasMore: boolean;
   pageSize: number;
 }
@@ -25,7 +25,7 @@ export function PostGrid({ initialPosts, initialHasMore, pageSize }: PostGridPro
       const data = await res.json();
       setPosts((prev) => {
         const existing = new Set(prev.map((p) => p.slug));
-        const newPosts = (data.posts as Post[]).filter((p) => !existing.has(p.slug));
+        const newPosts = (data.posts as PostSummary[]).filter((p) => !existing.has(p.slug));
         return [...prev, ...newPosts];
       });
       setHasMore(data.hasMore);

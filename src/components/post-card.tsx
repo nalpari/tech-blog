@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { type Post, formatDate } from "@/lib/data";
+import { type PostSummary, formatDate } from "@/lib/data";
 import { ViewCount } from "@/components/view-counter";
 import { LikeButton } from "@/components/like-button";
 
-export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
+export function PostCard({ post, index = 0 }: { post: PostSummary; index?: number }) {
   return (
     <Link href={`/posts/${post.slug}`} className="group block">
 
@@ -38,7 +38,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
 
           <div className="absolute top-3 left-3 z-10">
             <span className="inline-flex items-center rounded-full px-2 py-0.5 bg-background">
-              <LikeButton slug={post.slug} initialCount={post.likeCount} compact />
+              <LikeButton slug={post.slug} initialCount={post.likeCount} initialLiked={post.liked} compact />
             </span>
           </div>
         </div>
@@ -91,7 +91,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   );
 }
 
-export function FeaturedPostCard({ post }: { post: Post }) {
+export function FeaturedPostCard({ post }: { post: PostSummary }) {
   return (
     <Link href={`/posts/${post.slug}`} className="group block">
       <article className="relative overflow-hidden rounded-2xl border border-border/40 hover:border-border/80 transition-all duration-500">
@@ -117,7 +117,7 @@ export function FeaturedPostCard({ post }: { post: Post }) {
 
         <div className="absolute top-4 left-4 z-10">
           <span className="inline-flex items-center rounded-full px-2.5 py-1 bg-background">
-            <LikeButton slug={post.slug} initialCount={post.likeCount} compact />
+            <LikeButton slug={post.slug} initialCount={post.likeCount} initialLiked={post.liked} compact />
           </span>
         </div>
 

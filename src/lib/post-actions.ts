@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { revalidatePath, updateTag } from "next/cache";
+import { POST_CACHE_TAG } from "@/lib/queries";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
@@ -133,6 +135,14 @@ export async function updatePost(
         return { error: "태그 저장에 실패했습니다." };
       }
     }
+
+    // slug가 바뀌었을 수 있으므로 변경 전/후 양쪽 캐시를 무효화한다.
+    updateTag(POST_CACHE_TAG(currentPost.slug));
+    if (finalSlug !== currentPost.slug) {
+      updateTag(POST_CACHE_TAG(finalSlug!));
+    }
+    revalidatePath(`/posts/${finalSlug}`);
+    revalidatePath("/");
 
     const finalStatus = status === "published" ? "published" : "draft";
     if (finalStatus === "published") {

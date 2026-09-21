@@ -1,7 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { POST_CACHE_TAG } from "@/lib/queries";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
 
@@ -24,7 +25,7 @@ export async function togglePostStatus(postId: string) {
 
   const { data: post, error: fetchError } = await supabase
     .from("posts")
-    .select("status, published_at")
+    .select("slug, status, published_at")
     .eq("id", postId)
     .single();
 
@@ -47,6 +48,7 @@ export async function togglePostStatus(postId: string) {
     return { error: `상태 변경에 실패했습니다: ${updateError.message}` };
   }
 
+  updateTag(POST_CACHE_TAG(post.slug));
   revalidatePath("/admin/posts");
   revalidatePath("/");
   return { status: newStatus };
@@ -54,6 +56,13 @@ export async function togglePostStatus(postId: string) {
 
 export async function deletePost(postId: string) {
   const supabase = await assertAdmin();
+
+  // 캐시 무효화에 slug가 필요하므로 삭제 전에 읽어둔다.
+  const { data: post } = await supabase
+    .from("posts")
+    .select("slug")
+    .eq("id", postId)
+    .maybeSingle();
 
   // Delete related records first
   const deletes = await Promise.all([
@@ -74,6 +83,7 @@ export async function deletePost(postId: string) {
     return { error: `포스트 삭제에 실패했습니다: ${error.message}` };
   }
 
+  if (post?.slug) updateTag(POST_CACHE_TAG(post.slug));
   revalidatePath("/admin/posts");
   revalidatePath("/");
   return { success: true };

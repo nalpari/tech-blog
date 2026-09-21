@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { revalidatePath, updateTag } from "next/cache";
+import { POST_CACHE_TAG } from "@/lib/queries";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
@@ -22,7 +24,7 @@ export async function deletePost(postId: string) {
     // 본문 및 커버 이미지에서 Supabase Storage 이미지 URL 추출 후 삭제
     const { data: post } = await supabase
       .from("posts")
-      .select("content, cover_image")
+      .select("slug, content, cover_image")
       .eq("id", postId)
       .single();
 
@@ -63,6 +65,9 @@ export async function deletePost(postId: string) {
     if (deleteError) {
       return { error: `삭제 실패: ${deleteError.message}` };
     }
+
+    if (post?.slug) updateTag(POST_CACHE_TAG(post.slug));
+    revalidatePath("/");
 
     redirect("/");
   } catch (error) {

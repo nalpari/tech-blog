@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { generateSlug } from "@/lib/slug";
 import { redirect } from "next/navigation";
+import { revalidatePath, updateTag } from "next/cache";
+import { POST_CACHE_TAG } from "@/lib/queries";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
@@ -115,6 +117,9 @@ export async function createPost(
         return { error: "태그 저장에 실패했습니다. 다시 시도해주세요." };
       }
     }
+
+    updateTag(POST_CACHE_TAG(slug));
+    revalidatePath("/");
 
     if (status === "published") {
       redirect(`/posts/${encodeURIComponent(slug)}`);

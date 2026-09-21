@@ -29,7 +29,7 @@ pnpm lint         # Run ESLint
 
 ### Routing (App Router)
 
-All routes live in `src/app/`. Dynamic routes use `generateStaticParams` for full static generation:
+All routes live in `src/app/`. 모든 라우트는 요청 시 동적 렌더링된다 (`generateStaticParams` 없음 — 쿠키/`auth.getUser()` 의존). 대신 발행 포스트 조회를 쿼리 레벨에서 캐싱한다 (아래 Data Layer 참고):
 
 - `/` — Home (infinite scroll post grid with scroll-to-top)
 - `/posts/[slug]` — Post detail with prose content
@@ -53,11 +53,26 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 
 ### Data Layer
 
-`src/lib/data.ts` — Type definitions (`Post`, `Tag`) and mapper functions (`mapPost`, `mapTag`, `formatDate`). `src/lib/queries.ts` — Supabase query functions with pagination support (`getPosts`, `getPostBySlug`, `getPostsByTag`, `getTags`, etc.).
+`src/lib/data.ts` — Type definitions (`Post`, `PostSummary`, `Tag`)과 mapper (`mapPost`, `mapPostSummary`, `mapTag`, `formatDate`). `src/lib/queries.ts` — Supabase 쿼리 함수 (`getPosts`, `getPostBySlug`, `getPostsByTag`, `getRelatedPosts`, `getLikedPostIds`, `getTags` 등).
+
+**목록 vs 상세 (중요)**: 목록·카드는 본문이 필요 없으므로 `PostSummary`(= `Omit<Post, "content">`)를 쓰고, 목록 쿼리는 `POST_SUMMARY_SELECT`로 컬럼을 명시한다. `select("*")`로 되돌리면 카드 하나당 마크다운 본문 전체가 전송되는 회귀가 난다. 상세(`getPostBySlug`)만 `Post`(content 포함).
+
+**관련 포스트**: `getRelatedPosts(tagSlug, excludeSlug, limit)`가 DB에서 정렬·제외·limit까지 끝낸다. `getPostsByTag`로 전체를 받아 JS에서 `slice`하지 말 것.
+
+**좋아요 상태**: `liked`는 서버 렌더 시점에 채워 `LikeButton`의 `initialLiked`로 내려준다 (목록 쿼리는 `withLiked`, 상세는 `getLikedPostIds`). 클라이언트가 마운트 때 좋아요 상태를 조회하는 API는 제거됐다 (`/api/posts/[slug]/like`는 POST만 존재).
+
+**캐싱/무효화 (중요)**: 발행 포스트 상세는 `unstable_cache`(`revalidate: 60`, 태그 `POST_CACHE_TAG(slug)` = `post:<slug>`)로 요청 간 재사용된다.
+- 캐시 콜백은 쿠키를 읽을 수 없으므로 **반드시** `src/lib/supabase/public.ts`의 세션 없는 anon 클라이언트를 쓴다 (RLS `posts_select`가 published를 anon에 허용).
+- draft 조회(`includeDraft: true`)는 권한에 따라 결과가 달라지므로 캐시를 타지 않는다.
+- 포스트를 변경하는 Server Action은 **모두** `updateTag(POST_CACHE_TAG(slug))`를 호출해야 한다 (`post-actions.ts`, `posts/new/actions.ts`, `posts/[slug]/actions.ts`, `admin/posts/actions.ts`). slug를 바꾸는 `updatePost`는 변경 전/후 양쪽을 무효화한다. Next 16의 `revalidateTag`는 인자가 2개이고 지연 만료이므로, Server Action에서는 즉시 반영되는 `updateTag`를 쓴다.
+- `view_count`/`like_count`도 이 캐시를 타므로 최대 60초 stale할 수 있다 (의도된 트레이드오프). 토글·조회 직후 값은 API 응답으로 클라이언트에서 보정된다.
+
+**요청 단위 중복 제거**: `getPostBySlug`와 `src/lib/auth.ts`의 `getCurrentUser`/`isAdmin`은 `react.cache()`로 감싸져 있다. `cache()`는 인자를 참조/개수로 비교하므로 `getPostBySlug(slug, includeDraft)`는 **항상 인자 2개를 원시값으로** 넘겨야 적중한다 (객체 인자로 바꾸면 매번 캐시 미스).
 
 **Mutations**: Server Actions만 사용 (`"use server"`).
 - `src/lib/post-actions.ts` — `updatePost(prev, FormData) → UpdatePostState` (form state 패턴)
 - `src/app/admin/{posts,tags}/actions.ts` — 도메인별 admin 액션
+- 포스트를 바꾸는 액션은 `updateTag` + `revalidatePath` 무효화를 반드시 포함 (위 캐싱 항목 참고)
 
 **Server state**: React Query (`src/providers/query-provider.tsx`) — 기본값 `staleTime: 60_000`, `refetchOnWindowFocus: false`. `<QueryLoadingIndicator />`가 전역 로딩 상태 표시.
 
@@ -70,7 +85,8 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 ### Component Conventions
 
 - **Server components by default** — pages, footer, post-card, tag-badge
-- **Client components** (`"use client"`) — header, auth-buttons, user-avatar, post-grid (infinite scroll), scroll-to-top
+- **Client components** (`"use client"`) — header, auth-buttons, user-avatar, post-grid (infinite scroll), scroll-to-top, like-button, view-counter, copy-button
+- **마크다운 렌더는 서버에서** — `markdown-content.tsx`는 서버 컴포넌트다. react-markdown/highlight.js를 클라 번들에 넣지 않기 위해, 복사 버튼만 `copy-button.tsx`로 분리해 클라이언트로 둔다. `"use client"`를 다시 붙이면 번들과 하이드레이션 비용 회귀.
 - Components live in `src/components/`, one component per file
 
 ### Auth State
