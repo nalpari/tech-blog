@@ -18,9 +18,6 @@ export interface Post {
   authorId: string;
   viewCount: number;
   likeCount: number;
-  // 현재 로그인 사용자가 좋아요를 눌렀는지. 목록 쿼리가 서버에서 채워 넣으며,
-  // 비로그인이거나 아직 조회하지 않았으면 false다.
-  liked: boolean;
 }
 
 export interface Tag {
@@ -32,8 +29,14 @@ export interface Tag {
 }
 
 // 목록/카드는 본문이 필요 없다. 목록 쿼리가 content를 실어 나르지 않도록
-// 요약 타입을 따로 두고, 상세용 Post는 여기에 content만 얹는다.
-export type PostSummary = Omit<Post, "content">;
+// 요약 타입을 따로 둔다.
+//
+// `liked`가 Post가 아니라 여기에만 있는 이유: Post는 상세 조회 결과이고 그
+// 값은 unstable_cache로 사용자 간에 공유된다. 사용자별 필드를 그 타입에 두면
+// 언젠가 누가 채워 넣는 순간 한 사람의 좋아요 상태가 다른 사람에게 캐시로
+// 배달된다. 구조적으로 불가능하게 만들어 둔다.
+// 상세 페이지의 좋아요 상태는 getLikedPostIds로 따로 조회한다.
+export type PostSummary = Omit<Post, "content"> & { liked: boolean };
 
 type PostSummaryRow = Pick<
   PostRow,
@@ -52,10 +55,10 @@ type PostSummaryRow = Pick<
   | "like_count"
 >;
 
-export function mapPostSummary(
+function mapPostBase(
   row: PostSummaryRow,
-  tagSlugs: string[] = [],
-): PostSummary {
+  tagSlugs: string[],
+): Omit<Post, "content"> {
   return {
     id: row.id,
     slug: row.slug,
@@ -70,15 +73,22 @@ export function mapPostSummary(
     authorId: row.author_id,
     viewCount: row.view_count,
     likeCount: row.like_count,
-    liked: false,
   };
+}
+
+// liked는 withLiked()가 채운다. 여기서는 "아직 모른다"의 기본값으로 false.
+export function mapPostSummary(
+  row: PostSummaryRow,
+  tagSlugs: string[] = [],
+): PostSummary {
+  return { ...mapPostBase(row, tagSlugs), liked: false };
 }
 
 export function mapPost(
   row: PostRow,
   tagSlugs: string[] = [],
 ): Post {
-  return { ...mapPostSummary(row, tagSlugs), content: row.content };
+  return { ...mapPostBase(row, tagSlugs), content: row.content };
 }
 
 export function mapTag(row: TagRow, postCount: number = 0): Tag {
