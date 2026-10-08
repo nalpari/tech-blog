@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, IBM_Plex_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { QueryProvider } from "@/providers/query-provider";
@@ -11,16 +11,9 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-});
-
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://techlog.dev";
 const SITE_NAME = "techlog";
-const SITE_DESCRIPTION =
-  "where engineers share professional knowledge and technical insights";
+const SITE_DESCRIPTION = "개발하며 배운 것을 쌓아두는 블로그";
 
 export const metadata: Metadata = {
   title: {
@@ -46,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="ko" className="dark">
       <head>
         <link
           rel="stylesheet"
@@ -54,7 +47,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${jetbrainsMono.variable} ${ibmPlexMono.variable} antialiased`}
+        className={`${jetbrainsMono.variable} antialiased`}
       >
         <QueryProvider>
           <AuthProvider>

@@ -13,14 +13,10 @@ export function TagBadge({
   size = "sm",
   interactive = true,
 }: TagBadgeProps) {
-  const displayName = name || slug.replace(/-/g, "_");
+  const displayName = name || slug.replaceAll("-", " ");
 
-  const sizeClasses =
-    size === "sm"
-      ? "text-[11px] px-2 py-0.5"
-      : "text-xs px-2.5 py-1";
-
-  const baseClasses = `inline-flex items-center font-mono border border-accent text-accent ${sizeClasses}`;
+  const sizeClasses = size === "sm" ? "text-[12px] px-2 py-0.5" : "text-[13px] px-2.5 py-1";
+  const baseClasses = `inline-flex items-center rounded-[2px] border border-border-strong! text-muted ${sizeClasses}`;
 
   if (!interactive) {
     return <span className={baseClasses}>{displayName}</span>;
@@ -29,7 +25,7 @@ export function TagBadge({
   return (
     <Link
       href={`/tags/${slug}`}
-      className={`${baseClasses} hover:bg-accent hover:text-background transition-colors`}
+      className={`${baseClasses} hover:text-foreground hover:border-foreground/60! transition-colors`}
     >
       {displayName}
     </Link>

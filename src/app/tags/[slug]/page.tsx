@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTags, getTagBySlug, getPostsByTag } from "@/lib/queries";
-import { formatDate } from "@/lib/data";
+import { tagInfoOf } from "@/lib/strata";
+import { PostCard } from "@/components/post-card";
 
 export async function generateMetadata({
   params,
@@ -35,101 +36,63 @@ export default async function TagDetailPage({
   if (!tag) notFound();
 
   const otherTags = allTags.filter((t) => t.slug !== slug);
+  const info = tagInfoOf(allTags);
 
   return (
     <div className="pt-14">
-      {/* Tag Header */}
-      <section className="mx-auto max-w-[1200px] px-10 py-8 border-b border-border">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono mb-4">
+      <section className="mx-auto max-w-[1280px] px-[clamp(20px,2.6vw,48px)] pt-14 pb-10">
+        <nav aria-label="현재 위치" className="flex items-center gap-2 text-xs text-muted-foreground mb-5">
           <Link href="/" className="hover:text-foreground transition-colors">
             blog
           </Link>
-          <span>/</span>
-          <Link
-            href="/tags"
-            className="hover:text-foreground transition-colors"
-          >
+          <span aria-hidden="true">/</span>
+          <Link href="/tags" className="hover:text-foreground transition-colors">
             tags
           </Link>
-          <span>/</span>
-          <span className="text-accent">{slug}</span>
-        </div>
+        </nav>
 
-        <div className="flex items-center gap-4 mb-4">
-          <h1 className="text-2xl font-mono font-bold">
-            <span className="text-accent">$</span> {tag.name.toLowerCase()}
-          </h1>
-        </div>
-
-        <p className="text-sm font-sans text-muted mb-4 max-w-2xl">
-          {`// ${tag.description?.toLowerCase()}`}
+        <h1 className="text-3xl font-bold tracking-tight">{tag.name}</h1>
+        {tag.description && (
+          <p className="mt-3 text-sm text-muted max-w-2xl">{tag.description}</p>
+        )}
+        <p className="mt-3 font-mono text-xs tabular-nums text-muted-foreground">
+          {tag.postCount}편
         </p>
-
-        <div className="flex items-center gap-6 text-xs text-muted-foreground font-mono">
-          <span>{tag.postCount} items</span>
-        </div>
       </section>
 
-      {/* Two-column layout: Posts + Sidebar */}
-      <section className="mx-auto max-w-[1200px] px-10 py-10">
-        <div className="flex gap-10">
-          {/* Posts list */}
+      <section className="mx-auto max-w-[1280px] px-[clamp(20px,2.6vw,48px)] pb-10">
+        <div className="flex gap-16">
           <div className="flex-1 min-w-0">
             {tagPosts.length > 0 ? (
-              <div className="divide-y divide-border">
+              <div className="space-y-9">
                 {tagPosts.map((post) => (
-                  <Link
-                    key={post.slug}
-                    href={`/posts/${post.slug}`}
-                    className="group block py-5 first:pt-0"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[11px] font-mono px-2 py-0.5 border border-accent text-accent">
-                        {slug.replace(/-/g, "_")}
-                      </span>
-                      <span className="text-muted-foreground font-mono text-xs">
-                        ·
-                      </span>
-                      <span className="text-muted-foreground font-sans text-xs">
-                        {formatDate(post.date).toLowerCase()}
-                      </span>
-                    </div>
-                    <h3 className="text-base font-mono font-bold text-foreground group-hover:text-accent transition-colors mb-2">
-                      {post.title.toLowerCase()}
-                    </h3>
-                    <p className="text-[13px] font-sans text-muted leading-relaxed line-clamp-2">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground font-sans">
-                      {post.readTime && <span>{post.readTime}</span>}
-                    </div>
-                  </Link>
+                  <PostCard key={post.slug} post={post} tagInfo={info} />
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground font-sans text-sm py-10">
-                {"// no articles published in this topic yet"}
+              <p className="text-sm text-muted py-10">
+                이 주제로 발행된 글이 아직 없습니다.
               </p>
             )}
           </div>
 
-          {/* Sidebar */}
-          <aside className="hidden lg:block w-64 shrink-0 border-l border-border pl-8">
-            <p className="text-xs text-muted-foreground font-mono mb-4">
-              {"// related_tags"}
-            </p>
-            <div className="flex flex-col gap-2">
-              {otherTags.map((t) => (
-                <Link
-                  key={t.slug}
-                  href={`/tags/${t.slug}`}
-                  className="text-sm font-mono text-muted hover:text-accent transition-colors"
-                >
-                  # {t.name.toLowerCase()}
-                </Link>
-              ))}
-            </div>
-          </aside>
+          {otherTags.length > 0 && (
+            <aside className="hidden lg:block w-56 shrink-0" aria-label="다른 태그">
+              <h2 className="text-xs text-muted-foreground mb-4">다른 태그</h2>
+              <ul className="flex flex-col gap-2.5">
+                {otherTags.map((t) => (
+                  <li key={t.slug}>
+                    <Link
+                      href={`/tags/${t.slug}`}
+                      className="text-sm text-muted hover:text-foreground transition-colors"
+                    >
+                      {t.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )}
         </div>
       </section>
     </div>

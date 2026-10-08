@@ -1,12 +1,14 @@
+import { Wordmark } from "@/components/wordmark";
+
 export function Footer() {
   return (
-    <footer className="border-t border-border mt-20">
-      <div className="mx-auto max-w-[1200px] px-10 py-6 flex items-center justify-between">
-        <p className="text-xs text-muted-foreground font-sans">
-          {"// built with precision"}
-        </p>
-        <p className="text-xs text-muted-foreground font-mono">
-          &gt; {new Date().getFullYear()}
+    <footer className="mt-16 border-t border-border">
+      <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-[clamp(20px,2.6vw,48px)] py-8">
+        <span className="text-muted-foreground">
+          <Wordmark compact />
+        </span>
+        <p className="text-xs text-muted-foreground">
+          개발하며 배운 것을 쌓아둡니다. &copy; {new Date().getFullYear()}
         </p>
       </div>
     </footer>
