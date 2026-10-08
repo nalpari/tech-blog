@@ -1,6 +1,6 @@
 # techlog
 
-Dark-themed tech blog inspired by [Linear](https://linear.app)'s design language. Built with Next.js, Tailwind CSS, and Supabase.
+Personal tech blog where every published post is one layer of a stratigraphic column. Built with Next.js, Tailwind CSS, and Supabase.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ Dark-themed tech blog inspired by [Linear](https://linear.app)'s design language
 | Backend | Supabase (Auth, Database) |
 | State / Data | TanStack Query, Zustand |
 | Markdown | react-markdown, remark-gfm, rehype-highlight |
-| Fonts | JetBrains Mono, IBM Plex Mono, Pretendard |
+| Fonts | Pretendard (UI, headings, prose), JetBrains Mono (dates, code) |
 | Package Manager | pnpm |
 
 ## Features
@@ -23,7 +23,8 @@ Dark-themed tech blog inspired by [Linear](https://linear.app)'s design language
 - **Admin**: Post & tag management UI, draft/publish workflow, featured flag (admin email-gated)
 - **Engagement**: View counter, like button (auth-required)
 - **Search**: `Ctrl/Cmd + K` quick search modal
-- **Reading UX**: Infinite scroll, scroll-to-top, prose typography, dark theme
+- **Home**: Strata hero drawn from every published post (8 titled beds, older posts compressed into laminae you can pick by pointer, touch or keyboard; colour = primary tag, ruler and legend from real dates and tags), then a monthly core log with infinite scroll
+- **Reading UX**: scroll-to-top, prose typography, dark theme
 
 ## Getting Started
 
@@ -103,9 +104,10 @@ docs/
 
 ## Design
 
-- **Theme**: Dark-first (`#0a0a0a` background) with single emerald accent (`#10b981`); secondary cyan (`#06b6d4`) and amber (`#f59e0b`) accents. No gradient system.
-- **Typography**: IBM Plex Mono (body default, monospace-first aesthetic), Pretendard (post prose body, Korean), JetBrains Mono (code blocks and prose heading markers)
-- **Effects**: `.stagger-children` fade-in cascade (1–6th children, 50ms steps), `.animate-fade-in-up` / `.animate-fade-in` single-shot fades
+- **Concept**: the blog is a stratigraphic column. Newest posts sit on top; each post is a bed whose colour is its primary tag's formation. Product facts live in `PRODUCT.md`.
+- **Theme**: Dark ink ground (`#081818`) with mineral bed colours (ochre, teal, rust, violet, bone, slate) and a single accent (`#e2b04a`).
+- **Typography**: Pretendard for UI, headings and prose (Korean-first), JetBrains Mono for dates, depth ruler and code.
+- **Motion**: one authored moment (beds settle oldest-first on the home hero), hover lift on beds, everything off under `prefers-reduced-motion`.
 
 ## Deploy
 
