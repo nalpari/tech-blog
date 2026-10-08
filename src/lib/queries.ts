@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getPublicClient } from "@/lib/supabase/public";
 import type { Database } from "@/lib/supabase/database.types";
+import type { BedSource } from "@/lib/strata";
 import {
   mapPost,
   mapPostSummary,
@@ -14,6 +15,8 @@ import {
 } from "@/lib/data";
 
 export const POSTS_PER_PAGE = 6;
+// 히어로 지층 기둥에 올릴 수 있는 글 수의 상한. 넘는 오래된 글은 기둥에서만 빠진다.
+const ARCHIVE_LIMIT = 300;
 
 // posts.sort_date는 Supabase의 generated column으로
 // COALESCE(published_at, created_at) 결과를 담는다.
@@ -86,6 +89,29 @@ export async function getPosts(options?: { offset?: number; limit?: number }): P
   if (!posts) return [];
 
   return withLiked(posts.map((post) => mapPostSummary(post, tagSlugsOf(post))));
+}
+
+// 홈 히어로의 지층 기둥용. 발행된 모든 글의 제목·날짜·읽기 시간·태그만 가볍게 가져온다.
+// 본문·요약·카운터를 실어 나르지 않고, 좋아요 조회도 하지 않는다.
+export async function getArchiveBeds(): Promise<BedSource[]> {
+  const supabase = await createClient();
+
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("slug, title, published_at, created_at, read_time, post_tags(tag_id, tags(slug))")
+    .eq("status", "published")
+    .order(POSTS_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_SECONDARY_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
+    .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS)
+    .limit(ARCHIVE_LIMIT);
+
+  return (posts ?? []).map((post) => ({
+    slug: post.slug,
+    title: post.title,
+    date: post.published_at ?? post.created_at,
+    readTime: post.read_time,
+    tags: tagSlugsOf(post),
+  }));
 }
 
 export async function getFeaturedPosts(): Promise<PostSummary[]> {

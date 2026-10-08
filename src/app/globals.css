@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --muted: #6b7280;
-  --muted-foreground: #4b5563;
-  --border: #2a2a2a;
-  --border-light: #1a1a1a;
-  --card: #0f0f0f;
-  --card-hover: #1f1f1f;
-  --accent: #10b981;
-  --accent-cyan: #06b6d4;
+  --background: #081818;
+  --foreground: #f2f4f3;
+  --muted: #9aa9b5;
+  --muted-foreground: #758790;
+  --border: #263838;
+  --border-strong: #74879a;
+  --border-light: #142629;
+  --card: #0d2020;
+  --card-hover: #132a2a;
+  --accent: #e2b04a;
+  --accent-cyan: #7fc4c0;
   --accent-amber: #f59e0b;
-  --surface: #0f0f0f;
+  --surface: #0d2020;
 }
 
 @theme inline {
@@ -21,6 +22,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-border-light: var(--border-light);
   --color-card: var(--card);
   --color-card-hover: var(--card-hover);
@@ -28,7 +30,7 @@
   --color-accent-cyan: var(--accent-cyan);
   --color-accent-amber: var(--accent-amber);
   --color-surface: var(--surface);
-  --font-sans: var(--font-ibm-plex-mono);
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains-mono);
 }
 
@@ -37,11 +39,22 @@
 }
 
 body {
-  background: var(--background);
+  /* ground.png: 시안의 깨끗한 배경 영역을 거울 타일링한 질감 (2배 해상도 타일) */
+  background: var(--background) url("/assets/plates/ground.png");
+  background-size: 1075px 304px;
   color: var(--foreground);
-  font-family: var(--font-sans), "IBM Plex Mono", monospace;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* base 레이어에 둔다. 레이어 밖에 두면 focus:outline-none 같은 Tailwind 유틸리티를 덮어써서
+   자체 포커스 표시가 있는 입력창에 링이 이중으로 생긴다. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 /* Scrollbar */
@@ -64,7 +77,7 @@ body {
 
 /* Selection */
 ::selection {
-  background: rgba(16, 185, 129, 0.25);
+  background: rgba(226, 176, 74, 0.28);
   color: var(--foreground);
 }
 
@@ -93,16 +106,6 @@ body {
   animation: fade-in 0.4s ease-out forwards;
 }
 
-/* Horizontal accent separator with center-emphasized glow */
-.glow-line {
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--accent),
-    transparent
-  );
-}
-
 /* Stagger children */
 .stagger-children > * {
   opacity: 0;
@@ -116,12 +119,475 @@ body {
 .stagger-children > *:nth-child(5) { animation-delay: 200ms; }
 .stagger-children > *:nth-child(6) { animation-delay: 250ms; }
 
+/* ---- Strata hero ----
+   기본은 모바일 흐름 배치(제목, 버튼, 층 목록 순)이고, 1100px 이상에서는 승인된 시안의 16:9 프레임에
+   각 영역을 % 로 배치한다. 프레임 단위 --u는 컨테이너 너비와 뷰포트 높이 중 먼저 닿는 쪽에 맞춰지며,
+   100vw 대신 컨테이너 단위를 써야 스크롤바 폭 때문에 가로로 넘치지 않는다. */
+.hero-root {
+  container-type: inline-size;
+}
+
+.hero {
+  --u: min(1cqw, calc(1dvh * 1.7684));
+  position: relative;
+  padding: 88px 20px 0;
+}
+
+.hero-defs {
+  position: absolute;
+}
+
+.hero-title {
+  font-size: clamp(28px, 7.6vw, 40px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  word-break: keep-all;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 22px;
+  height: 42px;
+  padding-inline: 22px;
+  border-radius: 2px;
+  background: #eaeae9;
+  color: #09181f;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.hero-cta:hover {
+  background: var(--accent);
+}
+
+.hero-cta:active {
+  transform: translateY(1px);
+}
+
+.hero-surface {
+  height: 1px;
+  margin: 40px -20px 0;
+  background: rgba(242, 244, 243, 0.5);
+}
+
+.depth-ruler,
+.strata-wide,
+.legend {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.strata-narrow {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+}
+
+@media (min-width: 1100px) {
+  .hero {
+    width: calc(var(--u) * 100);
+    height: calc(var(--u) * 56.55);
+    margin-inline: auto;
+    padding: 0;
+  }
+
+  .hero-title {
+    position: absolute;
+    left: 2.6%;
+    top: 12.5%;
+    font-size: max(26px, calc(var(--u) * 2.8));
+    line-height: 1.15;
+  }
+
+  .hero-cta {
+    position: absolute;
+    left: 2.6%;
+    top: 25.13%;
+    width: 8.93%;
+    height: 4.74%;
+    min-width: 108px;
+    min-height: 34px;
+    margin: 0;
+    padding: 0;
+    font-size: max(13px, calc(var(--u) * 1.1));
+  }
+
+  .hero-surface {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 33.42%;
+    margin: 0;
+  }
+
+  .depth-ruler,
+  .strata-wide,
+  .legend {
+    display: block;
+    position: absolute;
+    top: 33.42%;
+    height: 62.1%;
+  }
+
+  .strata-wide {
+    left: 6.7%;
+    width: 82%;
+  }
+
+  .depth-ruler {
+    left: 1.7%;
+    width: 4.4%;
+    border-left: 1px solid #3a4f4f;
+  }
+
+  .legend {
+    left: 88.7%;
+    width: 11.3%;
+  }
+
+  .strata-narrow {
+    display: none;
+  }
+}
+
+.depth-tick {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  padding-left: calc(var(--u) * 1.1);
+  font-family: var(--font-jetbrains-mono);
+  font-size: max(10px, calc(var(--u) * 0.76));
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.depth-minor {
+  position: absolute;
+  left: 0;
+  width: calc(var(--u) * 0.7);
+  height: 1px;
+  background: #2f4444;
+}
+
+.depth-tick::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--u) * -0.7);
+  top: 50%;
+  width: calc(var(--u) * 1.4);
+  height: 1px;
+  background: #3a4f4f;
+}
+
+.legend-item {
+  position: absolute;
+  left: 0;
+  right: calc(var(--u) * 0.5);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 0.7);
+  transform: translateY(-50%);
+}
+
+.legend-leader {
+  flex: none;
+  width: calc(var(--u) * 1.3);
+  height: 1px;
+  background: #5a6f6f;
+}
+
+.legend-swatch {
+  flex: none;
+  width: calc(var(--u) * 1.2);
+  height: calc(var(--u) * 1.35);
+}
+
+.legend-label {
+  min-width: 0;
+  font-size: clamp(11px, calc(var(--u) * 0.95), 12.5px);
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+/* 코어 로그: 월별 목록 왼쪽에 지층색 질감의 코어 기둥이 서고, 글마다 자기 지층군 구간을 이룬다 */
+.log-core {
+  position: absolute;
+  left: -2rem;
+  top: 0;
+  bottom: -2.5rem;
+  width: 8px;
+  background: var(--bed) var(--tex-url, none) 0 0 / 100px 22px;
+}
+
+article:last-child > .log-core {
+  bottom: 0;
+}
+
+.f0 { --tex-url: url("/assets/plates/bed-0-0.webp"); }
+.f1 { --tex-url: url("/assets/plates/bed-1-0.webp"); }
+.f2 { --tex-url: url("/assets/plates/bed-2-0.webp"); }
+.f3 { --tex-url: url("/assets/plates/bed-3-0.webp"); }
+.f4 { --tex-url: url("/assets/plates/bed-4-0.webp"); }
+.f5 { --tex-url: url("/assets/plates/bed-5-0.webp"); }
+
+/* 목록 태그 앞의 지층 색 표시. 색 슬롯은 히어로와 같은 .f0~.f5 변수를 쓴다. */
+.swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--bed);
+}
+
+.bed-item {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bed-item:hover,
+.bed-item:focus-within {
+  z-index: 2;
+}
+
+.f0 { --bed: #9a6d2e; --bed-2: #936629; --bed-3: #8b6026; --bed-fg: #f2f4f3; --tex-b: 0.87; }
+.f1 { --bed: #33797a; --bed-2: #276163; --bed-3: #1f5153; --bed-fg: #f2f4f3; }
+.f2 { --bed: #9a5339; --bed-2: #8a4832; --bed-3: #7a3f2b; --bed-fg: #f2f4f3; }
+.f3 { --bed: #575989; --bed-2: #4d4f7b; --bed-3: #43456d; --bed-fg: #f2f4f3; }
+.f4 { --bed: #d8d7c7; --bed-2: #e4e3d6; --bed-3: #cccab6; --bed-fg: #0b1a17; }
+.f5 { --bed: #76848e; --bed-2: #8b98a1; --bed-3: #6a7882; --bed-fg: #0b1a17; }
+
+.bed {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  outline: none;
+  animation: bed-settle 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc((var(--n) - var(--i)) * 60ms);
+}
+
+.bed svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.bed .shape {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bed {
+  --bed-now: var(--bed);
+}
+
+.bed[data-tone="1"] {
+  --bed-now: var(--bed-2);
+}
+
+.bed[data-tone="2"] {
+  --bed-now: var(--bed-3);
+}
+
+.bed .base {
+  fill: var(--bed-now);
+}
+
+/* 질감 플레이트. 세 번째 층은 한 단계 어둡게 해서 같은 지층군 안에서 인접 층이 구분되게 한다. */
+.bed .tex {
+  filter: brightness(var(--tex-b, 1)) contrast(1.3);
+}
+
+.bed[data-tone="2"] .tex {
+  filter: brightness(calc(var(--tex-b, 1) * 0.9)) contrast(1.75);
+}
+
+.lamina {
+  stroke: var(--background);
+  stroke-opacity: 0.55;
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.lamina-slot {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.lamina-picker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.lamina-picker:focus-visible {
+  outline-offset: -2px;
+}
+
+.lamina-mark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  margin-top: -1px;
+  background: rgba(242, 244, 243, 0.85);
+  pointer-events: none;
+}
+
+.lamina-tip {
+  position: absolute;
+  left: 4.3%;
+  max-width: 70%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding: 6px 10px;
+  border: 1px solid var(--border-strong);
+  background: rgba(8, 24, 24, 0.94);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.lamina-tip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lamina-tip time {
+  flex: none;
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+/* 층 윗면의 밝은 가장자리 */
+.bed .lip {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.bed .edge {
+  fill: none;
+  stroke: var(--background);
+  stroke-opacity: 0.55;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.bed:hover .shape,
+.bed:focus-visible .shape {
+  transform: translateY(-5px);
+}
+
+.bed:focus-visible .edge {
+  stroke: var(--foreground);
+  stroke-opacity: 1;
+  stroke-width: 2;
+}
+
+.bed-title,
+.bed-date {
+  fill: var(--bed-fg);
+  dominant-baseline: central;
+  /* 질감 무늬가 작은 글자와 섞이지 않도록 층 색으로 얇은 후광을 둔다 */
+  paint-order: stroke;
+  stroke: color-mix(in srgb, var(--bed-now) 75%, transparent);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.bed-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.strata-narrow .bed-title {
+  font-size: 14.5px;
+}
+
+.strata-narrow .bed-date {
+  font-size: 10.5px;
+}
+
+.bed-date {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 눈금자와 범례는 층이 다 쌓인 뒤에 나타난다 */
+.depth-ruler,
+.legend {
+  animation: hero-annotate 0.6s ease-out 1.1s backwards;
+}
+
+@keyframes hero-annotate {
+  from {
+    opacity: 0;
+  }
+}
+
+/* 지층이 오래된 것부터 차례로 내려앉아 쌓인다. 첫 화면에서 한 번만 재생된다. */
+@keyframes bed-settle {
+  from {
+    opacity: 0;
+    transform: translateY(-26px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bed,
+  .depth-ruler,
+  .legend {
+    animation: none;
+  }
+
+  .bed .shape {
+    transition: none;
+  }
+}
+
 /* Prose styles for blog post content */
 .prose-blog {
+  /* 한글은 단어 단위로 줄바꿈하고, 제목은 줄 길이를 고르게 맞춘다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
   line-height: 1.8;
   font-size: 1rem;
   color: var(--muted);
   font-family: "Pretendard Variable", Pretendard, sans-serif;
+}
+
+.prose-blog h1,
+.prose-blog h2,
+.prose-blog h3 {
+  text-wrap: balance;
 }
 
 .prose-blog h1 {
@@ -133,13 +599,6 @@ body {
   margin-bottom: 1rem;
 }
 
-.prose-blog h1::before {
-  content: "# ";
-  color: var(--accent);
-  font-family: var(--font-mono), "JetBrains Mono", monospace;
-  font-size: 1.125rem;
-}
-
 .prose-blog h2 {
   color: var(--foreground);
   font-family: "Pretendard Variable", Pretendard, sans-serif;
@@ -147,13 +606,6 @@ body {
   font-weight: 700;
   margin-top: 2.5rem;
   margin-bottom: 1rem;
-}
-
-.prose-blog h2::before {
-  content: "## ";
-  color: var(--accent);
-  font-family: var(--font-mono), "JetBrains Mono", monospace;
-  font-size: 1rem;
 }
 
 .prose-blog h3 {
@@ -165,13 +617,6 @@ body {
   margin-bottom: 0.75rem;
 }
 
-.prose-blog h3::before {
-  content: "### ";
-  color: var(--accent);
-  font-family: var(--font-mono), "JetBrains Mono", monospace;
-  font-size: 0.875rem;
-}
-
 .prose-blog p {
   margin-bottom: 1.25rem;
 }
@@ -179,7 +624,7 @@ body {
 .prose-blog a {
   color: var(--accent);
   text-decoration: underline;
-  text-decoration-color: rgba(16, 185, 129, 0.3);
+  text-decoration-color: rgba(226, 176, 74, 0.4);
   text-underline-offset: 3px;
   transition: text-decoration-color 0.2s;
 }
@@ -191,7 +636,7 @@ body {
 .prose-blog code {
   font-family: var(--font-mono), "JetBrains Mono", monospace;
   font-size: 0.875em;
-  background: rgba(42, 42, 42, 0.5);
+  background: rgba(38, 56, 56, 0.6);
   padding: 0.15em 0.4em;
   border-radius: 2px;
   color: var(--accent-cyan);
@@ -219,7 +664,7 @@ body {
 }
 
 .prose-blog blockquote {
-  border-left: 2px solid var(--accent);
+  border-left: 1px solid var(--border-strong);
   padding-left: 1.25rem;
   margin: 1.5rem 0;
   color: var(--muted);
