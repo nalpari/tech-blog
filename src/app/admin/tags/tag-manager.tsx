@@ -66,7 +66,7 @@ export function TagManager({ initialTags }: TagManagerProps) {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="p-3 border border-red-500/30 bg-red-500/5 text-red-400 text-sm font-sans">
+        <div className="p-3 rounded border border-red-500/30! bg-red-500/10 text-red-600 dark:text-red-400 text-sm">
           {error}
         </div>
       )}
@@ -75,7 +75,7 @@ export function TagManager({ initialTags }: TagManagerProps) {
       {!showNew && (
         <button
           onClick={() => { setShowNew(true); setEditingId(null); }}
-          className="text-xs font-mono text-accent border border-accent px-3 py-1.5 hover:bg-accent hover:text-background transition-colors cursor-pointer"
+          className="h-9 px-4 rounded text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity cursor-pointer"
         >
           + new tag
         </button>
@@ -105,7 +105,7 @@ export function TagManager({ initialTags }: TagManagerProps) {
               <div className="flex items-center justify-between py-4 group">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-mono font-bold text-foreground">
+                    <span className="text-sm font-semibold text-foreground">
                       # {tag.name}
                     </span>
                     <span className="text-xs font-mono text-muted-foreground">
@@ -113,22 +113,22 @@ export function TagManager({ initialTags }: TagManagerProps) {
                     </span>
                   </div>
                   {tag.description && (
-                    <p className="text-xs font-sans text-muted mt-1 truncate">
+                    <p className="text-sm text-muted mt-1 truncate">
                       {tag.description}
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                   <button
                     onClick={() => { setEditingId(tag.id); setShowNew(false); setError(null); }}
-                    className="text-xs font-mono text-muted-foreground hover:text-accent px-2 py-1 border border-border hover:border-accent/50 transition-colors cursor-pointer"
+                    className="inline-flex items-center h-7 px-2.5 rounded text-xs text-foreground border border-border-strong! hover:bg-surface transition-colors cursor-pointer"
                   >
                     edit
                   </button>
                   <button
                     onClick={() => handleDelete(tag.id, tag.name)}
                     disabled={loading}
-                    className="text-xs font-mono text-muted-foreground hover:text-red-400 px-2 py-1 border border-border hover:border-red-400/50 transition-colors cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center h-7 px-2.5 rounded text-xs text-red-600 dark:text-red-400 border border-border-strong! hover:bg-red-500/10 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     delete
                   </button>
@@ -139,8 +139,8 @@ export function TagManager({ initialTags }: TagManagerProps) {
         ))}
 
         {tags.length === 0 && !showNew && (
-          <p className="py-10 text-center text-sm font-sans text-muted-foreground">
-            {"// 등록된 태그가 없습니다"}
+          <p className="py-10 text-center text-sm text-muted-foreground">
+            등록된 태그가 없습니다
           </p>
         )}
       </div>
@@ -191,47 +191,47 @@ function TagForm({
     <form onSubmit={handleSubmit} className="py-4 space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label className="text-xs font-mono text-muted">name</label>
+          <label className="text-sm font-medium text-foreground">name</label>
           <input
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
             placeholder="React"
             required
-            className="w-full px-3 py-2 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-mono text-muted">slug</label>
+          <label className="text-sm font-medium text-foreground">slug</label>
           <input
             value={slug}
             onChange={(e) => { setSlugEdited(true); setSlug(e.target.value); }}
             placeholder="react"
             required
-            className="w-full px-3 py-2 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
       </div>
       <div className="space-y-1">
-        <label className="text-xs font-mono text-muted">description</label>
+        <label className="text-sm font-medium text-foreground">description</label>
         <input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="태그 설명 (선택)"
-          className="w-full px-3 py-2 border border-border bg-background text-foreground text-sm font-sans placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+          className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
         />
       </div>
       <div className="flex items-center gap-2">
         <button
           type="submit"
           disabled={loading}
-          className="text-xs font-mono px-3 py-1.5 border border-accent bg-accent text-background hover:bg-accent/90 transition-colors cursor-pointer disabled:opacity-50"
+          className="h-9 px-4 rounded text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
         >
           {tag ? "update" : "create"}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="text-xs font-mono px-3 py-1.5 border border-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className="h-9 px-4 rounded text-sm border border-border-strong! text-foreground hover:bg-surface transition-colors cursor-pointer"
         >
           cancel
         </button>

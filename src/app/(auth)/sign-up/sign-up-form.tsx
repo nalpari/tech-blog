@@ -62,19 +62,19 @@ export function SignUpForm() {
   if (success) {
     return (
       <div className="space-y-4">
-        <div className="p-4 border border-accent/30 bg-accent/5">
-          <p className="text-accent text-sm font-mono">
-            {"// 확인 이메일을 보냈습니다"}
+        <div className="p-4 rounded-lg border border-border bg-background">
+          <p className="text-foreground text-sm font-medium">
+            확인 이메일을 보냈습니다
           </p>
-          <p className="text-muted text-sm font-sans mt-1">
+          <p className="text-muted text-sm mt-1">
             이메일의 링크를 클릭하여 계정을 활성화해 주세요.
           </p>
         </div>
         <button
           onClick={() => router.push("/sign-in")}
-          className="text-sm font-mono text-accent hover:underline transition-colors cursor-pointer"
+          className="text-sm text-accent hover:underline transition-colors cursor-pointer"
         >
-          &gt; sign_in
+          sign in
         </button>
       </div>
     );
@@ -87,7 +87,7 @@ export function SignUpForm() {
         <button
           type="button"
           onClick={() => handleOAuthSignUp("github")}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-border bg-background hover:bg-card-hover text-foreground text-sm font-mono transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-3 h-9 px-4 rounded border border-border-strong! bg-background hover:bg-surface text-foreground text-sm font-medium transition-colors cursor-pointer"
         >
           <GitHubIcon />
           github
@@ -95,7 +95,7 @@ export function SignUpForm() {
         <button
           type="button"
           onClick={() => handleOAuthSignUp("google")}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-border bg-background hover:bg-card-hover text-foreground text-sm font-mono transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-3 h-9 px-4 rounded border border-border-strong! bg-background hover:bg-surface text-foreground text-sm font-medium transition-colors cursor-pointer"
         >
           <GoogleIcon />
           google
@@ -108,7 +108,7 @@ export function SignUpForm() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-3 text-muted-foreground font-mono">
+          <span className="bg-background px-3 text-muted-foreground">
             or
           </span>
         </div>
@@ -117,13 +117,13 @@ export function SignUpForm() {
       {/* Email form */}
       <form onSubmit={handleSignUp} className="space-y-4">
         {error && (
-          <div className="p-3 border border-red-500/30 bg-red-500/5 text-red-400 text-sm font-sans">
+          <div className="p-3 rounded border border-red-500/30! bg-red-500/10 text-red-600 dark:text-red-400 text-sm">
             {error}
           </div>
         )}
 
         <div className="space-y-1.5">
-          <label htmlFor="email" className="text-xs font-mono text-muted">
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
             email
           </label>
           <input
@@ -133,12 +133,12 @@ export function SignUpForm() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             required
-            className="w-full px-3 py-2.5 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="password" className="text-xs font-mono text-muted">
+          <label htmlFor="password" className="text-sm font-medium text-foreground">
             password
           </label>
           <input
@@ -148,16 +148,16 @@ export function SignUpForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="최소 6자 이상"
             required
-            className="w-full px-3 py-2.5 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
 
         <div className="space-y-1.5">
           <label
             htmlFor="confirm-password"
-            className="text-xs font-mono text-muted"
+            className="text-sm font-medium text-foreground"
           >
-            confirm_password
+            confirm password
           </label>
           <input
             id="confirm-password"
@@ -166,20 +166,20 @@ export function SignUpForm() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="비밀번호 확인"
             required
-            className="w-full px-3 py-2.5 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2.5 text-sm font-mono border border-accent bg-accent text-background hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full h-9 px-4 rounded text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? "creating..." : "create account"}
         </button>
       </form>
 
-      <p className="text-center text-sm font-sans text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground">
         {"already have an account? "}
         <Link
           href="/sign-in"

@@ -228,7 +228,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
         <input type="hidden" name="postId" value={editMode.postId} />
       )}
       {state.error && (
-        <div className="p-3 border border-red-500/30 bg-red-500/5 text-red-400 text-sm font-sans">
+        <div className="p-3 rounded border border-red-500/30! bg-red-500/10 text-red-600 dark:text-red-400 text-sm">
           {state.error}
         </div>
       )}
@@ -236,11 +236,11 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       {/* Cover Image URL (uploaded client-side to Supabase Storage) */}
       <input type="hidden" name="coverImageUrl" value={coverImageUrl} />
       <div className="space-y-2">
-        <label className="text-sm font-medium text-muted-foreground">
+        <label className="text-sm font-medium text-foreground">
           커버 이미지
         </label>
         {coverImagePreview ? (
-          <div className="relative group rounded-xl overflow-hidden border border-border/40">
+          <div className="relative group rounded-lg overflow-hidden border border-border">
             <Image
               src={coverImagePreview}
               alt="커버 이미지 미리보기"
@@ -250,12 +250,12 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
               unoptimized
             />
             {coverUploading && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <span className="size-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
               </div>
             )}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <label className="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm text-white text-xs font-medium cursor-pointer hover:bg-white/30 transition-colors">
+              <label className="inline-flex items-center h-8 px-3 rounded bg-background text-foreground text-xs font-medium cursor-pointer hover:bg-surface transition-colors">
                 변경
                 <input
                   type="file"
@@ -267,14 +267,14 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
               <button
                 type="button"
                 onClick={removeCoverImage}
-                className="px-3 py-1.5 rounded-lg bg-red-500/30 backdrop-blur-sm text-white text-xs font-medium cursor-pointer hover:bg-red-500/50 transition-colors"
+                className="inline-flex items-center h-8 px-3 rounded bg-background text-red-600 dark:text-red-400 text-xs font-medium cursor-pointer hover:bg-surface transition-colors"
               >
                 삭제
               </button>
             </div>
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-border/40 hover:border-accent/40 bg-white/2 hover:bg-white/4 transition-all cursor-pointer">
+          <label className="flex flex-col items-center justify-center w-full h-40 rounded-lg border border-dashed border-border-strong! hover:border-accent! bg-background hover:bg-surface transition-colors cursor-pointer">
             <svg
               width="32"
               height="32"
@@ -284,14 +284,14 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-muted-foreground/40 mb-2"
+              className="text-muted-foreground mb-2"
             >
               <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
               <circle cx="9" cy="9" r="2" />
               <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
             </svg>
-            <span className="text-sm text-muted-foreground/50">클릭하여 커버 이미지 업로드</span>
-            <span className="text-xs text-muted-foreground/30 mt-1">PNG, JPG, WebP (최대 10MB)</span>
+            <span className="text-sm text-muted">클릭하여 커버 이미지 업로드</span>
+            <span className="text-xs text-muted-foreground mt-1">PNG, JPG, WebP (최대 10MB)</span>
             <input
               type="file"
               accept="image/*"
@@ -304,8 +304,8 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
 
       {/* Title */}
       <div className="space-y-1.5">
-        <label htmlFor="title" className="text-xs font-mono text-muted">
-          title <span className="text-red-400">*</span>
+        <label htmlFor="title" className="text-sm font-medium text-foreground">
+          title <span className="text-red-600 dark:text-red-400">*</span>
         </label>
         <input
           id="title"
@@ -314,16 +314,16 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="포스트 제목을 입력하세요"
-          className="w-full px-3 py-2.5 border border-border bg-background text-foreground text-lg font-mono font-bold placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+          className="w-full h-11 px-3 rounded border border-border-strong! bg-background text-foreground text-lg font-semibold placeholder:text-muted-foreground placeholder:font-normal focus:outline-none focus:border-accent! transition-colors"
         />
         {state.fieldErrors?.title && (
-          <p className="text-sm text-red-400 font-sans">{state.fieldErrors.title}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{state.fieldErrors.title}</p>
         )}
       </div>
 
       {/* Slug */}
       <div className="space-y-1.5">
-        <label htmlFor="slug" className="text-xs font-mono text-muted">
+        <label htmlFor="slug" className="text-sm font-medium text-foreground">
           slug
         </label>
         <div className="flex items-center gap-2">
@@ -335,17 +335,17 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             value={slug}
             onChange={(e) => handleSlugChange(e.target.value)}
             placeholder="auto-generated-slug"
-            className="flex-1 px-3 py-2 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="flex-1 h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
         {state.fieldErrors?.slug && (
-          <p className="text-sm text-red-400 font-sans">{state.fieldErrors.slug}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{state.fieldErrors.slug}</p>
         )}
       </div>
 
       {/* Excerpt */}
       <div className="space-y-1.5">
-        <label htmlFor="excerpt" className="text-xs font-mono text-muted">
+        <label htmlFor="excerpt" className="text-sm font-medium text-foreground">
           excerpt
         </label>
         <textarea
@@ -355,13 +355,13 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
           onChange={(e) => setExcerpt(e.target.value)}
           placeholder="포스트에 대한 간단한 설명"
           rows={2}
-          className="w-full px-3 py-2.5 border border-border bg-background text-foreground text-sm font-sans placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors resize-none"
+          className="w-full px-3 py-2.5 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors resize-none"
         />
       </div>
 
       {/* Tags */}
       <div className="space-y-1.5">
-        <label className="text-xs font-mono text-muted">tags</label>
+        <label className="text-sm font-medium text-foreground">tags</label>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => {
             const isSelected = selectedTags.includes(tag.id);
@@ -370,10 +370,11 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
                 key={tag.id}
                 type="button"
                 onClick={() => toggleTag(tag.id)}
-                className={`px-2.5 py-1 text-xs font-mono transition-colors cursor-pointer border ${
+                aria-pressed={isSelected}
+                className={`h-7 px-2.5 rounded text-xs transition-colors cursor-pointer border ${
                   isSelected
-                    ? "border-accent text-accent bg-accent/5"
-                    : "border-border text-muted-foreground hover:border-accent/50 hover:text-foreground"
+                    ? "border-accent! text-accent bg-accent/10"
+                    : "border-border-strong! text-muted hover:text-foreground hover:bg-surface"
                 }`}
               >
                 {tag.name.toLowerCase()}
@@ -381,7 +382,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             );
           })}
           {tags.length === 0 && (
-            <p className="text-sm text-muted-foreground font-sans">{"// 등록된 태그가 없습니다"}</p>
+            <p className="text-sm text-muted-foreground">등록된 태그가 없습니다</p>
           )}
         </div>
         {selectedTags.map((tagId) => (
@@ -392,8 +393,8 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       {/* Content Editor */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-mono text-muted">
-            content <span className="text-red-400">*</span>
+          <label className="text-sm font-medium text-foreground">
+            content <span className="text-red-600 dark:text-red-400">*</span>
           </label>
           <div className="flex items-center gap-2">
             {/* Image upload */}
@@ -401,7 +402,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
               type="button"
               onClick={() => imageInputRef.current?.click()}
               disabled={imageUploading}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-border hover:border-accent/50 text-muted-foreground hover:text-accent text-xs font-mono transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded border border-border-strong! text-foreground hover:bg-surface text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {imageUploading ? (
                 <>
@@ -428,7 +429,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             />
 
             {/* .md file upload */}
-            <label className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-border hover:border-accent/50 text-muted-foreground hover:text-accent text-xs font-mono transition-colors cursor-pointer">
+            <label className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded border border-border-strong! text-foreground hover:bg-surface text-xs transition-colors cursor-pointer">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" />
@@ -445,7 +446,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
           </div>
         </div>
         {uploadError && (
-          <p className="text-sm text-red-400 font-sans">{uploadError}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{uploadError}</p>
         )}
 
         {/* Tab switcher */}
@@ -453,10 +454,10 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
           <button
             type="button"
             onClick={() => setActiveTab("write")}
-            className={`px-3 py-2 text-xs font-mono transition-colors cursor-pointer ${
+            className={`px-3 py-2 text-sm transition-colors cursor-pointer -mb-px ${
               activeTab === "write"
-                ? "text-accent border-b border-accent -mb-px"
-                : "text-muted-foreground hover:text-foreground"
+                ? "text-foreground font-medium border-b-2 border-foreground!"
+                : "text-muted hover:text-foreground"
             }`}
           >
             write
@@ -464,10 +465,10 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
           <button
             type="button"
             onClick={() => setActiveTab("preview")}
-            className={`px-3 py-2 text-xs font-mono transition-colors cursor-pointer ${
+            className={`px-3 py-2 text-sm transition-colors cursor-pointer -mb-px ${
               activeTab === "preview"
-                ? "text-accent border-b border-accent -mb-px"
-                : "text-muted-foreground hover:text-foreground"
+                ? "text-foreground font-medium border-b-2 border-foreground!"
+                : "text-muted hover:text-foreground"
             }`}
           >
             preview
@@ -483,16 +484,16 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             onChange={(e) => setContent(e.target.value)}
             placeholder="마크다운으로 내용을 작성하세요..."
             rows={24}
-            className="w-full px-3 py-3 border border-border bg-background text-foreground text-sm font-mono leading-relaxed placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors resize-y"
+            className="w-full px-3 py-3 rounded border border-border-strong! bg-background text-foreground text-sm font-mono leading-relaxed placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors resize-y"
           />
         ) : (
-          <div className="min-h-[400px] px-4 py-3 border border-border bg-background overflow-auto">
+          <div className="min-h-[400px] px-4 py-3 rounded border border-border-strong! bg-background overflow-auto">
             {content ? (
               <div className="prose-blog">
                 <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
               </div>
             ) : (
-              <p className="text-muted-foreground text-sm font-sans">{"// 미리보기할 내용이 없습니다"}</p>
+              <p className="text-muted-foreground text-sm">미리보기할 내용이 없습니다</p>
             )}
           </div>
         )}
@@ -500,7 +501,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
           <input type="hidden" name="content" value={content} />
         )}
         {state.fieldErrors?.content && (
-          <p className="text-sm text-red-400 font-sans">{state.fieldErrors.content}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{state.fieldErrors.content}</p>
         )}
       </div>
 
@@ -515,10 +516,10 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
           className="flex items-center gap-2 cursor-pointer"
         >
           <input type="hidden" name="featured" value={featured ? "on" : ""} />
-          <div className={`relative w-8 h-4 border transition-colors ${featured ? "bg-accent/20 border-accent" : "bg-card border-border"}`}>
-            <div className={`absolute top-0.5 left-0.5 size-3 transition-all ${featured ? "bg-accent translate-x-4" : "bg-muted-foreground"}`} />
+          <div className={`relative w-8 h-[18px] rounded-full border transition-colors ${featured ? "bg-accent border-accent!" : "bg-surface border-border-strong!"}`}>
+            <div className={`absolute top-0.5 left-0.5 size-3 rounded-full transition-transform ${featured ? "bg-background translate-x-3.5" : "bg-muted-foreground"}`} />
           </div>
-          <span className="text-xs font-mono text-muted-foreground">featured</span>
+          <span className="text-sm text-foreground">featured</span>
         </button>
 
         <div className="flex-1" />
@@ -527,7 +528,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="px-3 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground border border-border hover:border-accent/50 transition-colors"
+            className="inline-flex items-center h-9 px-4 rounded text-sm text-foreground border border-border-strong! hover:bg-surface transition-colors"
           >
             cancel
           </Link>
@@ -536,7 +537,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             name="status"
             value="draft"
             disabled={isPending || coverUploading}
-            className="px-3 py-1.5 text-xs font-mono text-foreground border border-border hover:border-accent/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="h-9 px-4 rounded text-sm text-foreground border border-border-strong! hover:bg-surface transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending ? "saving..." : "save draft"}
           </button>
@@ -545,7 +546,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
             name="status"
             value="published"
             disabled={isPending || coverUploading}
-            className="px-4 py-1.5 text-xs font-mono border border-accent bg-accent text-background hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="h-9 px-4 rounded text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending
               ? isEditing && editMode.status === "published" ? "updating..." : "publishing..."

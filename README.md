@@ -1,6 +1,6 @@
 # techlog
 
-Personal tech blog where every published post is one layer of a stratigraphic column. Built with Next.js, Tailwind CSS, and Supabase.
+A quiet, reading-first personal tech blog. Built with Next.js, Tailwind CSS, and Supabase.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ Personal tech blog where every published post is one layer of a stratigraphic co
 | Backend | Supabase (Auth, Database) |
 | State / Data | TanStack Query, Zustand |
 | Markdown | react-markdown, remark-gfm, rehype-highlight |
-| Fonts | Pretendard (UI, headings, prose), JetBrains Mono (dates, code) |
+| Fonts | Pretendard (UI, headings, prose, dates), JetBrains Mono (code) |
 | Package Manager | pnpm |
 
 ## Features
@@ -23,8 +23,8 @@ Personal tech blog where every published post is one layer of a stratigraphic co
 - **Admin**: Post & tag management UI, draft/publish workflow, featured flag (admin email-gated)
 - **Engagement**: View counter, like button (auth-required)
 - **Search**: `Ctrl/Cmd + K` quick search modal
-- **Home**: Strata hero drawn from every published post (8 titled beds, older posts compressed into laminae you can pick by pointer, touch or keyboard; colour = primary tag, ruler and legend from real dates and tags), then a monthly core log with infinite scroll
-- **Reading UX**: scroll-to-top, prose typography, dark theme
+- **Home**: one-line intro, then posts grouped by year (date, title, excerpt, tags) with infinite scroll
+- **Reading UX**: scroll-to-top, prose typography, light theme with automatic dark mode (`prefers-color-scheme`)
 
 ## Getting Started
 
@@ -104,10 +104,10 @@ docs/
 
 ## Design
 
-- **Concept**: the blog is a stratigraphic column. Newest posts sit on top; each post is a bed whose colour is its primary tag's formation. Product facts live in `PRODUCT.md`.
-- **Theme**: Dark ink ground (`#081818`) with mineral bed colours (ochre, teal, rust, violet, bone, slate) and a single accent (`#e2b04a`).
-- **Typography**: Pretendard for UI, headings and prose (Korean-first), JetBrains Mono for dates, depth ruler and code.
-- **Motion**: one authored moment (beds settle oldest-first on the home hero), hover lift on beds, everything off under `prefers-reduced-motion`.
+- **Concept**: quiet reading. No hero graphic, no cards, no entrance animation; just an intro line and the post list. Product facts live in `PRODUCT.md`, the design system in `DESIGN.md`.
+- **Theme**: light by default (`#fcfcfd` background) with a dark variant via `prefers-color-scheme` (`#0e1013`), no toggle; a single blue accent (`#2f5bea` / `#7c9cff`).
+- **Typography**: Pretendard for everything (Korean-first, 17px / 1.85 prose in a 720px column), JetBrains Mono for code only.
+- **Motion**: colour transitions on hover only; no entrance animation.
 
 ## Deploy
 

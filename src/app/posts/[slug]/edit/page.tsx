@@ -47,12 +47,12 @@ export default async function EditPostPage({
 
   return (
     <div className="pt-14">
-      <div className="mx-auto max-w-[740px] px-10 py-12 animate-fade-in-up">
-        <h1 className="text-xl font-mono font-bold mb-1">
-          <span className="text-accent">&gt;</span> edit_post
+      <div className="mx-auto max-w-[740px] px-10 py-12">
+        <h1 className="text-2xl font-bold tracking-[-0.02em] mb-2">
+          edit post
         </h1>
-        <p className="text-sm font-sans text-muted mb-10">
-          {`// editing: ${slug}`}
+        <p className="text-sm text-muted mb-10">
+          editing <span className="font-mono">{slug}</span>
         </p>
 
         <PostEditor

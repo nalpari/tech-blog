@@ -23,12 +23,12 @@ export default async function AdminTagsPage() {
 
   return (
     <div className="pt-14">
-      <div className="mx-auto max-w-[720px] px-10 py-12 animate-fade-in-up">
-        <h1 className="text-xl font-mono font-bold mb-1">
-          <span className="text-accent">&gt;</span> manage_tags
+      <div className="mx-auto max-w-[720px] px-10 py-12">
+        <h1 className="text-2xl font-bold tracking-[-0.02em] mb-2">
+          manage tags
         </h1>
-        <p className="text-sm font-sans text-muted mb-10">
-          {"// 태그를 추가, 수정, 삭제할 수 있습니다"}
+        <p className="text-sm text-muted mb-10">
+          태그를 추가, 수정, 삭제할 수 있습니다
         </p>
 
         <TagManager initialTags={tags ?? []} />

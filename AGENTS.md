@@ -16,7 +16,7 @@ pnpm lint         # Run ESLint
 - **Next.js 16.3.5** — App Router, React Compiler enabled (`reactCompiler: true`)
 - **React 19** with TypeScript 5 (strict mode)
 - **Tailwind CSS v4** via `@tailwindcss/postcss` — uses `@import "tailwindcss"` and `@theme inline` syntax, NOT v3 config files
-- **Fonts**: JetBrains Mono via `next/font/google`(날짜·눈금·코드 등 수치용); Pretendard via CDN `<link>` in `layout.tsx` (본문·UI·제목 전부)
+- **Fonts**: Pretendard via CDN `<link>` in `layout.tsx` (본문·UI·제목·날짜 전부); JetBrains Mono via `next/font/google`(코드 전용)
 - **Supabase** — backend & database (`@supabase/supabase-js`, `@supabase/ssr`)
 - **State / Data**: `@tanstack/react-query` (server state), `zustand` (client/auth store)
 - **Markdown**: `react-markdown` + `remark-gfm` + `rehype-highlight` (with `highlight.js`)
@@ -25,13 +25,13 @@ pnpm lint         # Run ESLint
 
 ## Architecture
 
-**Blog name**: techlog — `layout.tsx`의 `SITE_NAME` 기준 정식 이름. 글 한 편이 지층 한 겹이라는 **층서 단면(stratigraphic column)** 컨셉의 다크 테마 기술 블로그. 제품 사실은 루트 `PRODUCT.md`, 시각 결정과 방향 계약은 `.impeccable/`(작업 산출물, 커밋 대상 아님)에 있다.
+**Blog name**: techlog — `layout.tsx`의 `SITE_NAME` 기준 정식 이름. **"조용한 읽기"** 컨셉의 미니멀 개인 기술 블로그(라이트 기본, 시스템 설정을 따르는 다크). 제품 사실은 루트 `PRODUCT.md`, 시각 결정과 방향 계약은 `.impeccable/`(작업 산출물, 커밋 대상 아님)에 있다.
 
 ### Routing (App Router)
 
 All routes live in `src/app/`. 데이터나 인증을 쓰는 라우트는 전부 요청 시 동적 렌더링된다 (`generateStaticParams`가 `src/app` 전체에 0건이고, 쿠키/`auth.getUser()`에 의존). 정적 프리렌더되는 건 데이터를 읽지 않는 `/about`, `/sign-in`, `/sign-up`, `/_not-found`뿐이다. 동적 라우트는 대신 발행 포스트 조회를 쿼리 레벨에서 캐싱한다 (아래 Data Layer 참고):
 
-- `/` — Home: 최신 10편으로 그린 지층 히어로(`StrataHero`) + 그 이후 글의 월별 로그(무한 스크롤, scroll-to-top)
+- `/` — Home: 한 줄 소개 + 연도별로 묶인 글 목록(무한 스크롤, scroll-to-top)
 - `/posts/[slug]` — Post detail with prose content
 - `/tags` — Tag directory
 - `/tags/[slug]` — Tag detail with filtered posts
@@ -89,8 +89,8 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 
 ### Component Conventions
 
-- **Server components by default** — pages, footer, post-card(목록 행), tag-badge, strata-hero(SVG 지층, 클라이언트 JS 0)
-- **Client components** (`"use client"`) — header, auth-buttons, user-avatar, post-grid (infinite scroll), scroll-to-top, like-button, view-counter, copy-button
+- **Server components by default** — pages, footer, wordmark, post-card(목록 행), tag-badge
+- **Client components** (`"use client"`) — header, search-modal, auth-buttons, user-avatar, post-grid (infinite scroll), scroll-to-top, like-button, view-counter, copy-button, post-editor, delete-post-button, loading, query-loading-indicator
 - **마크다운 렌더는 서버에서** — `markdown-content.tsx`는 서버 컴포넌트다. react-markdown/highlight.js를 클라 번들에 넣지 않기 위해, 복사 버튼만 `copy-button.tsx`로 분리해 클라이언트로 둔다. `"use client"`를 다시 붙이면 번들과 하이드레이션 비용 회귀.
 - Components live in `src/components/`, one component per file
 
@@ -106,14 +106,17 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 
 ### Styling
 
-층서 단면 세계: 깊은 청록 잉크 바탕(`#081818`) 위에 광물색 지층. CSS custom properties in `globals.css` with Tailwind v4 `@theme inline` 매핑.
+"조용한 읽기": 히어로 그래픽·카드·진입 애니메이션 없이 글과 목록만 둔다. 라이트가 기본이고 `prefers-color-scheme: dark`면 같은 이름의 토큰 값만 바뀐다(토글 없음). 액센트는 파란색 하나. CSS custom properties in `globals.css` with Tailwind v4 `@theme inline` 매핑.
 
-**실제 디자인 토큰** (`globals.css` 최상단):
+**실제 디자인 토큰** (`globals.css` 최상단, 라이트 / 다크):
 
-- Background `#081818`, Foreground `#f2f4f3`, Card/Surface `#0d2020`, Card hover `#132a2a`
-- Border `#263838` / Border strong `#74879a` / Border light `#142629`, Muted `#9aa9b5` / Muted foreground `#758790`
-- Accent `#e2b04a`(황토빛, 링크·포커스·활성), Accent cyan `#7fc4c0`(인라인 코드), Accent amber `#f59e0b`(초안 배너)
-- 지층 색 슬롯 `.f0`~`.f5` (`--bed`, `--bed-2`, `--bed-3`, `--bed-fg`): 황토·청록·적갈·보라·본화이트·슬레이트. **태그 게시물 수 순위 상위 5개**가 슬롯 0~4를 받고 나머지는 5(`lib/strata.ts`의 `rankSlots`). 히어로와 목록의 태그 색 표시(`.swatch`)가 같은 규칙을 쓴다.
+- Background `#fcfcfd` / `#0e1013`, Foreground `#14161a` / `#e8eaee`
+- Card·Surface `#f3f4f6` / `#16191e`, Card hover `#eceef1` / `#1c2026`
+- Border `#e6e8ec` / `#23272e`, Border strong `#c9cdd4` / `#3a4049`, Border light `#f0f1f4` / `#1a1d22`
+- Muted `#5b6270` / `#9aa1ad`, Muted foreground `#686f7d` / `#828a98`
+- Accent `#2f5bea` / `#7c9cff`(링크·포커스·hover 제목), Accent cyan `#0e7490` / `#7fc4c0`, Accent amber `#b45309` / `#f59e0b`(초안 배너)
+- `--radius` 6px, `--radius-lg` 12px (`rounded`·`rounded-lg` 유틸이 따른다)
+- 코드 하이라이트는 highlight.js 테마 CSS를 import하지 않는다. `--hl-keyword`·`--hl-string`·`--hl-number`·`--hl-title`·`--hl-built-in`·`--hl-deletion` 변수(라이트/다크 쌍)와 `globals.css`의 `.hljs-*` 규칙으로 직접 칠한다. 텍스트 색은 각 테마 background·surface 위 WCAG AA(4.5:1) 기준.
 - 토큰은 `:root`와 `@theme inline`에 이중 매핑되어 raw `var(--*)`와 Tailwind 유틸 모두 같은 변수를 가리킴. 이름 변경은 두 곳 모두 수정 필요.
 
 **함정 (실제로 겪음)**:
@@ -121,30 +124,26 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 - ⚠ `@theme inline` 변수는 **쓰이지 않으면 `:root`에 내보내지지 않는다.** 커스텀 CSS에서 `var(--font-mono)`는 비어 있으므로 `var(--font-jetbrains-mono)`를 직접 쓴다.
 - ⚠ 전역 `* { border-color: var(--border) }`가 Tailwind 유틸(`border-border-strong` 등)보다 우선한다. 색을 바꾸려면 `border-border-strong!`처럼 `!` 접미사를 쓴다.
 - ⚠ 개발 서버가 `globals.css` 수정을 감지하지 못할 때가 있다(Turbopack). 스타일이 안 바뀌면 `.next/dev`를 지우고 `pnpm dev`를 다시 띄운다.
-- ⚠ **`backdrop-filter`·`filter`·`transform`이 걸린 요소는 안쪽 `position: fixed`의 기준점이 뷰포트에서 그 요소로 바뀐다.** 헤더에 `backdrop-blur`가 있으므로 `SearchModal` 같은 전체 화면 오버레이는 `<header>` 밖(형제)에 둔다. 안에 두면 오버레이가 헤더 영역만 덮는다.
+- ⚠ **`backdrop-filter`·`filter`·`transform`이 걸린 요소는 안쪽 `position: fixed`의 기준점이 뷰포트에서 그 요소로 바뀐다.** 지금 헤더는 블러 없는 단색이지만, 나중에 다시 붙어도 깨지지 않도록 `SearchModal` 같은 전체 화면 오버레이는 `<header>` 밖(형제)에 둔다.
 - ⚠ 전역 포커스 링(`:focus-visible`)은 `@layer base`에 있다. 레이어 밖에 두면 `focus:outline-none` 유틸리티를 덮어써서 입력창에 링이 이중으로 생긴다.
-- ⚠ `.hero-root`는 `container-type: inline-size`라 레이아웃 격리가 걸려 **안쪽 `position: fixed`의 기준점이 바뀐다.** `ScrollToTop` 같은 fixed 요소를 이 안에 넣지 말 것.
 
-**홈 히어로 (`StrataHero`, `lib/strata.ts`)**:
+**레이아웃**:
 
-- `page.tsx`가 `getArchiveBeds()`(발행 글 전체의 제목·날짜·읽기 시간·태그만, `queries.ts`), `getPosts(offset=8)`, `getTags()`를 병렬로 받는다. 기둥은 발행 글 **전체**로 그리고, 앞 `TITLED_BEDS`(8)편만 제목이 붙은 큰 층, 나머지는 압축된 얇은 **박층(lamina)** 띠다. 목록(`PostGrid`)은 8편 다음 글부터 이어진다(`startOffset=8`).
-- `lib/strata.ts`는 순수 함수다: 큰 층 두께 = 읽기 시간(±25%), 접힘은 난수 없이 결정적, 제목 기준선은 거의 수평(±0.5°), 눈금·범례·색은 실제 날짜·태그에서 계산한다. 색은 `tags[0]`의 슬롯이고 같은 지층군 안에서는 출현 순서대로 명도·질감이 순환한다(색조는 돌리지 않는다).
-- 박층 44편 등은 `LaminaPicker`(클라이언트)로 열 수 있다: 마우스는 이동해 고르고 클릭, 터치는 탭 후 제목 링크, 키보드는 ↑↓ Enter.
-- 데스크톱(≥1100px)은 승인된 시안의 16:9 프레임(`--u` 단위, `min(1cqw, 1dvh*1.7684)`)에 % 배치하고, 그 아래는 모바일 흐름 배치다. SVG 레이아웃은 `WIDE_LAYOUT`/`narrowLayout()` 두 벌을 만들어 CSS로 전환한다. 층은 `<a>` 링크이고 제목은 `textPath`로 층 중심선을 따라간다.
-- 층 재질은 승인된 시안에서 잘라낸 질감 플레이트(`public/assets/plates/bed-*.webp`, 출처는 `.webp.json`)를 SVG pattern으로 입힌 것이다.
-- 모션은 "층이 오래된 것부터 내려앉는" 진입 한 번뿐이며 `prefers-reduced-motion`에서 꺼진다.
+- 헤더: `h-14` fixed, `bg-background` 단색 + 하단 `border-b`. 텍스트 워드마크 `techlog`(`wordmark.tsx`, 헤더·푸터 공용) + `blog`/`tags`/`about` 내비. 페이지는 `pt-14`로 헤더 높이만큼 내린다.
+- 읽기 컬럼은 `max-w-[720px]` (홈·글 상세·태그 목록·태그 상세).
+- 홈(`page.tsx`): `getPosts`(`POSTS_PER_PAGE`+1)와 `getTags()`를 병렬로 받아 한 줄 소개(`h1`) 아래 `PostGrid`를 둔다. `PostGrid`는 연도별로 묶고(`groupByYear`), 각 행(`PostCard`, `dateStyle="short"`)은 md 이상에서 `MM.DD | 제목·발췌·태그` 2칼럼이다. 목록에는 조회수·좋아요·읽기 시간을 표시하지 않는다(글 상세 메타 줄에만).
+- 날짜는 `src/lib/format.ts`의 `kstYmd`(KST 기준 `YYYY.MM.DD`), 태그 slug → 이름 맵은 같은 파일의 `tagInfoOf`.
 
 **실제 정의된 유틸리티 클래스**:
 
-- `.prose-blog` — 마크다운 본문. Pretendard, `word-break: keep-all`, 헤딩 `text-wrap: balance`. (터미널풍 `# ## ###` 접두 마커는 제거됨)
-- `.hero*`, `.bed*`, `.strata*`, `.depth-*`, `.legend*`, `.swatch` — 홈 히어로와 태그 색 표시
-- `.stagger-children` — 1~6번째 자식까지 50ms 간격 `fade-in-up` (현재 관리자 화면 등에서만 쓰임). **7번째 이후는 delay 0**
-- `.animate-fade-in-up`, `.animate-fade-in` — 단발 페이드
+- `.prose-blog` — 마크다운 본문. Pretendard 17px(`1.0625rem`)/1.85, `word-break: keep-all`, 헤딩 `text-wrap: balance`. 링크는 accent, 코드 블록은 surface 배경.
+- `.stagger-children` — 1~6번째 자식까지 50ms 간격 `fade-in-up`. **7번째 이후는 delay 0**. 현재 `src`의 어떤 컴포넌트도 쓰지 않는다(정의만 남음).
+- `.animate-fade-in-up`, `.animate-fade-in` — 단발 페이드. 역시 현재 사용처 없음. 셋 다 `prefers-reduced-motion`에서 꺼진다.
 
 **폰트 적용 범위**:
 
-- `body`·UI·제목 — Pretendard(`--font-sans`)
-- 날짜·깊이 눈금·코드 — JetBrains Mono(`--font-jetbrains-mono`)
+- `body`·UI·제목·날짜 — Pretendard(`--font-sans`). 날짜는 `tabular-nums`.
+- 코드(`.prose-blog code`) — JetBrains Mono(`--font-jetbrains-mono`)
 
 Path alias: `@/*` maps to `./src/*`.
 

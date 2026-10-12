@@ -17,10 +17,13 @@ export function CopyButton({ code }: { code: string }) {
 
   return (
     <button
+      type="button"
       onClick={handleCopy}
-      className="absolute top-2 right-2 px-2 py-1 text-[10px] font-mono border border-border/60 bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-accent hover:border-accent/50 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+      className={`absolute top-2 right-2 cursor-pointer rounded border border-border bg-background/80 px-2 py-1 text-xs transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 ${
+        copied ? "text-accent" : "text-muted hover:text-foreground"
+      }`}
     >
-      {copied ? "copied!" : "copy"}
+      {copied ? "복사됨" : "복사"}
     </button>
   );
 }

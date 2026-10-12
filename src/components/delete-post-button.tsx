@@ -25,7 +25,7 @@ export function DeletePostButton({ postId }: DeletePostButtonProps) {
 
   if (error) {
     return (
-      <span className="text-xs font-mono text-red-400">
+      <span className="text-sm text-red-600 dark:text-red-400">
         {error}
       </span>
     );
@@ -34,20 +34,20 @@ export function DeletePostButton({ postId }: DeletePostButtonProps) {
   if (confirming) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs font-mono text-muted-foreground">
-          {"// 정말 삭제하시겠습니까?"}
+        <span className="text-sm text-muted">
+          정말 삭제하시겠습니까?
         </span>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="text-xs font-mono text-red-400 hover:text-red-300 border border-red-400/50 hover:border-red-400 px-2.5 py-1 transition-colors cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center h-8 px-3 rounded text-sm font-medium text-red-600 dark:text-red-400 border border-red-500/40! hover:bg-red-500/10 transition-colors cursor-pointer disabled:opacity-50"
         >
           {deleting ? "deleting..." : "confirm"}
         </button>
         <button
           onClick={() => setConfirming(false)}
           disabled={deleting}
-          className="text-xs font-mono text-muted-foreground hover:text-foreground border border-border hover:border-accent/50 px-2.5 py-1 transition-colors cursor-pointer"
+          className="inline-flex items-center h-8 px-3 rounded text-sm text-foreground border border-border-strong! hover:bg-surface transition-colors cursor-pointer"
         >
           cancel
         </button>
@@ -58,7 +58,7 @@ export function DeletePostButton({ postId }: DeletePostButtonProps) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="text-xs font-mono text-muted-foreground hover:text-red-400 border border-border hover:border-red-400/50 px-2.5 py-1 transition-colors cursor-pointer"
+      className="inline-flex items-center h-8 px-3 rounded text-sm text-red-600 dark:text-red-400 border border-border-strong! hover:bg-red-500/10 transition-colors cursor-pointer"
     >
       delete
     </button>
