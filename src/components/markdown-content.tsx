@@ -2,7 +2,6 @@ import { type ComponentProps } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import "highlight.js/styles/github-dark-dimmed.css";
 import { CopyButton } from "@/components/copy-button";
 
 function extractText(node: unknown): string {

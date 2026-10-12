@@ -43,7 +43,6 @@ export function LikeButton({
   const [count, setCount] = useState(initialCount);
   // 좋아요 상태는 서버 렌더 시점에 주입된다. 마운트 후 별도 fetch를 하지 않는다.
   const [liked, setLiked] = useState(initialLiked);
-  const [isAnimating, setIsAnimating] = useState(false);
   const isToggling = useRef(false);
 
   async function handleToggle() {
@@ -58,7 +57,6 @@ export function LikeButton({
     const newLiked = !liked;
     setLiked(newLiked);
     setCount((prev) => (newLiked ? prev + 1 : Math.max(prev - 1, 0)));
-    setIsAnimating(true);
 
     try {
       const res = await fetch(`/api/posts/${slug}/like`, { method: "POST" });
@@ -81,7 +79,6 @@ export function LikeButton({
       setCount((prev) => (newLiked ? Math.max(prev - 1, 0) : prev + 1));
     } finally {
       isToggling.current = false;
-      setTimeout(() => setIsAnimating(false), 300);
     }
   }
 
@@ -99,21 +96,14 @@ export function LikeButton({
     <button
       type="button"
       onClick={handleClick}
-      className={`inline-flex items-center transition-colors duration-200 ${
+      className={`inline-flex cursor-pointer items-center transition-colors ${
         compact ? "gap-1" : "gap-1.5"
-      } ${
-        liked
-          ? "text-rose-400 hover:text-rose-300"
-          : "text-muted-foreground hover:text-rose-400"
-      }`}
+      } ${liked ? "text-accent" : "text-muted hover:text-foreground"}`}
       aria-label={liked ? "좋아요 취소" : "좋아요"}
+      aria-pressed={liked}
     >
-      <span
-        className={`transition-transform duration-300 ${isAnimating ? "scale-125" : "scale-100"}`}
-      >
-        <HeartIcon size={iconSize} filled={liked} />
-      </span>
-      <span className={`tabular-nums ${compact ? "text-[11px]" : "text-xs"}`}>
+      <HeartIcon size={iconSize} filled={liked} />
+      <span className={`tabular-nums ${compact ? "text-xs" : ""}`}>
         {count.toLocaleString()}
       </span>
     </button>

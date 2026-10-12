@@ -43,9 +43,9 @@ export default async function AdminDashboardPage() {
   return (
     <div className="pt-14">
       <div className="mx-auto max-w-[1200px] px-10 py-12">
-        <header className="mb-10 animate-fade-in-up">
-          <p className="text-xs font-mono text-accent mb-2">{"// admin"}</p>
-          <h1 className="text-2xl font-mono font-bold">dashboard</h1>
+        <header className="mb-10">
+          <p className="text-sm text-muted mb-2">admin</p>
+          <h1 className="text-2xl font-bold tracking-[-0.02em]">dashboard</h1>
           <p className="text-sm text-muted-foreground mt-2">
             게시글 조회수 및 좋아요 통계
           </p>

@@ -57,7 +57,7 @@ export function DashboardContent({
   const totalLikes = posts.reduce((sum, p) => sum + p.like_count, 0);
 
   return (
-    <div className="animate-fade-in-up" style={{ animationDelay: "60ms" }}>
+    <div>
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         <SummaryCard label="총 게시글" value={posts.length} />
@@ -88,8 +88,8 @@ export function DashboardContent({
 
 function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="border border-border/40 bg-card/30 rounded-lg p-5">
-      <p className="text-xs font-mono text-muted-foreground mb-1">{label}</p>
+    <div className="border border-border bg-background rounded-lg p-5">
+      <p className="text-sm text-muted mb-1">{label}</p>
       <p className="text-2xl font-bold font-mono text-foreground">
         {value.toLocaleString()}
       </p>
@@ -109,10 +109,10 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 text-xs font-mono transition-colors -mb-px ${
+      className={`px-4 py-2 text-sm transition-colors -mb-px ${
         active
-          ? "text-accent border-b-2 border-accent"
-          : "text-muted-foreground hover:text-foreground"
+          ? "text-foreground font-medium border-b-2 border-foreground!"
+          : "text-muted hover:text-foreground"
       }`}
     >
       {children}
@@ -134,37 +134,37 @@ function OverviewTab({ posts }: { posts: PostStat[] }) {
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSortBy("views")}
-          className={`text-[11px] font-mono px-2 py-1 rounded transition-colors ${
+          className={`text-xs px-2 py-1 rounded transition-colors ${
             sortBy === "views"
               ? "bg-accent/10 text-accent"
-              : "text-muted-foreground hover:text-foreground"
+              : "text-muted hover:text-foreground"
           }`}
         >
           조회수순
         </button>
         <button
           onClick={() => setSortBy("likes")}
-          className={`text-[11px] font-mono px-2 py-1 rounded transition-colors ${
+          className={`text-xs px-2 py-1 rounded transition-colors ${
             sortBy === "likes"
               ? "bg-accent/10 text-accent"
-              : "text-muted-foreground hover:text-foreground"
+              : "text-muted hover:text-foreground"
           }`}
         >
           좋아요순
         </button>
       </div>
 
-      <div className="border border-border/40 rounded-lg overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border/40 bg-card/50">
-              <th className="text-left text-[11px] font-mono text-muted-foreground px-4 py-3">
+            <tr className="border-b border-border bg-surface">
+              <th className="text-left text-xs font-medium text-muted px-4 py-3">
                 게시글
               </th>
-              <th className="text-right text-[11px] font-mono text-muted-foreground px-4 py-3 w-24">
+              <th className="text-right text-xs font-medium text-muted px-4 py-3 w-24">
                 조회수
               </th>
-              <th className="text-right text-[11px] font-mono text-muted-foreground px-4 py-3 w-24">
+              <th className="text-right text-xs font-medium text-muted px-4 py-3 w-24">
                 좋아요
               </th>
             </tr>
@@ -173,7 +173,7 @@ function OverviewTab({ posts }: { posts: PostStat[] }) {
             {sorted.map((post) => (
               <tr
                 key={post.id}
-                className="border-b border-border/20 hover:bg-card/30 transition-colors"
+                className="border-b border-border-light last:border-b-0 hover:bg-surface transition-colors"
               >
                 <td className="px-4 py-3">
                   <Link
@@ -214,17 +214,17 @@ function ActivityTab({
   }
 
   return (
-    <div className="border border-border/40 rounded-lg overflow-hidden">
+    <div className="border border-border rounded-lg overflow-hidden">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-border/40 bg-card/50">
-            <th className="text-left text-[11px] font-mono text-muted-foreground px-4 py-3">
+          <tr className="border-b border-border bg-surface">
+            <th className="text-left text-xs font-medium text-muted px-4 py-3">
               사용자
             </th>
-            <th className="text-left text-[11px] font-mono text-muted-foreground px-4 py-3">
+            <th className="text-left text-xs font-medium text-muted px-4 py-3">
               게시글
             </th>
-            <th className="text-right text-[11px] font-mono text-muted-foreground px-4 py-3 w-36">
+            <th className="text-right text-xs font-medium text-muted px-4 py-3 w-36">
               일시
             </th>
           </tr>
@@ -236,7 +236,7 @@ function ActivityTab({
             return (
               <tr
                 key={`${record.post_id}-${record.user_id}-${i}`}
-                className="border-b border-border/20 hover:bg-card/30 transition-colors"
+                className="border-b border-border-light last:border-b-0 hover:bg-surface transition-colors"
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -250,7 +250,7 @@ function ActivityTab({
                       />
                     ) : (
                       <div className="size-5 rounded-full bg-accent/10 flex items-center justify-center">
-                        <span className="text-[8px] font-mono text-accent">
+                        <span className="text-[9px] font-medium text-accent">
                           {(profile?.username ?? "?")[0].toUpperCase()}
                         </span>
                       </div>
@@ -269,10 +269,10 @@ function ActivityTab({
                       {post.title}
                     </Link>
                   ) : (
-                    <span className="text-sm text-muted-foreground/50">삭제된 게시글</span>
+                    <span className="text-sm text-muted-foreground">삭제된 게시글</span>
                   )}
                 </td>
-                <td className="text-right px-4 py-3 text-xs font-mono text-muted-foreground/60 tabular-nums">
+                <td className="text-right px-4 py-3 text-xs font-mono text-muted-foreground tabular-nums">
                   {formatDateTime(record.created_at)}
                 </td>
               </tr>

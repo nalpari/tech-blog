@@ -61,7 +61,7 @@ export default function AboutPage() {
     <div className="pt-14">
       <div className="mx-auto max-w-[1200px] px-10 py-12">
         {/* Header */}
-        <div className="mb-12 animate-fade-in-up">
+        <div className="mb-12">
           <h1 className="text-2xl font-mono font-bold mb-4">
             <span className="text-accent">&gt;</span> about
           </h1>
@@ -96,11 +96,11 @@ export default function AboutPage() {
           <p className="text-xs text-muted-foreground font-mono mb-6">
             {"// values"}
           </p>
-          <div className="grid sm:grid-cols-2 gap-4 stagger-children">
+          <div className="grid sm:grid-cols-2 gap-4">
             {values.map((value) => (
               <div
                 key={value.title}
-                className="p-5 border border-border"
+                className="p-5 rounded-lg border border-border bg-background"
               >
                 <h3 className="text-sm font-mono font-bold text-accent mb-2">
                   $ {value.title}
@@ -118,13 +118,13 @@ export default function AboutPage() {
           <p className="text-xs text-muted-foreground font-mono mb-6">
             {"// team"}
           </p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {team.map((member) => (
               <div
                 key={member.name}
-                className="p-5 border border-border"
+                className="p-5 rounded-lg border border-border bg-background"
               >
-                <div className="size-10 border border-accent flex items-center justify-center mb-3">
+                <div className="size-10 rounded-full border border-accent! flex items-center justify-center mb-3">
                   <span className="text-accent font-mono text-xs font-bold">
                     {member.initials}
                   </span>

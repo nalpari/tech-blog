@@ -81,36 +81,36 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`px-4 py-2 text-xs font-mono transition-colors cursor-pointer ${
+            className={`px-4 py-2 text-sm transition-colors cursor-pointer -mb-px ${
               filter === f.key
-                ? "text-accent border-b-2 border-accent"
-                : "text-muted-foreground hover:text-foreground"
+                ? "text-foreground font-medium border-b-2 border-foreground!"
+                : "text-muted hover:text-foreground"
             }`}
           >
             {f.label}
-            <span className="ml-1.5 text-muted-foreground">({counts[f.key]})</span>
+            <span className="ml-1.5 font-normal text-muted-foreground tabular-nums">{counts[f.key]}</span>
           </button>
         ))}
       </div>
 
       {/* Table */}
-      <div className="border border-border overflow-hidden">
+      <div className="rounded-lg border border-border bg-background overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border bg-card/50">
-              <th className="text-left px-4 py-3 text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
+            <tr className="border-b border-border bg-surface">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted">
                 title
               </th>
-              <th className="text-center px-3 py-3 text-[11px] font-mono text-muted-foreground uppercase tracking-wider w-24">
+              <th className="text-center px-3 py-3 text-xs font-medium text-muted w-24">
                 status
               </th>
-              <th className="text-center px-3 py-3 text-[11px] font-mono text-muted-foreground uppercase tracking-wider w-28 hidden sm:table-cell">
+              <th className="text-center px-3 py-3 text-xs font-medium text-muted w-28 hidden sm:table-cell">
                 date
               </th>
-              <th className="text-center px-3 py-3 text-[11px] font-mono text-muted-foreground uppercase tracking-wider w-16 hidden sm:table-cell">
+              <th className="text-center px-3 py-3 text-xs font-medium text-muted w-16 hidden sm:table-cell">
                 views
               </th>
-              <th className="text-right px-4 py-3 text-[11px] font-mono text-muted-foreground uppercase tracking-wider w-32">
+              <th className="text-right px-4 py-3 text-xs font-medium text-muted w-32">
                 actions
               </th>
             </tr>
@@ -120,31 +120,31 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
               <tr>
                 <td
                   colSpan={5}
-                  className="px-4 py-12 text-center text-sm text-muted-foreground font-mono"
+                  className="px-4 py-12 text-center text-sm text-muted-foreground"
                 >
-                  {"// 포스트가 없습니다"}
+                  포스트가 없습니다
                 </td>
               </tr>
             ) : (
               filtered.map((post) => (
                 <tr
                   key={post.id}
-                  className="border-b border-border last:border-b-0 hover:bg-card/30 transition-colors"
+                  className="border-b border-border-light last:border-b-0 hover:bg-surface transition-colors"
                 >
                   {/* Title */}
                   <td className="px-4 py-3">
                     <Link
                       href={`/posts/${encodeURIComponent(post.slug)}`}
-                      className="text-sm font-mono text-foreground hover:text-accent transition-colors line-clamp-1"
+                      className="text-sm font-medium text-foreground hover:text-accent transition-colors line-clamp-1"
                     >
                       {post.featured && (
-                        <span className="text-amber-400 mr-1.5" title="featured">
+                        <span className="text-accent-amber mr-1.5" title="featured">
                           *
                         </span>
                       )}
                       {post.title}
                     </Link>
-                    <p className="text-[11px] text-muted-foreground font-mono mt-0.5 truncate">
+                    <p className="text-xs text-muted-foreground font-mono mt-0.5 truncate">
                       /{post.slug}
                     </p>
                   </td>
@@ -152,10 +152,10 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
                   {/* Status badge */}
                   <td className="text-center px-3 py-3">
                     <span
-                      className={`inline-block px-2 py-0.5 text-[10px] font-mono border ${
+                      className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
                         post.status === "published"
-                          ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/5"
-                          : "text-amber-400 border-amber-400/30 bg-amber-400/5"
+                          ? "text-accent bg-accent/10"
+                          : "text-accent-amber bg-accent-amber/10"
                       }`}
                     >
                       {post.status}
@@ -183,24 +183,20 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
                             ? "draft로 변경"
                             : "publish"
                         }
-                        className={`px-2 py-1 text-[11px] font-mono border transition-colors cursor-pointer disabled:opacity-50 ${
-                          post.status === "published"
-                            ? "text-amber-400 border-amber-400/30 hover:bg-amber-400/10"
-                            : "text-emerald-400 border-emerald-400/30 hover:bg-emerald-400/10"
-                        }`}
+                        className="inline-flex items-center h-7 px-2.5 rounded text-xs text-foreground border border-border-strong! hover:bg-surface transition-colors cursor-pointer disabled:opacity-50"
                       >
                         {post.status === "published" ? "unpublish" : "publish"}
                       </button>
                       <Link
                         href={`/posts/${encodeURIComponent(post.slug)}/edit`}
-                        className="px-2 py-1 text-[11px] font-mono text-accent border border-accent/30 hover:bg-accent/10 transition-colors"
+                        className="inline-flex items-center h-7 px-2.5 rounded text-xs text-foreground border border-border-strong! hover:bg-surface transition-colors"
                       >
                         edit
                       </Link>
                       <button
                         onClick={() => setDeleteTarget(post)}
                         disabled={isPending}
-                        className="px-2 py-1 text-[11px] font-mono text-red-400 border border-red-400/30 hover:bg-red-400/10 transition-colors cursor-pointer disabled:opacity-50"
+                        className="inline-flex items-center h-7 px-2.5 rounded text-xs text-red-600 dark:text-red-400 border border-border-strong! hover:bg-red-500/10 transition-colors cursor-pointer disabled:opacity-50"
                       >
                         del
                       </button>
@@ -215,35 +211,32 @@ export function PostsManageContent({ posts }: { posts: PostItem[] }) {
 
       {/* Delete confirmation modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in">
-          <div className="w-full max-w-md mx-4 border border-border bg-background p-6 shadow-2xl shadow-black/40">
-            <p className="text-xs font-mono text-red-400 mb-2">
-              {"// confirm delete"}
-            </p>
-            <h3 className="text-sm font-mono font-bold text-foreground mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md mx-4 rounded-lg border border-border bg-background p-6">
+            <h3 className="text-base font-bold text-foreground mb-4">
               이 포스트를 삭제하시겠습니까?
             </h3>
             <p className="text-sm text-muted-foreground mb-1 truncate">
               {deleteTarget.title}
             </p>
-            <p className="text-[11px] font-mono text-muted-foreground mb-6">
+            <p className="text-xs font-mono text-muted-foreground mb-6">
               /{deleteTarget.slug}
             </p>
-            <p className="text-xs text-red-400/70 mb-6">
+            <p className="text-sm text-red-600 dark:text-red-400 mb-6">
               관련된 태그, 좋아요, 조회수, 북마크도 함께 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={isPending}
-                className="px-4 py-2 text-xs font-mono text-muted-foreground border border-border hover:text-foreground hover:border-foreground/30 transition-colors cursor-pointer"
+                className="h-9 px-4 rounded text-sm text-foreground border border-border-strong! hover:bg-surface transition-colors cursor-pointer"
               >
                 cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={isPending}
-                className="px-4 py-2 text-xs font-mono text-red-400 border border-red-400/30 hover:bg-red-400/10 transition-colors cursor-pointer disabled:opacity-50"
+                className="h-9 px-4 rounded text-sm font-medium text-red-600 dark:text-red-400 border border-red-500/40! hover:bg-red-500/10 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isPending ? "deleting..." : "delete"}
               </button>

@@ -8,14 +8,12 @@ export const metadata: Metadata = {
 export default function SignUpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 pt-14">
-      <div className="w-full max-w-[400px] space-y-8 animate-fade-in-up">
-        <div className="space-y-2">
-          <h1 className="text-xl font-mono font-bold text-foreground">
-            <span className="text-accent">&gt;</span> create_account
+      <div className="w-full max-w-[380px] space-y-8">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-bold tracking-[-0.02em] text-foreground">
+            create account
           </h1>
-          <p className="text-sm font-sans text-muted">
-            {"// join techlog and start exploring"}
-          </p>
+          <p className="text-sm text-muted">join techlog and start exploring</p>
         </div>
 
         <SignUpForm />

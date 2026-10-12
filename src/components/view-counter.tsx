@@ -50,8 +50,8 @@ export function ViewCounter({
   }, [slug]);
 
   return (
-    <span className="inline-flex items-center gap-1">
-      <EyeIcon size={14} />
+    <span className="inline-flex items-center gap-1.5 tabular-nums text-muted">
+      <EyeIcon size={16} />
       {count.toLocaleString()}
     </span>
   );
@@ -59,7 +59,7 @@ export function ViewCounter({
 
 export function ViewCount({ count }: { count: number }) {
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex items-center gap-1 tabular-nums text-muted">
       <EyeIcon size={12} />
       {count.toLocaleString()}
     </span>

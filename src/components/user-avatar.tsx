@@ -50,7 +50,7 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative size-7 flex items-center justify-center overflow-hidden border border-border hover:border-accent/50 transition-colors cursor-pointer focus:outline-none focus:border-accent"
+        className="relative size-7 flex items-center justify-center overflow-hidden rounded-full border border-border hover:border-border-strong! transition-colors cursor-pointer"
       >
         {avatarUrl ? (
           <Image
@@ -60,8 +60,8 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
             className="object-cover"
           />
         ) : (
-          <div className="size-full bg-accent/10 flex items-center justify-center">
-            <span className="text-accent text-[10px] font-mono font-bold">
+          <div className="size-full bg-surface flex items-center justify-center">
+            <span className="text-foreground text-[10px] font-semibold">
               {initials}
             </span>
           </div>
@@ -69,13 +69,13 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-52 border border-border bg-background shadow-2xl shadow-black/40 animate-fade-in overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-52 rounded-lg border border-border bg-background shadow-lg overflow-hidden">
           {/* User info */}
           <div className="px-4 py-3 border-b border-border">
-            <p className="text-sm font-mono font-bold text-foreground truncate">
+            <p className="text-sm font-semibold text-foreground truncate">
               {name}
             </p>
-            <p className="text-xs font-sans text-muted-foreground truncate">
+            <p className="text-xs text-muted truncate">
               {email}
             </p>
           </div>
@@ -85,22 +85,22 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
             <div className="py-1 border-b border-border">
               <MenuLink
                 href="/admin/dashboard"
-                label="~ dashboard"
+                label="dashboard"
                 onClick={() => setOpen(false)}
               />
               <MenuLink
                 href="/posts/new"
-                label="+ write"
+                label="write"
                 onClick={() => setOpen(false)}
               />
               <MenuLink
                 href="/admin/posts"
-                label="@ manage posts"
+                label="manage posts"
                 onClick={() => setOpen(false)}
               />
               <MenuLink
                 href="/admin/tags"
-                label="# manage tags"
+                label="manage tags"
                 onClick={() => setOpen(false)}
               />
             </div>
@@ -116,7 +116,7 @@ export function UserAvatar({ name, email, avatarUrl, isAdmin }: UserAvatarProps)
           <div className="border-t border-border py-1">
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center px-4 py-2 text-xs font-mono text-muted-foreground hover:text-red-400 hover:bg-card-hover transition-colors cursor-pointer"
+              className="w-full flex items-center px-4 py-2 text-[13px] text-muted hover:text-foreground hover:bg-surface transition-colors cursor-pointer"
             >
               sign out
             </button>
@@ -140,7 +140,7 @@ function MenuLink({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center px-4 py-2 text-xs font-mono text-muted-foreground hover:text-accent hover:bg-card-hover transition-colors"
+      className="flex items-center px-4 py-2 text-[13px] text-muted hover:text-foreground hover:bg-surface transition-colors"
     >
       {label}
     </Link>
@@ -160,7 +160,7 @@ function ComingSoonButton({
         onClick();
         showToast("준비중인 기능입니다.");
       }}
-      className="w-full flex items-center px-4 py-2 text-xs font-mono text-muted-foreground hover:text-accent hover:bg-card-hover transition-colors cursor-pointer"
+      className="w-full flex items-center px-4 py-2 text-[13px] text-muted hover:text-foreground hover:bg-surface transition-colors cursor-pointer"
     >
       {label}
     </button>

@@ -63,8 +63,8 @@ export function LoadingScreen() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
       <Loading size="md" />
-      <p className="text-xs font-mono text-muted-foreground animate-pulse">
-        {"// loading..."}
+      <p className="text-sm text-muted-foreground animate-pulse">
+        loading...
       </p>
     </div>
   );

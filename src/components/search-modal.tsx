@@ -191,10 +191,10 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-[600px] mx-4 bg-card border border-border shadow-2xl animate-fade-in">
+      <div className="relative w-full max-w-[600px] mx-4 bg-background border border-border rounded-lg shadow-xl overflow-hidden">
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
           <svg
@@ -217,9 +217,9 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
             onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="포스트 검색..."
-            className="flex-1 bg-transparent text-foreground text-sm font-mono placeholder:text-muted-foreground outline-none"
+            className="flex-1 bg-transparent text-foreground text-sm placeholder:text-muted-foreground outline-none"
           />
-          <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[11px] font-mono text-muted-foreground border border-border bg-background">
+          <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-surface font-sans text-[11px] text-muted-foreground">
             ESC
           </kbd>
         </div>
@@ -227,13 +227,13 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
         {/* Results */}
         <div ref={listRef} className="max-h-[60vh] overflow-y-auto">
           {isSearching && (
-            <div className="px-4 py-8 text-center text-muted text-sm font-mono">
+            <div className="px-4 py-8 text-center text-muted text-sm">
               검색 중...
             </div>
           )}
 
           {!isSearching && hasQuery && !hasResults && (
-            <div className="px-4 py-8 text-center text-muted text-sm font-mono">
+            <div className="px-4 py-8 text-center text-muted text-sm">
               <span className="text-muted-foreground">&apos;{query}&apos;</span>에 대한 검색
               결과가 없습니다.
             </div>
@@ -243,7 +243,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
             <>
               {titleResults.length > 0 && (
                 <div>
-                  <div className="px-4 py-2 text-[11px] font-mono text-muted-foreground uppercase tracking-wider bg-background/50 border-b border-border">
+                  <div className="px-4 pt-3 pb-1.5 text-xs font-medium text-muted-foreground">
                     타이틀 검색 결과
                   </div>
                   {titleResults.map((result) => {
@@ -254,19 +254,19 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                         key={result.slug}
                         data-search-item
                         onClick={() => navigateToPost(result.slug)}
-                        className={`w-full text-left px-4 py-3 flex flex-col gap-1 border-b border-border-light transition-colors cursor-pointer ${
+                        className={`w-full text-left px-4 py-3 flex flex-col gap-1 transition-colors cursor-pointer ${
                           activeIndex === idx
-                            ? "bg-card-hover"
-                            : "hover:bg-card-hover"
+                            ? "bg-surface"
+                            : "hover:bg-surface"
                         }`}
                       >
-                        <span className="text-sm text-foreground font-mono leading-snug">
+                        <span className="text-sm font-medium text-foreground leading-snug">
                           {highlightMatch(result.title, query)}
                         </span>
                         <span className="text-xs text-muted line-clamp-1">
                           {result.excerpt ?? ""}
                         </span>
-                        <span className="text-[11px] text-muted-foreground font-mono">
+                        <span className="text-xs text-muted-foreground">
                           {result.date ? formatDate(result.date) : ""}
                         </span>
                       </button>
@@ -277,7 +277,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
 
               {contentResults.length > 0 && (
                 <div>
-                  <div className="px-4 py-2 text-[11px] font-mono text-muted-foreground uppercase tracking-wider bg-background/50 border-b border-border">
+                  <div className="px-4 pt-3 pb-1.5 text-xs font-medium text-muted-foreground">
                     본문 검색 결과
                   </div>
                   {contentResults.map((result) => {
@@ -288,13 +288,13 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                         key={result.slug}
                         data-search-item
                         onClick={() => navigateToPost(result.slug)}
-                        className={`w-full text-left px-4 py-3 flex flex-col gap-1 border-b border-border-light transition-colors cursor-pointer ${
+                        className={`w-full text-left px-4 py-3 flex flex-col gap-1 transition-colors cursor-pointer ${
                           activeIndex === idx
-                            ? "bg-card-hover"
-                            : "hover:bg-card-hover"
+                            ? "bg-surface"
+                            : "hover:bg-surface"
                         }`}
                       >
-                        <span className="text-sm text-foreground font-mono leading-snug">
+                        <span className="text-sm font-medium text-foreground leading-snug">
                           {result.title}
                         </span>
                         <span className="text-xs text-muted line-clamp-2">
@@ -303,7 +303,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                             query,
                           )}
                         </span>
-                        <span className="text-[11px] text-muted-foreground font-mono">
+                        <span className="text-xs text-muted-foreground">
                           {result.date ? formatDate(result.date) : ""}
                         </span>
                       </button>
@@ -315,33 +315,33 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
           )}
 
           {!isSearching && !hasQuery && (
-            <div className="px-4 py-8 text-center text-muted text-sm font-mono">
+            <div className="px-4 py-8 text-center text-muted text-sm">
               2글자 이상 입력하면 검색이 시작됩니다.
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-border text-[11px] font-mono text-muted-foreground">
+        <div className="flex items-center justify-between px-4 py-2 border-t border-border text-xs text-muted-foreground">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 border border-border bg-background text-[10px]">
+              <kbd className="px-1 py-0.5 rounded bg-surface font-sans text-[11px]">
                 &uarr;
               </kbd>
-              <kbd className="px-1 py-0.5 border border-border bg-background text-[10px]">
+              <kbd className="px-1 py-0.5 rounded bg-surface font-sans text-[11px]">
                 &darr;
               </kbd>
               <span className="ml-0.5">탐색</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 border border-border bg-background text-[10px]">
+              <kbd className="px-1 py-0.5 rounded bg-surface font-sans text-[11px]">
                 &crarr;
               </kbd>
               <span className="ml-0.5">이동</span>
             </span>
           </div>
           <span className="flex items-center gap-1">
-            <kbd className="px-1 py-0.5 border border-border bg-background text-[10px]">
+            <kbd className="px-1 py-0.5 rounded bg-surface font-sans text-[11px]">
               ESC
             </kbd>
             <span className="ml-0.5">닫기</span>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { kstYmd } from "@/lib/strata";
+import { kstYmd } from "@/lib/format";
 import { isAdmin } from "@/lib/auth";
 import { getLikedPostIds, getPostBySlug, getRelatedPosts } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -65,18 +65,18 @@ export default async function PostPage({
 
     if (draftExists) {
       return (
-        <div className="pt-14">
-          <div className="mx-auto max-w-[740px] px-10 py-24 text-center animate-fade-in-up">
-            <p className="text-xs font-medium text-amber-400 mb-4">초안</p>
-            <h1 className="text-xl font-bold mb-4">
+        <div className="px-[clamp(20px,4vw,40px)] pt-14">
+          <div className="mx-auto max-w-[720px] py-24 text-center">
+            <p className="mb-4 text-sm font-medium text-accent-amber">초안</p>
+            <h1 className="mb-4 text-xl font-bold">
               비공개 포스트입니다
             </h1>
-            <p className="text-sm text-muted-foreground mb-8">
+            <p className="mb-8 text-sm text-muted">
               이 포스트는 아직 발행되지 않았습니다. 관리자만 열람할 수 있습니다.
             </p>
             <Link
               href="/"
-              className="inline-block px-4 py-2 text-xs font-medium text-accent border border-accent/40! hover:bg-accent/10 transition-colors"
+              className="inline-block rounded border border-border-strong! px-4 py-2 text-sm transition-colors hover:bg-surface"
             >
               홈으로 돌아가기
             </Link>
@@ -97,38 +97,42 @@ export default async function PostPage({
   ]);
 
   return (
-    <div className="pt-14">
-      <div className="mx-auto max-w-[1024px] px-[clamp(20px,4vw,40px)] py-14">
+    <div className="px-[clamp(20px,4vw,40px)] pt-14">
+      <div className="mx-auto max-w-[720px] py-16">
         {/* Draft banner */}
         {isDraft && (
-          <div className="mx-auto max-w-[720px] mb-8 px-4 py-3 border border-amber-400/30! bg-amber-400/5">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-amber-400">
-                초안입니다. 관리자만 볼 수 있습니다.
-              </p>
-              <Link
-                href={`/posts/${post.slug}/edit`}
-                className="shrink-0 text-xs font-medium text-amber-400 border border-amber-400/30! hover:bg-amber-400/10 px-2.5 py-1 transition-colors"
-              >
-                수정하고 발행
-              </Link>
-            </div>
+          <div className="mb-10 flex items-center justify-between gap-4 rounded border border-accent-amber/30! bg-accent-amber/10 px-4 py-3 text-sm text-accent-amber">
+            <p>초안입니다. 관리자만 볼 수 있습니다.</p>
+            <Link
+              href={`/posts/${post.slug}/edit`}
+              className="shrink-0 font-medium underline-offset-4 hover:underline"
+            >
+              수정하고 발행
+            </Link>
           </div>
         )}
 
         {/* Article Header */}
-        <header className="mx-auto max-w-[720px] mb-10 animate-fade-in">
-          <div className="flex items-start justify-between gap-4 mb-5">
-            <div className="flex flex-wrap items-center gap-2">
-              {post.tags.map((tag) => (
-                <TagBadge key={tag} slug={tag} size="sm" />
-              ))}
+        <header className="mb-10">
+          <h1 className="text-[28px] sm:text-4xl leading-[1.25] font-bold tracking-[-0.02em] break-keep text-balance">
+            {post.title}
+          </h1>
+
+          {/* 메타 줄 + 관리자 버튼(같은 행 우측) */}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-x-5 gap-y-2">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
+              <time dateTime={post.date} className="tabular-nums">
+                {kstYmd(post.date)}
+              </time>
+              {post.readTime && <span>{post.readTime}</span>}
+              <ViewCounter slug={post.slug} initialCount={post.viewCount} />
+              <LikeButton slug={post.slug} initialCount={post.likeCount} initialLiked={likedIds.has(post.id)} />
             </div>
             {isAdminUser && (
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex shrink-0 items-center gap-4">
                 <Link
                   href={`/posts/${post.slug}/edit`}
-                  className="text-xs font-medium text-muted hover:text-accent border border-border-strong! hover:border-accent/60! px-2.5 py-1 transition-colors"
+                  className="text-sm text-muted transition-colors hover:text-foreground"
                 >
                   수정
                 </Link>
@@ -137,29 +141,24 @@ export default async function PostPage({
             )}
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold leading-[1.2] tracking-tight text-balance">
-            {post.title}
-          </h1>
-
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-muted">
-            <time dateTime={post.date} className="font-mono tabular-nums">
-              {kstYmd(post.date)}
-            </time>
-            {post.readTime && <span>{post.readTime}</span>}
-            <ViewCounter slug={post.slug} initialCount={post.viewCount} />
-            <LikeButton slug={post.slug} initialCount={post.likeCount} initialLiked={likedIds.has(post.id)} />
-          </div>
+          {post.tags.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              {post.tags.map((tag) => (
+                <TagBadge key={tag} slug={tag} size="sm" />
+              ))}
+            </div>
+          )}
         </header>
 
         {/* Cover Image */}
         {post.coverImage && (
-          <div className="mx-auto max-w-[720px] mb-12 animate-fade-in">
+          <div className="mb-10">
             <Image
               src={post.coverImage}
               alt=""
               width={720}
               height={405}
-              className="w-full h-auto rounded-[2px]"
+              className="h-auto w-full rounded-lg"
               sizes="(max-width: 720px) 100vw, 720px"
               priority
             />
@@ -168,14 +167,14 @@ export default async function PostPage({
 
         {/* Article Content */}
         {post.content && (
-          <article className="prose-blog mx-auto max-w-[720px]">
+          <article className="prose-blog">
             <MarkdownContent content={post.content} />
           </article>
         )}
 
         {/* Related Posts */}
         {relatedPosts.length > 0 && (
-          <section className="mx-auto max-w-[720px] mt-20 pt-10 border-t border-border" aria-labelledby="related-title">
+          <section className="mt-20 border-t border-border pt-10" aria-labelledby="related-title">
             <h2 id="related-title" className="text-sm font-semibold text-muted mb-7">
               같은 주제의 글
             </h2>

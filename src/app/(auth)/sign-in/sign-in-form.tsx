@@ -59,7 +59,7 @@ export function SignInForm() {
         <button
           type="button"
           onClick={() => handleOAuthSignIn("github")}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-border bg-background hover:bg-card-hover text-foreground text-sm font-mono transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-3 h-9 px-4 rounded border border-border-strong! bg-background hover:bg-surface text-foreground text-sm font-medium transition-colors cursor-pointer"
         >
           <GitHubIcon />
           github
@@ -67,7 +67,7 @@ export function SignInForm() {
         <button
           type="button"
           onClick={() => handleOAuthSignIn("google")}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-border bg-background hover:bg-card-hover text-foreground text-sm font-mono transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-3 h-9 px-4 rounded border border-border-strong! bg-background hover:bg-surface text-foreground text-sm font-medium transition-colors cursor-pointer"
         >
           <GoogleIcon />
           google
@@ -80,7 +80,7 @@ export function SignInForm() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-3 text-muted-foreground font-mono">
+          <span className="bg-background px-3 text-muted-foreground">
             or
           </span>
         </div>
@@ -89,13 +89,13 @@ export function SignInForm() {
       {/* Email form */}
       <form onSubmit={handleEmailSignIn} className="space-y-4">
         {error && (
-          <div className="p-3 border border-red-500/30 bg-red-500/5 text-red-400 text-sm font-sans">
+          <div className="p-3 rounded border border-red-500/30! bg-red-500/10 text-red-600 dark:text-red-400 text-sm">
             {error}
           </div>
         )}
 
         <div className="space-y-1.5">
-          <label htmlFor="email" className="text-xs font-mono text-muted">
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
             email
           </label>
           <input
@@ -105,12 +105,12 @@ export function SignInForm() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             required
-            className="w-full px-3 py-2.5 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="password" className="text-xs font-mono text-muted">
+          <label htmlFor="password" className="text-sm font-medium text-foreground">
             password
           </label>
           <input
@@ -120,20 +120,20 @@ export function SignInForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
-            className="w-full px-3 py-2.5 border border-border bg-background text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+            className="w-full h-10 px-3 rounded border border-border-strong! bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent! transition-colors"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2.5 text-sm font-mono border border-accent bg-accent text-background hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full h-9 px-4 rounded text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? "signing in..." : "sign in"}
         </button>
       </form>
 
-      <p className="text-center text-sm font-sans text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground">
         {"don't have an account? "}
         <Link
           href="/sign-up"
