@@ -50,3 +50,6 @@ next-env.d.ts
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
+
+# impeccable 작업 산출물 (커밋 대상 아님)
+/.impeccable/
