@@ -132,7 +132,7 @@ export default async function PostPage({
               <div className="flex shrink-0 items-center gap-4">
                 <Link
                   href={`/posts/${post.slug}/edit`}
-                  className="text-sm text-muted transition-colors hover:text-foreground"
+                  className="inline-flex h-8 items-center rounded border border-border-strong! px-3 text-sm text-foreground transition-colors hover:bg-surface"
                 >
                   수정
                 </Link>

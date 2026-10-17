@@ -72,7 +72,7 @@
     <div class="scroll">
     <svg viewBox="0 0 920 944" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="flowchart-post-save-title flowchart-post-save-desc">
       <title id="flowchart-post-save-title">포스트 저장 Server Action 흐름</title>
-      <desc id="flowchart-post-save-desc">createPost가 로그인, 관리자 이메일, 필수 입력, 슬러그 중복을 차례로 검사한 뒤 posts와 post_tags를 저장하고 리다이렉트하며, 각 실패 지점은 error 또는 fieldErrors를 반환하는 흐름도.</desc>
+      <desc id="flowchart-post-save-desc">로그인과 관리자 이메일, 필수 입력, 공통 슬러그 규칙을 검사한 뒤 DB RPC 한 트랜잭션으로 posts와 post_tags를 저장한다. 실패 시 전체 롤백하고 성공 후 캐시를 무효화하고 리다이렉트한다.</desc>
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#9ca3af"/></marker>
         <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#10b981"/></marker>
@@ -152,13 +152,13 @@
       <!-- Step: posts insert -->
       <rect x="240" y="576" width="240" height="64" rx="6" fill="#0a0a0a"/>
       <rect x="240" y="576" width="240" height="64" rx="6" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
-      <text x="360" y="604" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">posts insert</text>
-      <text x="360" y="620" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="middle">published면 published_at = now()</text>
+      <text x="360" y="604" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">DB 저장 RPC 호출</text>
+      <text x="360" y="620" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace" text-anchor="middle">관리자 재검증 · posts + post_tags</text>
 
       <!-- D5 -->
       <polygon points="360,672 480,712 360,752 240,712" fill="#0f0f0f" stroke="#fafafa" stroke-width="1"/>
-      <text x="360" y="708" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">post_tags insert</text>
-      <text x="360" y="724" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">성공?</text>
+      <text x="360" y="708" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">트랜잭션 성공?</text>
+      <text x="360" y="724" fill="#fafafa" font-size="12" font-weight="600" font-family="'Geist', 'Noto Sans KR', sans-serif" text-anchor="middle">성공 후 캐시 무효화</text>
 
       <!-- End: redirect (focal) -->
       <rect x="240" y="784" width="240" height="64" rx="20" fill="#0a0a0a"/>
@@ -175,7 +175,7 @@
       <text x="656" y="396" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ fieldErrors: title, content }</text>
       <text x="656" y="508" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ fieldErrors: slug } | 조회 error</text>
       <text x="656" y="716" fill="#9ca3af" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">{ error: 태그 저장 실패 }</text>
-      <text x="656" y="732" fill="#6b7280" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">고아 post delete 후 반환</text>
+      <text x="656" y="732" fill="#6b7280" font-size="9" font-family="'Geist Mono', 'Noto Sans KR', monospace">글·태그 변경 전체 롤백</text>
 
       <!-- ============ LEGEND ============ -->
       <line x1="24" y1="880" x2="896" y2="880" stroke="rgba(250,250,250,0.10)" stroke-width="0.8"/>
@@ -199,9 +199,9 @@
     </div>
 
     <ul class="notes">
-      <li>근거: <code>src/app/posts/new/actions.ts</code>의 <code>createPost</code>. slug는 입력값이 없으면 <code>generateSlug(title)</code>로 만들고, 중복 조회에서 <code>PGRST116</code>(행 없음) 외의 오류는 <code>error</code>로 반환함.</li>
-      <li>그림에서 뺀 경로: <code>posts insert</code> 실패 시 <code>{ error: 포스트 저장에 실패했습니다 }</code> 반환, 예상 못 한 예외는 catch에서 <code>error</code>로 변환(<code>isRedirectError</code>는 다시 throw).</li>
-      <li><code>updatePost</code>(<code>src/lib/post-actions.ts</code>)와의 차이: 자기 자신(<code>neq("id", postId)</code>)을 빼고 slug 중복을 검사함 · 태그는 <code>post_tags</code> delete 후 insert로 교체 · 태그 실패 시 정리 로직 없음 · draft→published로 바뀔 때만 <code>published_at</code>을 설정 · draft로 저장하면 <code>/admin/posts</code>로 redirect.</li>
+      <li>생성과 수정은 공통 slug 규칙을 검증한다. 한글 제목 등으로 자동 slug가 비면 필드 오류를 반환하고, API에서도 같은 규칙을 사용한다.</li>
+      <li>posts와 post_tags는 한 RPC 트랜잭션으로 저장한다. 잘못된 태그나 DB 오류가 있으면 본문·태그를 함께 롤백한다. 관리자 권한은 Server Action과 DB 양쪽에서 검증한다.</li>
+      <li>성공한 쓰기 이후에만 캐시를 무효화한다. 수정 시 이전·신규 slug 양쪽을 처리하고, draft→published 전환 시 발행 시각을 설정한다. redirect 예외는 일반 오류로 삼키지 않는다.</li>
     </ul>
   </div>
 </body>

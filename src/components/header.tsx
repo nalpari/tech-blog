@@ -8,6 +8,7 @@ import { AuthButtons } from "@/components/auth-buttons";
 import { UserAvatar } from "@/components/user-avatar";
 import { SearchModal } from "@/components/search-modal";
 import { Wordmark } from "@/components/wordmark";
+import { ThemeSelect } from "@/components/theme-select";
 import { showToast } from "@/lib/toast";
 
 const ADMIN_EMAIL = "yoo32767@gmail.com";
@@ -53,13 +54,13 @@ export function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-40 bg-background border-b border-border">
-        <nav className="h-14 flex items-center justify-between px-[clamp(16px,2.6vw,48px)]">
-          <div className="flex items-center gap-[clamp(14px,3vw,44px)]">
+        <nav className="h-14 flex items-center justify-between gap-2 px-[clamp(12px,2.6vw,48px)]">
+          <div className="flex items-center gap-[clamp(8px,2vw,44px)]">
             <Link href="/" aria-label="techlog 홈" className="text-foreground">
               <Wordmark />
             </Link>
 
-            <div className="flex items-center gap-[clamp(12px,2.2vw,32px)]">
+            <div className="flex items-center gap-[clamp(8px,1.5vw,32px)]">
               {navItems.map((item) => {
                 const isActive =
                   item.href === "/"
@@ -96,7 +97,8 @@ export function Header() {
             </div>
           </div>
 
-          <div className="flex items-center gap-[clamp(10px,1.6vw,24px)]">
+          <div className="flex shrink-0 items-center gap-[clamp(6px,1.6vw,24px)]">
+            <ThemeSelect />
             <button
               onClick={() => setSearchOpen(true)}
               aria-label="검색 열기"

@@ -1,81 +1,23 @@
-"use server";
+﻿"use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { ADMIN_EMAIL } from "@/lib/auth";
+import { deletePostAndQueueImages } from "@/lib/delete-post";
 import { redirect } from "next/navigation";
-import { revalidatePath, updateTag } from "next/cache";
-import { POST_CACHE_TAG } from "@/lib/queries";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-
-const ADMIN_EMAIL = "yoo32767@gmail.com";
 
 export async function deletePost(postId: string) {
   try {
     const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user || user.email !== ADMIN_EMAIL) {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user || user.email !== ADMIN_EMAIL) {
       return { error: "삭제 권한이 없습니다." };
     }
-
-    // 본문 및 커버 이미지에서 Supabase Storage 이미지 URL 추출 후 삭제.
-    // slug는 캐시 무효화에도 쓰이므로, 읽지 못하면 삭제를 진행하지 않는다.
-    // (무효화 없이 지우면 지워진 글이 최대 60초간 계속 보인다.)
-    const { data: post, error: fetchError } = await supabase
-      .from("posts")
-      .select("slug, content, cover_image")
-      .eq("id", postId)
-      .single();
-
-    if (fetchError || !post) {
-      return { error: "삭제할 포스트를 찾을 수 없습니다. 새로고침 후 다시 시도해주세요." };
-    }
-
-    const STORAGE_HOST = "stcwgfbjyvlyshdvojgn.supabase.co";
-    const paths: string[] = [];
-
-    // 커버 이미지 경로 추출
-    if (post.cover_image?.includes(STORAGE_HOST) && post.cover_image.includes("/post-images/")) {
-      const path = post.cover_image.split("/post-images/").pop();
-      if (path) paths.push(path);
-    }
-
-    // 본문 이미지 경로 추출
-    if (post.content) {
-      const imgRegex = /!\[.*?\]\((https?:\/\/[^)]+)\)/g;
-      let match;
-      while ((match = imgRegex.exec(post.content)) !== null) {
-        const url = match[1];
-        if (url.includes(STORAGE_HOST) && url.includes("/post-images/")) {
-          const path = url.split("/post-images/").pop();
-          if (path) paths.push(path);
-        }
-      }
-    }
-
-    if (paths.length > 0) {
-      await supabase.storage.from("post-images").remove(paths);
-    }
-
-    // post_tags are cascaded on delete
-    const { error: deleteError } = await supabase
-      .from("posts")
-      .delete()
-      .eq("id", postId);
-
-    if (deleteError) {
-      return { error: `삭제 실패: ${deleteError.message}` };
-    }
-
-    updateTag(POST_CACHE_TAG(post.slug));
-    revalidatePath("/");
-
+    const result = await deletePostAndQueueImages(supabase, postId);
+    if (result.error) return result;
     redirect("/");
   } catch (error) {
     if (isRedirectError(error)) throw error;
-    return { error: "삭제 중 오류가 발생했습니다." };
+    return { error: "삭제 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요." };
   }
 }

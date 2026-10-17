@@ -1,6 +1,6 @@
 ---
 name: techlog
-description: A quiet, reading-first personal engineering blog. Light by default with a system-driven dark variant, one blue accent, and Pretendard throughout.
+description: A quiet, reading-first personal engineering blog. System theme by default with saved light/dark choices, one blue accent, and Pretendard throughout.
 colors:
   paper: "#fcfcfd"
   paper-dark: "#0e1013"
@@ -117,7 +117,7 @@ components:
 
 techlog gets out of the way of the writing. There is no hero graphic, no card grid and no entrance animation: the home page is a one-line introduction and a list of posts grouped by year, and a post page is a title, a meta line and the text in a 720px column.
 
-Light is the default. When the system prefers dark, `@media (prefers-color-scheme: dark)` swaps the same token names to their dark values; there is no theme toggle. All tokens live in `src/app/globals.css`, double-mapped between `:root` and `@theme inline`.
+The header offers system, light, and dark themes. System is the default; the choice is saved as `techlog-theme` in localStorage. A synchronous head script resolves the preference before first paint. The html `data-theme` attribute selects the actual palette and Tailwind `dark:` utilities. OS changes apply while system is selected; explicit choices take precedence. The media query supplies a system-dark fallback when JavaScript is unavailable. All tokens live in `src/app/globals.css`, mapped to Tailwind through `@theme inline`.
 
 **Key Characteristics:**
 - One blue accent for links, focus and hover; everything else is ink, grey and hairlines.
@@ -197,7 +197,7 @@ Ink text, accent links, inline code on Surface with a 6px radius, code blocks on
 
 ### Do:
 - **Do** keep the list to date, title, excerpt and tags; put counts and read time on the post page.
-- **Do** change token values in both the light `:root` block and the dark media query.
+- **Do** keep the light `:root`, explicit dark `[data-theme="dark"]`, and system-dark media fallback token values consistent.
 - **Do** write custom-CSS font references as `var(--font-jetbrains-mono)`; `@theme inline` variables are not emitted to `:root` unless a utility uses them.
 - **Do** suffix border colour utilities with `!` (`border-border-strong!`); the global `* { border-color }` outranks them.
 

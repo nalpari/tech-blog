@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PostsManageContent } from "./posts-manage-content";
-
-const ADMIN_EMAIL = "yoo32767@gmail.com";
+import Link from "next/link";
+import { ADMIN_EMAIL } from "@/lib/auth";
 
 export const metadata = {
   title: "Manage Posts — Spectra Admin",
@@ -34,6 +34,9 @@ export default async function AdminPostsPage() {
           </p>
         </header>
 
+        <Link href="/admin/image-cleanup" className="mb-5 inline-block text-sm text-accent hover:underline">
+          삭제한 글의 이미지 정리 · 재시도
+        </Link>
         <PostsManageContent posts={posts ?? []} />
       </div>
     </div>

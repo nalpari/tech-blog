@@ -320,8 +320,9 @@
       <li>생략한 테이블: <code>bookmarks</code>(user_id·post_id 모두 CASCADE), <code>post_views</code>(post_id CASCADE, user_id <code>SET NULL</code>, SELECT는 admin만).</li>
       <li><code>sort_date</code> = <code>GENERATED ALWAYS AS (COALESCE(published_at, created_at)) STORED</code>. 목록 정렬 <code>(sort_date, created_at, id) desc</code>와 인덱스 키가 일치해야 함.</li>
       <li>RPC(SECURITY DEFINER): <code>toggle_post_like(post_slug, liker_id)</code> → post_likes 삽입/삭제 + like_count 증감, <code>increment_post_view_count(post_slug, viewer_id)</code> → post_views 기록 + view_count 증가.</li>
-      <li>트리거: <code>on_auth_user_created</code> → <code>handle_new_user()</code>가 auth.users 가입 시 profiles 행 생성. posts·profiles에는 <code>update_updated_at</code> 트리거.</li>
-      <li><code>admin/posts/actions.ts</code>의 <code>deletePost</code>는 CASCADE가 있어도 post_tags·post_likes·post_views·bookmarks를 먼저 수동 삭제함.</li>
+      <li>트리거: <code>on_auth_user_created</code> → <code>handle_new_user()</code>가 UUID 기반의 충돌 없는 username과 기본 user 역할로 profiles 행을 생성한다. posts·profiles에는 <code>update_updated_at</code> 트리거가 있다.</li>
+      <li><code>save_post_with_tags</code>는 posts와 post_tags를 한 트랜잭션으로 저장한다. <code>delete_post_with_cleanup</code>은 posts를 삭제하고 관련 행은 CASCADE로 정리한다. 두 RPC 모두 <code>is_blog_admin()</code>으로 관리자 신원을 검증한다.</li>
+      <li>삭제 트리거가 <code>post_image_cleanup_jobs</code>에 글의 content·cover_image 스냅샷을 보존한다. 컬럼은 id UUID PK, post_id UUID UNIQUE, content TEXT, cover_image TEXT, attempts INT, last_error TEXT, created_at TIMESTAMPTZ이다. 삭제된 글을 참조하는 FK는 두지 않는다. 관리자만 조회·처리하고 공유 이미지·실패 작업은 재시도를 위해 유지한다.</li>
     </ul>
   </div>
 </body>

@@ -1,18 +1,13 @@
-"use server";
+﻿"use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { ADMIN_EMAIL } from "@/lib/auth";
+import { isValidPostSlug, POST_SLUG_ERROR } from "@/lib/slug";
 import { redirect } from "next/navigation";
 import { revalidatePath, updateTag } from "next/cache";
 import { POST_CACHE_TAG } from "@/lib/queries";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-
-const ADMIN_EMAIL = "yoo32767@gmail.com";
-
-function estimateReadTime(content: string): string {
-  const words = content.trim().split(/\s+/).length;
-  const minutes = Math.max(1, Math.ceil(words / 200));
-  return `${minutes} min read`;
-}
+import { readPostForm, postMutationError } from "@/lib/post-form";
 
 export type UpdatePostState = {
   error?: string;
@@ -25,148 +20,39 @@ export async function updatePost(
 ): Promise<UpdatePostState> {
   try {
     const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return { error: "로그인이 필요합니다." };
+    if (user.email !== ADMIN_EMAIL) return { error: "포스트 수정 권한이 없습니다." };
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return { error: "로그인이 필요합니다." };
-    }
-
-    if (user.email !== ADMIN_EMAIL) {
-      return { error: "포스트 수정 권한이 없습니다." };
-    }
-
-    const postId = formData.get("postId") as string;
-    const title = formData.get("title") as string;
-    const content = formData.get("content") as string;
-    const excerpt = formData.get("excerpt") as string;
-    const slug = formData.get("slug") as string;
-    const coverImageUrl = formData.get("coverImageUrl") as string;
-    const status = formData.get("status") as string;
-    const featured = formData.get("featured") === "on";
-    const tagIds = formData.getAll("tags") as string[];
-
-    const fieldErrors: Record<string, string> = {};
-    if (!title?.trim()) fieldErrors.title = "제목을 입력해주세요.";
-    if (!content?.trim()) fieldErrors.content = "내용을 입력해주세요.";
-
-    if (Object.keys(fieldErrors).length > 0) {
-      return { fieldErrors };
-    }
-
-    const readTime = estimateReadTime(content);
-
-    // Check slug uniqueness (exclude current post)
-    if (slug?.trim()) {
-      const { data: existing, error: slugCheckError } = await supabase
-        .from("posts")
-        .select("id")
-        .eq("slug", slug.trim())
-        .neq("id", postId)
-        .single();
-
-      if (slugCheckError && slugCheckError.code !== "PGRST116") {
-        return { error: "슬러그 중복 확인에 실패했습니다." };
-      }
-
-      if (existing) {
-        return { fieldErrors: { slug: "이미 사용 중인 슬러그입니다." } };
-      }
-    }
-
-    // Get current post to check publish state transition
+    const { fields, fieldErrors } = readPostForm(formData);
+    if (Object.keys(fieldErrors).length) return { fieldErrors };
+    const postId = String(formData.get("postId") ?? "");
     const { data: currentPost, error: fetchError } = await supabase
-      .from("posts")
-      .select("status, published_at, slug")
-      .eq("id", postId)
-      .single();
-
+      .from("posts").select("slug").eq("id", postId).single();
     if (fetchError || !currentPost) {
-      return { error: "수정할 포스트를 찾을 수 없습니다. 페이지를 새로고침 후 다시 시도해주세요." };
+      return { error: "수정할 포스트를 찾을 수 없습니다. 새로고침 후 다시 시도해주세요." };
     }
+    const slug = fields.slug || currentPost.slug;
+    if (!isValidPostSlug(slug)) return { fieldErrors: { slug: POST_SLUG_ERROR } };
 
-    const isNewlyPublished =
-      status === "published" && currentPost.status !== "published";
+    // posts와 post_tags는 하나의 DB 트랜잭션이다. 실패 시 기존 본문·태그가 모두 보존된다.
+    const { data: result, error } = await supabase.rpc("save_post_with_tags", {
+      target_post_id: postId,
+      post_data: { ...fields, slug },
+      tag_ids: fields.tagIds,
+    });
+    if (error || !result) return postMutationError(error);
 
-    const finalSlug = slug?.trim() || currentPost.slug;
-
-    const { error: updateError } = await supabase
-      .from("posts")
-      .update({
-        title: title.trim(),
-        slug: finalSlug,
-        content: content.trim(),
-        excerpt: excerpt?.trim() || null,
-        cover_image: coverImageUrl || null,
-        status: status === "published" ? "published" : "draft",
-        featured,
-        read_time: readTime,
-        published_at: isNewlyPublished
-          ? new Date().toISOString()
-          : currentPost.published_at,
-      })
-      .eq("id", postId);
-
-    if (updateError) {
-      return { error: `포스트 수정에 실패했습니다: ${updateError.message}` };
-    }
-
-    // slug가 바뀌었을 수 있으므로 변경 전/후 양쪽을 버린다.
-    const invalidatePost = () => {
-      updateTag(POST_CACHE_TAG(currentPost.slug));
-      if (finalSlug !== currentPost.slug) {
-        updateTag(POST_CACHE_TAG(finalSlug));
-      }
-      revalidatePath(`/posts/${finalSlug}`);
-      revalidatePath("/");
-    };
-
-    // posts 쓰기가 커밋된 직후에 한 번. 아래 태그 저장이 실패해 early
-    // return하더라도 본문 변경은 이미 반영됐으므로, 옛 캐시를 남겨두면
-    // "저장했는데 60초 동안 안 바뀌는" 화면이 된다.
-    invalidatePost();
-
-    try {
-      // Update tags: delete existing, insert new
-      const { error: deleteTagError } = await supabase.from("post_tags").delete().eq("post_id", postId);
-
-      if (deleteTagError) {
-        return { error: "기존 태그 삭제에 실패했습니다. 다시 시도해주세요." };
-      }
-
-      if (tagIds.length > 0) {
-        const postTags = tagIds.map((tagId) => ({
-          post_id: postId,
-          tag_id: tagId,
-        }));
-
-        const { error: tagError } = await supabase
-          .from("post_tags")
-          .insert(postTags);
-
-        if (tagError) {
-          return { error: "태그 저장에 실패했습니다." };
-        }
-      }
-    } finally {
-      // 태그 작업이 끝난 뒤 한 번 더. 무효화는 호출 시각까지 생성된 항목만
-      // 버리므로, 위 1차 무효화 이후 delete와 insert 사이에 캐시 미스 요청이
-      // 들어와 "태그가 빈" 중간 상태를 캐싱했다면 그 항목은 살아남는다.
-      // 성공·부분 실패 어느 쪽으로 끝나든 그 중간 상태를 다시 버린다.
-      invalidatePost();
-    }
-
-    const finalStatus = status === "published" ? "published" : "draft";
-    if (finalStatus === "published") {
-      redirect(`/posts/${encodeURIComponent(finalSlug!)}`);
-    } else {
-      redirect("/admin/posts");
-    }
+    // RPC 성공 응답은 COMMIT 뒤에 온다. DB가 잠근 행에서 읽은 이전 slug도 무효화한다.
+    updateTag(POST_CACHE_TAG(result.previous_slug ?? currentPost.slug));
+    updateTag(POST_CACHE_TAG(slug));
+    revalidatePath(`/posts/${currentPost.slug}`);
+    revalidatePath(`/posts/${slug}`);
+    revalidatePath("/admin/posts");
+    revalidatePath("/");
+    redirect(fields.status === "published" ? `/posts/${slug}` : "/admin/posts");
   } catch (error) {
     if (isRedirectError(error)) throw error;
-    return { error: "포스트 수정 중 예기치 않은 오류가 발생했습니다." };
+    return { error: "포스트 수정 중 오류가 발생했습니다. 입력 내용을 유지한 채 다시 시도해주세요." };
   }
 }

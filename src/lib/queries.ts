@@ -74,7 +74,7 @@ export async function getPosts(options?: { offset?: number; limit?: number }): P
   const offset = options?.offset ?? 0;
   const limit = options?.limit ?? POSTS_PER_PAGE;
 
-  const { data: posts } = await supabase
+  const { data: posts, error } = await supabase
     .from("posts")
     .select(POST_SUMMARY_SELECT)
     .eq("status", "published")
@@ -82,6 +82,10 @@ export async function getPosts(options?: { offset?: number; limit?: number }): P
     .order(POSTS_SECONDARY_ORDER_COLUMN, POSTS_ORDER_OPTIONS)
     .order(POSTS_TIE_BREAKER_COLUMN, POSTS_ORDER_OPTIONS)
     .range(offset, offset + limit - 1);
+
+  if (error) {
+    throw new Error(`[getPosts] query failed: ${error.message}`);
+  }
 
   if (!posts) return [];
 

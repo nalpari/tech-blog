@@ -158,10 +158,9 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const before = content.slice(0, start);
-    const after = content.slice(end);
-
-    setContent(before + text + after);
+    // 비동기 업로드도 완료 시점의 선택 영역에 삽입한다. 업로드 도중 쓴
+    // 본문을 보존하도록 이전 렌더의 content 대신 최신 상태를 사용한다.
+    setContent((latest) => latest.slice(0, start) + text + latest.slice(end));
 
     requestAnimationFrame(() => {
       const newPos = start + text.length;
@@ -171,7 +170,8 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+    const input = e.currentTarget;
+    const file = input.files?.[0];
     if (!file) return;
 
     setUploadError(null);
@@ -186,7 +186,7 @@ export function PostEditor({ tags, editMode }: PostEditorProps) {
       setUploadError(err instanceof Error ? err.message : "이미지 업로드 실패");
     } finally {
       setImageUploading(false);
-      e.target.value = "";
+      input.value = "";
     }
   }
 

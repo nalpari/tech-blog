@@ -39,6 +39,7 @@ All routes live in `src/app/`. 데이터나 인증을 쓰는 라우트는 전부
 - `(auth)/sign-in`, `(auth)/sign-up` — Supabase Auth UI (route group, URL에서 `(auth)` 표기 안 됨)
 - `/auth/callback` — OAuth 콜백 핸들러
 - `/admin/dashboard`, `/admin/posts`, `/admin/tags` — 관리자 전용 (admin email gate)
+- `/admin/image-cleanup` — 삭제 후 남은 이미지 정리 대기열 조회·재시도 (admin email gate)
 - `/api/posts` — 무한 스크롤용 목록. `/api/posts/[slug]/like`(POST), `/api/posts/[slug]/view`(POST)
 
 ### Supabase
@@ -67,7 +68,7 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 - 포스트를 변경하는 Server Action은 **모두** `updateTag(POST_CACHE_TAG(slug))`를 호출해야 한다 (`post-actions.ts`, `posts/new/actions.ts`, `posts/[slug]/actions.ts`, `admin/posts/actions.ts`). slug를 바꾸는 `updatePost`는 변경 전/후 양쪽을 무효화한다. Next 16의 `revalidateTag`는 인자가 2개(`revalidateTag(tag, profile)`)이고 지연 만료이므로, Server Action에서는 즉시 반영되는 `updateTag`를 쓴다.
   - ⚠️ **`updateTag`는 Server Action 전용이다.** Route Handler(`app/api/**/route.ts`)에서 호출하면 `E872`가 던져져 요청이 500이 된다. 그쪽에서 캐시를 버려야 하면 `revalidateTag(tag, "max")`를 쓴다. (아래 카운트 stale 항목을 고치러 `like/route.ts`에 손대는 경우가 바로 여기 해당한다.)
   - 무효화는 **쓰기가 성공한 직후**에 호출해야 한다. `revalidate`는 호출 시점 타임스탬프를 찍고 그때까지 생성된 항목만 버리므로, DB 쓰기 전에 부르면 그 사이에 다시 캐싱된 옛 값이 살아남는다.
-  - 쓰기가 **여러 단계**로 나뉘면(예: `updatePost`의 posts UPDATE → post_tags DELETE → INSERT) 마지막 단계 뒤에도 한 번 더 무효화해야 한다. 중간에 캐시 미스 요청이 들어오면 "태그가 빈" 중간 상태가 캐싱되는데, 그 항목은 앞선 무효화보다 나중에 생성돼 살아남는다. `updatePost`는 첫 쓰기 직후 한 번(부분 실패 대비) + `finally`에서 한 번, 두 번 부른다.
+  - 글·태그 생성/수정은 `save_post_with_tags` RPC 한 트랜잭션으로 처리한다. 여러 HTTP 쓰기로 나누면 중간 태그 상태 노출과 부분 실패가 다시 생기므로 되돌리지 않는다. RPC 성공 응답 후 이전·신규 slug를 무효화하며, 롤백된 저장에는 무효화를 호출하지 않는다.
 - `view_count`/`like_count`도 이 캐시를 타므로 최대 60초 stale할 수 있다 (의도된 트레이드오프). 토글·조회 **직후 그 화면에서만** API 응답으로 보정되고, **새로고침하면 캐시된 옛 카운트로 되돌아간다** (예: 하트는 채워져 있는데 숫자는 1 적음). 정확한 카운트가 필요해지면 캐시 쿼리에서 카운터를 빼고 따로 읽어야 한다.
 - 쿼리 실패를 `null`로 반환하면 그 `null`이 캐싱돼 일시적 DB 장애가 60초짜리 404로 굳는다. `fetchPublishedPost`는 error를 받으면 던진다 — 이 가드를 제거하지 말 것.
 - **태그를 바꾸는 액션도 포스트 캐시를 무효화해야 한다.** 캐시된 포스트 row는 태그 slug를 embed하고 있어서, 태그 slug 변경/삭제 시 `admin/tags/actions.ts`의 `invalidatePostsOfTag`로 해당 포스트들을 함께 버린다 (삭제는 cascade 전에 호출). 이 파일은 자체 `updateTag` Server Action을 export하므로 `next/cache`의 것은 `updateCacheTag` 별칭으로 import한다.
@@ -102,11 +103,11 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 - `src/stores/auth-store.ts` — `{ user, isLoading, setUser, setLoading }` (zustand)
 - `src/lib/supabase/proxy.ts` — 모든 요청에서 `getUser()`로 토큰 갱신
 
-**Admin gate**: 정식 헬퍼는 `src/lib/auth.ts`의 `ADMIN_EMAIL` / `isAdmin()` / `getCurrentUser()`다 (`getCurrentUser`는 `react.cache()`로 감싸져 요청당 Auth 왕복 1회). 현재 이 헬퍼를 쓰는 건 `app/posts/[slug]/page.tsx`(`isAdmin`)와 `lib/queries.ts`(`getCurrentUser`) 둘뿐이고, 나머지 9개 파일은 여전히 각자 상수를 하드코딩한다 — `components/header.tsx`, `lib/post-actions.ts`, `app/posts/new/actions.ts`, `app/posts/[slug]/actions.ts`, `app/admin/{dashboard,posts,tags}/page.tsx`, `app/admin/{posts,tags}/actions.ts` (`rg "ADMIN_EMAIL = " src`로 확인, 총 10곳). 값 변경 시 모든 위치 동기화 필요. **새 코드는 `lib/auth.ts`를 import할 것** — 상수를 또 만들면 동기화 지점만 늘어난다.
+**Admin gate**: 정식 헬퍼는 `src/lib/auth.ts`의 `ADMIN_EMAIL` / `isAdmin()` / `getCurrentUser()`다 (`getCurrentUser`는 `react.cache()`로 감싸져 요청당 Auth 왕복 1회). 새로 수정한 글 저장·삭제·이미지 정리 코드는 이 상수를 import한다. 여전히 별도 상수를 두는 곳은 `components/header.tsx`, `app/admin/dashboard/page.tsx`, `app/admin/tags/page.tsx`, `app/admin/tags/actions.ts` 네 곳이다 (`graft grep "ADMIN_EMAIL = "`). 값 변경 시 이 위치들과 DB의 `is_blog_admin()`도 동기화한다. **새 코드는 `lib/auth.ts`를 import할 것**.
 
 ### Styling
 
-"조용한 읽기": 히어로 그래픽·카드·진입 애니메이션 없이 글과 목록만 둔다. 라이트가 기본이고 `prefers-color-scheme: dark`면 같은 이름의 토큰 값만 바뀐다(토글 없음). 액센트는 파란색 하나. CSS custom properties in `globals.css` with Tailwind v4 `@theme inline` 매핑.
+"조용한 읽기": 히어로 그래픽·카드·진입 애니메이션 없이 글과 목록만 둔다. 헤더의 `ThemeSelect`에서 시스템 설정·라이트·다크를 고른다. 기본은 시스템 설정이고 `localStorage`의 `techlog-theme`에 선택을 저장한다. `src/lib/theme.ts`의 초기 스크립트를 layout head에서 실행해 첫 페인트 전에 html의 `data-theme`(실제 light/dark)·`data-theme-preference`(선택값)를 반영한다. `suppressHydrationWarning`은 html에만 둔다. Tailwind v4 `dark:`도 `data-theme` 커스텀 variant를 따른다. JS 미실행 시 미디어 쿼리가 시스템 다크 토큰을 적용한다. 액센트는 파란색 하나. CSS custom properties in `globals.css` with Tailwind v4 `@theme inline` 매핑.
 
 **실제 디자인 토큰** (`globals.css` 최상단, 라이트 / 다크):
 
@@ -161,6 +162,16 @@ Path alias: `@/*` maps to `./src/*`.
 - supabase 의 'my-notion-blog-comments' 프로젝트를 사용한다.
 - 커밋시에 접두사는 영어로 나머지 타이틀과 내용은 한국어로 작성한다.
 - task 완료시 AGENTS.md 및 README.md 문서에 업데이트가 필요하면 진행한다.
+
+## 2026-10-17 리뷰 수정 계약
+
+- 관리자 글 저장은 `save_post_with_tags` RPC 한 트랜잭션으로 posts와 post_tags를 변경한다. 저장 실패 후 태그만 지워지는 여러 요청 방식으로 되돌리지 않는다. RPC 성공 후에만 이전·신규 slug의 포스트 캐시를 무효화한다.
+- `delete_post_with_cleanup`과 DB 삭제 트리거가 이미지 정리 대기열을 보존한다. 이미지 파일을 글 삭제보다 먼저 지우지 않는다. 공유 참조와 정리 실패는 대기열에 남기고 `/admin/image-cleanup`에서 재시도한다.
+- DB의 관리자 전용 글 RPC는 `is_blog_admin()`으로 관리자 이메일을 검증한다. `src/lib/auth.ts`의 관리자 이메일을 바꾸면 이 DB 판정도 마이그레이션으로 맞춘다. 일반 사용자는 자신의 profile role을 변경할 수 없다.
+- 활동 RPC의 UUID 인자는 호환성 때문에 유지하지만, DB에서 `auth.uid()`와 대조한다. 공개 글만 처리하며, 직접 post_likes/post_views 쓰기 및 구형 RPC overload를 다시 허용하지 않는다.
+- slug는 `src/lib/slug.ts`의 공통 규칙으로 생성·수정·활동 API에서 검증한다. 자동 생성 결과가 비면 필드 오류로 처리한다.
+- 목록 DB 실패를 빈 배열로 바꾸지 않는다. `/api/posts`는 실패 상태를 반환하고, PostGrid는 자동 요청을 멈춘 뒤 수동 재시도를 제공한다.
+- 새 앱 배포 전에 `20261017090000` 및 `20261017091000` 마이그레이션이 적용돼야 한다. 이전 캐시·부분 저장 설명보다 이 단일 트랜잭션 계약을 우선한다.
 
 <!-- graft:start -->
 ## Graft — repo context graph

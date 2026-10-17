@@ -224,6 +224,7 @@
       <li><code>limit + 1</code> 트릭: <code>POSTS_PER_PAGE</code>(6)보다 1개 더 요청해 7번째 행이 있으면 <code>hasMore = true</code>이고, 응답에는 6개만 담음. <code>/api/posts</code>는 <code>limit</code>를 <code>POSTS_PER_PAGE</code>로 상한 처리함.</li>
       <li>정렬 불변식: <code>sort_date = COALESCE(published_at, created_at)</code>(generated column), 정렬 순서는 <code>(sort_date desc, created_at desc, id desc)</code>. 부분 인덱스는 <code>posts_published_sort_idx … WHERE status = 'published'</code>.</li>
       <li>offset 기반이라 로드 사이에 새 글이 발행되면 경계가 밀릴 수 있어서, <code>PostGrid</code>가 slug 기준으로 중복을 제거한 뒤 append함.</li>
+      <li>실패 경로: DB 조회 오류는 빈 마지막 페이지로 바꾸지 않고 API 오류로 반환한다. PostGrid는 HTTP 상태와 응답 구조를 검사하고, 실패 시 자동 로딩을 멈춘 뒤 재시도 버튼을 제공한다.</li>
     </ul>
   </div>
 </body>

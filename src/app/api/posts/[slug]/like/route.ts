@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-
-const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+import { isValidPostSlug } from "@/lib/slug";
 
 // POST: 좋아요 토글 (인증 필수)
 export async function POST(
@@ -10,7 +9,7 @@ export async function POST(
 ) {
   const { slug } = await params;
 
-  if (!slug || slug.length > 200 || !SLUG_PATTERN.test(slug)) {
+  if (!isValidPostSlug(slug)) {
     return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
   }
 

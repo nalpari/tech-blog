@@ -14,6 +14,31 @@ export type Database = {
   }
   public: {
     Tables: {
+      post_image_cleanup_jobs: {
+        Row: {
+          id: string
+          post_id: string
+          content: string | null
+          cover_image: string | null
+          attempts: number
+          last_error: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          content?: string | null
+          cover_image?: string | null
+          attempts?: number
+          last_error?: string | null
+          created_at?: string
+        }
+        Update: {
+          attempts?: number
+          last_error?: string | null
+        }
+        Relationships: []
+      }
       bookmarks: {
         Row: {
           created_at: string
@@ -362,6 +387,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_blog_admin: { Args: never; Returns: boolean }
+      save_post_with_tags: {
+        Args: { target_post_id: string | null; post_data: Json; tag_ids: string[] }
+        Returns: { id: string; slug: string; previous_slug: string | null }
+      }
+      delete_post_with_cleanup: {
+        Args: { target_post_id: string }
+        Returns: { slug: string }
+      }
+      get_post_image_references: { Args: never; Returns: Json }
       get_user_role: { Args: never; Returns: string }
       increment_post_view_count: {
         Args: { post_slug: string; viewer_id?: string | null }

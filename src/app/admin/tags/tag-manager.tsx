@@ -18,7 +18,8 @@ interface TagManagerProps {
 
 export function TagManager({ initialTags }: TagManagerProps) {
   const router = useRouter();
-  const [tags, setTags] = useState(initialTags);
+  // 생성·수정·삭제 모두 서버에서 갱신된 목록을 그대로 표시한다.
+  const tags = initialTags;
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export function TagManager({ initialTags }: TagManagerProps) {
     if (result.error) {
       setError(result.error);
     } else {
-      setTags((prev) => prev.filter((t) => t.id !== id));
+      router.refresh();
     }
     setLoading(false);
   }

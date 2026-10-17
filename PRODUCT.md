@@ -36,7 +36,7 @@ A quiet personal tech blog where the writing reads well. No hero graphic or visu
 ## Brand Commitments
 
 - Name: techlog (kept). Logo: the text wordmark `techlog` (no separate mark).
-- Tone: quiet and reading-first; light by default, following the system dark setting.
+- Tone: quiet and reading-first; system theme by default, with a persistent system/light/dark selector in the header.
 
 ## Evidence on Hand
 
