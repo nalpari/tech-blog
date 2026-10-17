@@ -25,7 +25,7 @@ pnpm lint         # Run ESLint
 
 ## Architecture
 
-**Blog name**: techlog — `layout.tsx`의 `SITE_NAME` 기준 정식 이름. **"조용한 읽기"** 컨셉의 미니멀 개인 기술 블로그(라이트 기본, 시스템 설정을 따르는 다크). 제품 사실은 루트 `PRODUCT.md`, 시각 결정과 방향 계약은 `.impeccable/`(작업 산출물, 커밋 대상 아님)에 있다.
+**Blog name**: techlog — `layout.tsx`의 `SITE_NAME` 기준 정식 이름. **"조용한 읽기"** 컨셉의 미니멀 개인 기술 블로그(라이트 기본, 토글로 전환하는 다크). 제품 사실은 루트 `PRODUCT.md`, 시각 결정과 방향 계약은 `.impeccable/`(작업 산출물, 커밋 대상 아님)에 있다.
 
 ### Routing (App Router)
 
@@ -107,7 +107,7 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 
 ### Styling
 
-"조용한 읽기": 히어로 그래픽·카드·진입 애니메이션 없이 글과 목록만 둔다. 헤더의 `ThemeSelect`에서 시스템 설정·라이트·다크를 고른다. 기본은 시스템 설정이고 `localStorage`의 `techlog-theme`에 선택을 저장한다. `src/lib/theme.ts`의 초기 스크립트를 layout head에서 실행해 첫 페인트 전에 html의 `data-theme`(실제 light/dark)·`data-theme-preference`(선택값)를 반영한다. `suppressHydrationWarning`은 html에만 둔다. Tailwind v4 `dark:`도 `data-theme` 커스텀 variant를 따른다. JS 미실행 시 미디어 쿼리가 시스템 다크 토큰을 적용한다. 액센트는 파란색 하나. CSS custom properties in `globals.css` with Tailwind v4 `@theme inline` 매핑.
+"조용한 읽기": 히어로 그래픽·카드·진입 애니메이션 없이 글과 목록만 둔다. 헤더의 `ThemeSelect`(라이트/다크 토글 버튼)로 전환한다. 기본은 라이트이고 시스템 설정은 따르지 않으며, `localStorage`의 `techlog-theme`에 선택을 저장한다. `src/lib/theme.ts`의 초기 스크립트를 layout head에서 실행해 첫 페인트 전에 html의 `data-theme`(light/dark)을 반영한다. `suppressHydrationWarning`은 html에만 둔다. Tailwind v4 `dark:`도 `data-theme` 커스텀 variant를 따른다. JS 미실행 시에는 라이트 토큰이 적용된다. 액센트는 파란색 하나. CSS custom properties in `globals.css` with Tailwind v4 `@theme inline` 매핑.
 
 **실제 디자인 토큰** (`globals.css` 최상단, 라이트 / 다크):
 

@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-/* 헤더에서 선택한 테마를 data-theme으로 반영하며, 미선택 시 시스템 설정을 따른다.
+/* 헤더 토글에서 고른 테마를 data-theme으로 반영하며, 기본은 라이트다.
    텍스트 색(muted·muted-foreground·accent*)과 .hljs-* 색은 해당 테마의 background·surface 위에서
    WCAG AA(4.5:1) 이상이 되도록 정했다. */
 :root {
@@ -54,32 +54,6 @@
     --hl-title: #79c0ff;
     --hl-built-in: #56d4dd;
     --hl-deletion: #ff7b72;
-}
-
-/* JavaScript를 실행하지 못해도 시스템 다크 모드는 기존처럼 지원한다. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-    --background: #0e1013;
-    --foreground: #e8eaee;
-    --muted: #9aa1ad;
-    --muted-foreground: #828a98;
-    --border: #23272e;
-    --border-strong: #3a4049;
-    --border-light: #1a1d22;
-    --card: #16191e;
-    --card-hover: #1c2026;
-    --accent: #7c9cff;
-    --accent-cyan: #7fc4c0;
-    --accent-amber: #f59e0b;
-    --surface: #16191e;
-    --hl-keyword: #d2a8ff;
-    --hl-string: #7ee787;
-    --hl-number: #ffa657;
-    --hl-title: #79c0ff;
-    --hl-built-in: #56d4dd;
-    --hl-deletion: #ff7b72;
-  }
 }
 
 @theme inline {

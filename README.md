@@ -24,7 +24,7 @@ A quiet, reading-first personal tech blog. Built with Next.js, Tailwind CSS, and
 - **Engagement**: View counter, like button (auth-required)
 - **Search**: `Ctrl/Cmd + K` quick search modal
 - **Home**: one-line intro, then posts grouped by year (date, title, excerpt, tags) with infinite scroll
-- **Reading UX**: scroll-to-top, prose typography, header theme selector (system / light / dark) with saved preference
+- **Reading UX**: scroll-to-top, prose typography, header light/dark theme toggle (light by default) with saved preference
 
 ## Getting Started
 
@@ -105,7 +105,7 @@ docs/
 ## Design
 
 - **Concept**: quiet reading. No hero graphic, no cards, no entrance animation; just an intro line and the post list. Product facts live in `PRODUCT.md`, the design system in `DESIGN.md`.
-- **Theme**: system preference by default, with light (`#fcfcfd`) and dark (`#0e1013`) choices in the header. The selection is saved locally and applied before the first paint; a single blue accent (`#2f5bea` / `#7c9cff`).
+- **Theme**: light by default, with a light (`#fcfcfd`) / dark (`#0e1013`) toggle in the header. The selection is saved locally and applied before the first paint; a single blue accent (`#2f5bea` / `#7c9cff`).
 - **Typography**: Pretendard for everything (Korean-first, 17px / 1.85 prose in a 720px column), JetBrains Mono for code only.
 - **Motion**: colour transitions on hover only; no entrance animation.
 
