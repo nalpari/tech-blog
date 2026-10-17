@@ -60,3 +60,10 @@ next-env.d.ts
 
 # Claude Code 로컬 설정
 /.claude/settings.local.json
+
+# graft 연동 파일 (환경별 경로가 달라 커밋 대상 아님)
+/.claude/helpers/graft-*.cjs
+/.claude/skills/graft/
+/.mcp.json
+/.ignore
+/opencode.json
