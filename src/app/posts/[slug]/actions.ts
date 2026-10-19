@@ -1,18 +1,14 @@
-﻿"use server";
+"use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { ADMIN_EMAIL } from "@/lib/auth";
-import { deletePostAndQueueImages } from "@/lib/delete-post";
+import { requireAdmin } from "@/lib/auth";
+import { deletePostAndQueueImages } from "@/lib/post-mutations";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 export async function deletePost(postId: string) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error || !user || user.email !== ADMIN_EMAIL) {
-      return { error: "삭제 권한이 없습니다." };
-    }
+    const supabase = await requireAdmin();
+    if (!supabase) return { error: "삭제 권한이 없습니다." };
     const result = await deletePostAndQueueImages(supabase, postId);
     if (result.error) return result;
     redirect("/");

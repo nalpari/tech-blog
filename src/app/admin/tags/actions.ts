@@ -1,22 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-// 이 파일도 updateTag라는 Server Action을 export하므로 별칭으로 가져온다.
-import { revalidatePath, updateTag as updateCacheTag } from "next/cache";
-import { POST_CACHE_TAG } from "@/lib/queries";
+import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
-
-const ADMIN_EMAIL = "yoo32767@gmail.com";
-
-async function checkAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== ADMIN_EMAIL) {
-    return { error: "권한이 없습니다.", supabase: null };
-  }
-  return { error: null, supabase };
-}
+import { requireAdmin } from "@/lib/auth";
+import { invalidatePosts } from "@/lib/post-mutations";
 
 // 포스트 상세 캐시는 태그 slug를 embed한 채 저장돼 있다. 태그 slug가 바뀌거나
 // 태그가 사라지면 그 태그를 단 포스트의 캐시도 함께 버려야 죽은 /tags/<slug>
@@ -47,13 +35,9 @@ async function getPostSlugsOfTag(
     .filter((s): s is string => !!s);
 }
 
-function invalidatePosts(slugs: string[]) {
-  for (const slug of slugs) updateCacheTag(POST_CACHE_TAG(slug));
-}
-
 export async function createTag(formData: FormData) {
-  const { error, supabase } = await checkAdmin();
-  if (error || !supabase) return { error };
+  const supabase = await requireAdmin();
+  if (!supabase) return { error: "권한이 없습니다." };
 
   const name = (formData.get("name") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
@@ -78,8 +62,8 @@ export async function createTag(formData: FormData) {
 }
 
 export async function updateTag(formData: FormData) {
-  const { error, supabase } = await checkAdmin();
-  if (error || !supabase) return { error };
+  const supabase = await requireAdmin();
+  if (!supabase) return { error: "권한이 없습니다." };
 
   const id = formData.get("id") as string;
   const name = (formData.get("name") as string)?.trim();
@@ -106,13 +90,12 @@ export async function updateTag(formData: FormData) {
 
   invalidatePosts(await getPostSlugsOfTag(supabase, id));
   revalidatePath("/admin/tags");
-  revalidatePath("/");
   return { error: null };
 }
 
 export async function deleteTag(id: string) {
-  const { error, supabase } = await checkAdmin();
-  if (error || !supabase) return { error };
+  const supabase = await requireAdmin();
+  if (!supabase) return { error: "권한이 없습니다." };
 
   // slug는 cascade 전에 읽고, 무효화는 DELETE가 끝난 뒤에 한다.
   const slugs = await getPostSlugsOfTag(supabase, id);
@@ -126,6 +109,5 @@ export async function deleteTag(id: string) {
 
   invalidatePosts(slugs);
   revalidatePath("/admin/tags");
-  revalidatePath("/");
   return { error: null };
 }
