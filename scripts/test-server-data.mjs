@@ -195,12 +195,11 @@ function postForm(fields) {
 }
 
 function mutationClient({ currentSlug = "old", rpcError = null, previousSlug = currentSlug } = {}) {
-  const calls = { rpc: [], update: [] };
+  const calls = { rpc: [] };
   const query = {
     select: () => query,
     eq: () => query,
-    single: async () => ({ data: { slug: currentSlug, status: "draft", published_at: null }, error: null }),
-    update: (values) => { calls.update.push(values); return { eq: async () => ({ error: null }) }; },
+    single: async () => ({ data: { slug: currentSlug }, error: null }),
   };
   return {
     calls,
@@ -208,6 +207,7 @@ function mutationClient({ currentSlug = "old", rpcError = null, previousSlug = c
       from: () => query,
       rpc: async (name, args) => {
         calls.rpc.push(args);
+        if (name === "toggle_post_status") return { data: { slug: currentSlug, status: "published" }, error: null };
         return rpcError ? { data: null, error: rpcError } : { data: { id: "id", slug: args.post_data.slug, previous_slug: previousSlug }, error: null };
       },
     },
@@ -248,6 +248,6 @@ test("상태 전환도 글 상세 경로까지 무효화한다", async () => {
   const { switchPostStatus } = loadMutations(events);
   const { client, calls } = mutationClient({ currentSlug: "post" });
   assert.deepEqual(await switchPostStatus(client, "id"), { status: "published" });
-  assert.equal(calls.update[0].status, "published");
+  assert.deepEqual(calls.rpc, [{ target_post_id: "id" }]);
   assert.ok(events.includes("tag:post") && events.includes("path:/posts/post"));
 });

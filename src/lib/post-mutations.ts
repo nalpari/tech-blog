@@ -59,28 +59,13 @@ export async function savePost(
   return { saved: { slug, published: fields.status === "published" } };
 }
 
+// 발행 시각 규칙은 toggle_post_status RPC(SQL)에만 있다.
 export async function switchPostStatus(supabase: Client, postId: string) {
-  const { data: post, error: fetchError } = await supabase
-    .from("posts")
-    .select("slug, status, published_at")
-    .eq("id", postId)
-    .single();
-  if (fetchError || !post) return { error: "포스트를 찾을 수 없습니다." };
-
-  const newStatus = post.status === "published" ? "draft" : "published";
-  // ponytail: published_at 규칙(처음 발행할 때만 now)이 save_post_with_tags SQL과 여기 두 곳에 있다.
-  // 어긋나면 상태 전환 RPC를 마이그레이션으로 추가해 SQL 한 곳으로 옮긴다.
-  const { error: updateError } = await supabase
-    .from("posts")
-    .update({
-      status: newStatus,
-      published_at: newStatus === "published" ? new Date().toISOString() : post.published_at,
-    })
-    .eq("id", postId);
-  if (updateError) return { error: `상태 변경에 실패했습니다: ${updateError.message}` };
+  const { data: post, error } = await supabase.rpc("toggle_post_status", { target_post_id: postId });
+  if (error || !post) return { error: "상태를 변경하지 못했습니다. 새로고침 후 다시 시도해주세요." };
 
   invalidatePosts([post.slug]);
-  return { status: newStatus };
+  return { status: post.status };
 }
 
 export async function deletePostAndQueueImages(supabase: Client, postId: string) {

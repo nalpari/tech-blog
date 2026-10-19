@@ -396,6 +396,10 @@ export type Database = {
         Args: { target_post_id: string }
         Returns: { slug: string }
       }
+      toggle_post_status: {
+        Args: { target_post_id: string }
+        Returns: { slug: string; status: "draft" | "published" }
+      }
       get_post_image_references: { Args: never; Returns: Json }
       get_user_role: { Args: never; Returns: string }
       increment_post_view_count: {
