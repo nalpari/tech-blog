@@ -136,6 +136,7 @@ Migrations live in `supabase/migrations/`.
 
 1. `20261017090000_harden_auth_and_engagement.sql`: 프로필 role 수정 권한 제한, 활동 RPC 신원·공개 상태 검증, 구형 RPC 제거, 좋아요 직렬화와 카운터 보정, 충돌 없는 가입 username 생성.
 2. `20261017091000_atomic_post_mutations.sql`: 글·태그 트랜잭션 저장, 관리자 전용 삭제, 이미지 정리 대기열과 재시도.
+3. `20261019090000_toggle_post_status.sql`: 관리자 글 목록의 발행/초안 전환 RPC(`toggle_post_status`). 발행 시각 규칙을 저장 RPC와 같은 SQL로 처리한다.
 
 기존 admin/author 역할은 자동으로 강등하지 않는다. 배포 전에 역할이 정당한지 확인한다. 앱의 `src/lib/admin-email.ts` 관리자 이메일과 DB의 관리자 판정도 함께 맞춰야 한다. 마이그레이션 파일 작성과 운영 DB 적용은 별개이며, 이 저장소 수정만으로 운영 DB가 변경되지는 않는다.
 
