@@ -1,20 +1,14 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { TagManager } from "./tag-manager";
-
-const ADMIN_EMAIL = "yoo32767@gmail.com";
 
 export const metadata = {
   title: "manage tags",
 };
 
 export default async function AdminTagsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user || user.email !== ADMIN_EMAIL) {
-    redirect("/");
-  }
+  const supabase = await requireAdmin();
+  if (!supabase) redirect("/");
 
   const { data: tags } = await supabase
     .from("tags")

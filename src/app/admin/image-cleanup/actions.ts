@@ -1,15 +1,13 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { ADMIN_EMAIL } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { processPostImageCleanup } from "@/lib/post-image-cleanup";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function retryImageCleanup() {
-  const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user || user.email !== ADMIN_EMAIL) redirect("/");
+  const supabase = await requireAdmin();
+  if (!supabase) redirect("/");
   let failed = false;
   try {
     await processPostImageCleanup(supabase);

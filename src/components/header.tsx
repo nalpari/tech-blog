@@ -10,8 +10,7 @@ import { SearchModal } from "@/components/search-modal";
 import { Wordmark } from "@/components/wordmark";
 import { ThemeSelect } from "@/components/theme-select";
 import { showToast } from "@/lib/toast";
-
-const ADMIN_EMAIL = "yoo32767@gmail.com";
+import { ADMIN_EMAIL } from "@/lib/admin-email";
 
 const navItems = [
   { href: "/", label: "blog" },

@@ -1,22 +1,14 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { DashboardContent } from "./dashboard-content";
-
-const ADMIN_EMAIL = "yoo32767@gmail.com";
 
 export const metadata = {
   title: "Dashboard — Spectra Admin",
 };
 
 export default async function AdminDashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user || user.email !== ADMIN_EMAIL) {
-    redirect("/");
-  }
+  const supabase = await requireAdmin();
+  if (!supabase) redirect("/");
 
   // 게시글 목록 (view_count, like_count 포함)
   const { data: posts } = await supabase

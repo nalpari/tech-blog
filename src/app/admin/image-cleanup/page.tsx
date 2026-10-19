@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ADMIN_EMAIL } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { retryImageCleanup } from "./actions";
 
 export const metadata = { title: "이미지 정리 — techlog" };
@@ -9,9 +8,8 @@ export const metadata = { title: "이미지 정리 — techlog" };
 export default async function ImageCleanupPage({ searchParams }: {
   searchParams: Promise<{ result?: string }>;
 }) {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user || user.email !== ADMIN_EMAIL) redirect("/");
+  const supabase = await requireAdmin();
+  if (!supabase) redirect("/");
   const [{ result }, { data: jobs, count, error }] = await Promise.all([
     searchParams,
     supabase.from("post_image_cleanup_jobs")

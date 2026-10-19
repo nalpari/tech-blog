@@ -1,22 +1,15 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { PostsManageContent } from "./posts-manage-content";
 import Link from "next/link";
-import { ADMIN_EMAIL } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata = {
   title: "Manage Posts — Spectra Admin",
 };
 
 export default async function AdminPostsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user || user.email !== ADMIN_EMAIL) {
-    redirect("/");
-  }
+  const supabase = await requireAdmin();
+  if (!supabase) redirect("/");
 
   const { data: posts } = await supabase
     .from("posts")

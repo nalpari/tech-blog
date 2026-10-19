@@ -1,7 +1,8 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { ADMIN_EMAIL } from "@/lib/admin-email";
 
-export const ADMIN_EMAIL = "yoo32767@gmail.com";
+export { ADMIN_EMAIL };
 
 // 한 요청 안에서 여러 번 호출돼도 Auth 왕복은 1회만 발생하도록 메모이제이션한다.
 // ponytail: getUser()는 매번 Auth 서버로 왕복한다. 프로젝트가 아직 legacy HS256
@@ -19,3 +20,9 @@ export const isAdmin = cache(async () => {
   const user = await getCurrentUser();
   return user?.email === ADMIN_EMAIL;
 });
+
+// 관리자만 쓰는 페이지·Server Action의 gate. 관리자가 아니면 null이고,
+// 거절 방식(에러 반환 / redirect)은 호출부가 정한다.
+export async function requireAdmin() {
+  return (await isAdmin()) ? createClient() : null;
+}
