@@ -26,12 +26,14 @@ INSERT INTO public.tags(id, slug, name) VALUES
 SELECT pg_temp.assert_true(NOT has_function_privilege('anon', 'public.save_post_with_tags(uuid,jsonb,uuid[])', 'EXECUTE'), 'anonymous save denied');
 SELECT pg_temp.assert_true(NOT has_function_privilege('anon', 'public.delete_post_with_cleanup(uuid)', 'EXECUTE'), 'anonymous delete denied');
 SELECT pg_temp.assert_true(NOT has_function_privilege('anon', 'public.get_post_image_references()', 'EXECUTE'), 'anonymous private reference read denied');
+SELECT pg_temp.assert_true(NOT has_function_privilege('anon', 'public.toggle_post_status(uuid)', 'EXECUTE'), 'anonymous status toggle denied');
 
 SET LOCAL ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub', '10000000-0000-4000-a000-000000000002', true);
 SELECT pg_temp.assert_denied($sql$SELECT public.save_post_with_tags(NULL, '{"slug":"forged-save","title":"Denied","content":"Denied","status":"draft"}', '{}')$sql$);
 SELECT pg_temp.assert_denied($sql$SELECT public.delete_post_with_cleanup('10000000-0000-4000-b000-000000000001')$sql$);
 SELECT pg_temp.assert_denied($sql$SELECT public.get_post_image_references()$sql$);
+SELECT pg_temp.assert_denied($sql$SELECT public.toggle_post_status('10000000-0000-4000-b000-000000000001')$sql$);
 SELECT pg_temp.assert_true((SELECT count(*) = 0 FROM public.post_image_cleanup_jobs), 'non-admin cannot see cleanup queue');
 
 SELECT set_config('request.jwt.claim.sub', '10000000-0000-4000-a000-000000000001', true);
@@ -80,6 +82,19 @@ BEGIN
       '{"slug":"React_19","title":"Invalid","content":"Invalid body","status":"published"}', '{}');
     RAISE EXCEPTION 'Expected slug rejection';
   EXCEPTION WHEN invalid_parameter_value THEN NULL;
+  END;
+
+  -- 상태 전환: 초안으로 내려도 발행 시각을 유지하고, 다시 발행하면 새로 찍는다.
+  result := public.toggle_post_status(saved_post_id);
+  PERFORM pg_temp.assert_true(result ->> 'status' = 'draft' AND result ->> 'slug' = 'atomic-changed', 'toggle unpublishes and returns slug');
+  PERFORM pg_temp.assert_true((SELECT status = 'draft' AND published_at = initial_published_at FROM public.posts WHERE id = saved_post_id), 'unpublish preserves publication time');
+  UPDATE public.posts SET published_at = published_at - interval '1 day' WHERE id = saved_post_id;
+  result := public.toggle_post_status(saved_post_id);
+  PERFORM pg_temp.assert_true((SELECT status = 'published' AND published_at = now() FROM public.posts WHERE id = saved_post_id), 'republish stamps a new publication time');
+  BEGIN
+    PERFORM public.toggle_post_status('10000000-0000-4000-b000-000000000099');
+    RAISE EXCEPTION 'Expected missing post';
+  EXCEPTION WHEN no_data_found THEN NULL;
   END;
 END;
 $$;
