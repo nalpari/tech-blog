@@ -65,20 +65,20 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 **캐싱/무효화 (중요)**: 발행 포스트 상세는 `unstable_cache`(`revalidate: 60`, 태그 `POST_CACHE_TAG(slug)` = `post:<slug>`)로 요청 간 재사용된다.
 - 캐시 콜백은 쿠키를 읽을 수 없으므로 **반드시** `src/lib/supabase/public.ts`의 `getPublicClient()`(세션 없는 anon 클라이언트)를 쓴다 (RLS `posts_select`가 published를 anon에 허용). 모듈 최상위가 아니라 첫 호출에 생성하는 이유는 env가 없는 CI/프리뷰에서 import만으로 빌드가 죽지 않게 하기 위함이다.
 - draft 조회(`includeDraft: true`)는 권한에 따라 결과가 달라지므로 캐시를 타지 않는다.
-- 포스트를 변경하는 Server Action은 **모두** `updateTag(POST_CACHE_TAG(slug))`를 호출해야 한다 (`post-actions.ts`, `posts/new/actions.ts`, `posts/[slug]/actions.ts`, `admin/posts/actions.ts`). slug를 바꾸는 `updatePost`는 변경 전/후 양쪽을 무효화한다. Next 16의 `revalidateTag`는 인자가 2개(`revalidateTag(tag, profile)`)이고 지연 만료이므로, Server Action에서는 즉시 반영되는 `updateTag`를 쓴다.
+- 포스트 쓰기와 무효화는 `src/lib/post-mutations.ts` module에만 있다 (`savePost`·`switchPostStatus`·`deletePostAndQueueImages`, 공통 `invalidatePosts(slugs)` = `updateTag(POST_CACHE_TAG)` + `/posts/<slug>`·`/admin/posts`·`/` 경로). Server Action은 `requireAdmin()`으로 받은 client를 넘기고 redirect만 한다 — 액션에서 `updateTag`/`revalidatePath`를 직접 부르지 말 것. slug를 바꾸는 저장은 변경 전/후 양쪽을 무효화한다. Next 16의 `revalidateTag`는 인자가 2개(`revalidateTag(tag, profile)`)이고 지연 만료이므로, Server Action에서는 즉시 반영되는 `updateTag`를 쓴다.
   - ⚠️ **`updateTag`는 Server Action 전용이다.** Route Handler(`app/api/**/route.ts`)에서 호출하면 `E872`가 던져져 요청이 500이 된다. 그쪽에서 캐시를 버려야 하면 `revalidateTag(tag, "max")`를 쓴다. (아래 카운트 stale 항목을 고치러 `like/route.ts`에 손대는 경우가 바로 여기 해당한다.)
   - 무효화는 **쓰기가 성공한 직후**에 호출해야 한다. `revalidate`는 호출 시점 타임스탬프를 찍고 그때까지 생성된 항목만 버리므로, DB 쓰기 전에 부르면 그 사이에 다시 캐싱된 옛 값이 살아남는다.
   - 글·태그 생성/수정은 `save_post_with_tags` RPC 한 트랜잭션으로 처리한다. 여러 HTTP 쓰기로 나누면 중간 태그 상태 노출과 부분 실패가 다시 생기므로 되돌리지 않는다. RPC 성공 응답 후 이전·신규 slug를 무효화하며, 롤백된 저장에는 무효화를 호출하지 않는다.
 - `view_count`/`like_count`도 이 캐시를 타므로 최대 60초 stale할 수 있다 (의도된 트레이드오프). 토글·조회 **직후 그 화면에서만** API 응답으로 보정되고, **새로고침하면 캐시된 옛 카운트로 되돌아간다** (예: 하트는 채워져 있는데 숫자는 1 적음). 정확한 카운트가 필요해지면 캐시 쿼리에서 카운터를 빼고 따로 읽어야 한다.
 - 쿼리 실패를 `null`로 반환하면 그 `null`이 캐싱돼 일시적 DB 장애가 60초짜리 404로 굳는다. `fetchPublishedPost`는 error를 받으면 던진다 — 이 가드를 제거하지 말 것.
-- **태그를 바꾸는 액션도 포스트 캐시를 무효화해야 한다.** 캐시된 포스트 row는 태그 slug를 embed하고 있어서, 태그 slug 변경/삭제 시 `admin/tags/actions.ts`의 `invalidatePostsOfTag`로 해당 포스트들을 함께 버린다 (삭제는 cascade 전에 호출). 이 파일은 자체 `updateTag` Server Action을 export하므로 `next/cache`의 것은 `updateCacheTag` 별칭으로 import한다.
+- **태그를 바꾸는 액션도 포스트 캐시를 무효화해야 한다.** 캐시된 포스트 row는 태그 slug를 embed하고 있어서, 태그 slug 변경/삭제 시 `admin/tags/actions.ts`가 `getPostSlugsOfTag`로 대상 slug를 읽어 `invalidatePosts`로 함께 버린다 (삭제는 cascade 전에 slug를 읽고, 무효화는 DELETE 뒤).
 
 **요청 단위 중복 제거**: `getPostBySlug`와 `src/lib/auth.ts`의 `getCurrentUser`/`isAdmin`은 `react.cache()`로 감싸져 있다. `cache()`는 인자를 참조/개수로 비교하므로 `getPostBySlug(slug, includeDraft)`는 **항상 인자 2개를 원시값으로** 넘겨야 적중한다 (객체 인자로 바꾸면 매번 캐시 미스).
 
 **Mutations**: Server Actions만 사용 (`"use server"`).
-- `src/lib/post-actions.ts` — `updatePost(prev, FormData) → UpdatePostState` (form state 패턴)
-- `src/app/admin/{posts,tags}/actions.ts` — 도메인별 admin 액션
-- 포스트를 바꾸는 액션은 `updateTag` + `revalidatePath` 무효화를 반드시 포함 (위 캐싱 항목 참고)
+- `src/lib/post-mutations.ts` — 글 변경 module (저장·상태 전환·삭제·무효화). supabase client를 인자로 받으므로 `scripts/test-server-data.mjs`가 이 interface로 직접 테스트한다.
+- `src/lib/post-actions.ts`(`updatePost`), `posts/new/actions.ts`(`createPost`), `posts/[slug]/actions.ts`·`admin/posts/actions.ts`(삭제·상태 전환) — 권한 확인과 redirect만 하는 얇은 액션 (form state 패턴)
+- `src/app/admin/tags/actions.ts` — 태그 액션. 포스트 무효화는 `invalidatePosts`를 재사용
 
 **Server state**: React Query (`src/providers/query-provider.tsx`) — 기본값 `staleTime: 60_000`, `refetchOnWindowFocus: false`. `<QueryLoadingIndicator />`가 전역 로딩 상태 표시.
 
@@ -103,7 +103,7 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 - `src/stores/auth-store.ts` — `{ user, isLoading, setUser, setLoading }` (zustand)
 - `src/lib/supabase/proxy.ts` — 모든 요청에서 `getUser()`로 토큰 갱신
 
-**Admin gate**: 정식 헬퍼는 `src/lib/auth.ts`의 `ADMIN_EMAIL` / `isAdmin()` / `getCurrentUser()`다 (`getCurrentUser`는 `react.cache()`로 감싸져 요청당 Auth 왕복 1회). 새로 수정한 글 저장·삭제·이미지 정리 코드는 이 상수를 import한다. 여전히 별도 상수를 두는 곳은 `components/header.tsx`, `app/admin/dashboard/page.tsx`, `app/admin/tags/page.tsx`, `app/admin/tags/actions.ts` 네 곳이다 (`graft grep "ADMIN_EMAIL = "`). 값 변경 시 이 위치들과 DB의 `is_blog_admin()`도 동기화한다. **새 코드는 `lib/auth.ts`를 import할 것**.
+**Admin gate**: 관리자 이메일 상수는 `src/lib/admin-email.ts` 한 곳에만 있다 (클라이언트 `header.tsx`도 import하므로 서버 의존성 없음). 서버 헬퍼는 `src/lib/auth.ts`의 `getCurrentUser()` / `isAdmin()` / `requireAdmin()`이다 (`react.cache()`로 요청당 Auth 왕복 1회). 관리자 페이지와 Server Action은 모두 `requireAdmin()`을 쓴다 — 관리자면 supabase client, 아니면 `null`을 돌려주고 거절 방식(에러 반환 / `redirect("/")`)은 호출부가 정한다. 이메일을 바꾸면 DB의 `is_blog_admin()`도 마이그레이션으로 맞춘다.
 
 ### Styling
 
