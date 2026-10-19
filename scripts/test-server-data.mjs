@@ -161,7 +161,7 @@ test("Storage 실패는 큐를 유지하고 참조 조회 실패는 Storage를 �
 test("DB 삭제 실패에는 이미지 정리·캐시 무효화를 수행하지 않는다", async () => {
   const events = [];
   let dbFails = true;
-  const { deletePostAndQueueImages } = load("src/lib/delete-post.ts", {
+  const { deletePostAndQueueImages } = load("src/lib/post-mutations.ts", {
     "next/cache": { updateTag: () => events.push("cache"), revalidatePath() {} },
     "@/lib/queries": { POST_CACHE_TAG: (slug) => slug },
     "@/lib/post-image-cleanup": { processPostImageCleanup: async () => {
@@ -178,4 +178,76 @@ test("DB 삭제 실패에는 이미지 정리·캐시 무효화를 수행하지 
   dbFails = false;
   assert.equal((await deletePostAndQueueImages(client, "id")).success, true);
   assert.deepEqual(events, ["delete", "delete", "cache", "cleanup"]);
+});
+
+function loadMutations(events) {
+  return load("src/lib/post-mutations.ts", {
+    "next/cache": { updateTag: (tag) => events.push(`tag:${tag}`), revalidatePath: (p) => events.push(`path:${p}`) },
+    "@/lib/queries": { POST_CACHE_TAG: (slug) => slug },
+    "@/lib/post-image-cleanup": { processPostImageCleanup: async () => {} },
+  });
+}
+
+function postForm(fields) {
+  const form = new FormData();
+  for (const [key, value] of Object.entries({ title: "제목", content: "본문", status: "published", ...fields })) form.set(key, value);
+  return form;
+}
+
+function mutationClient({ currentSlug = "old", rpcError = null, previousSlug = currentSlug } = {}) {
+  const calls = { rpc: [], update: [] };
+  const query = {
+    select: () => query,
+    eq: () => query,
+    single: async () => ({ data: { slug: currentSlug, status: "draft", published_at: null }, error: null }),
+    update: (values) => { calls.update.push(values); return { eq: async () => ({ error: null }) }; },
+  };
+  return {
+    calls,
+    client: {
+      from: () => query,
+      rpc: async (name, args) => {
+        calls.rpc.push(args);
+        return rpcError ? { data: null, error: rpcError } : { data: { id: "id", slug: args.post_data.slug, previous_slug: previousSlug }, error: null };
+      },
+    },
+  };
+}
+
+test("글 저장: slug 변경 시 이전·신규 slug를 모두 무효화하고 실패하면 무효화하지 않는다", async () => {
+  const events = [];
+  const { savePost } = loadMutations(events);
+  const { client } = mutationClient();
+  const result = await savePost(client, "id", postForm({ slug: "new" }));
+  assert.deepEqual(result.saved, { slug: "new", published: true });
+  for (const slug of ["new", "old"]) {
+    assert.ok(events.includes(`tag:${slug}`));
+    assert.ok(events.includes(`path:/posts/${slug}`));
+  }
+  assert.ok(events.includes("path:/") && events.includes("path:/admin/posts"));
+
+  events.length = 0;
+  const failing = mutationClient({ rpcError: { code: "23505", message: "dup" } });
+  assert.deepEqual(await savePost(failing.client, "id", postForm({ slug: "new" })), { fieldErrors: { slug: "이미 사용 중인 슬러그입니다." } });
+  assert.deepEqual(events, []);
+});
+
+test("글 저장: 새 글은 제목으로 slug를 만들고, 만들 수 없으면 RPC를 부르지 않는다", async () => {
+  const { savePost } = loadMutations([]);
+  const ok = mutationClient();
+  assert.equal((await savePost(ok.client, null, postForm({ title: "React 19" }))).saved.slug, "react-19");
+  assert.equal(ok.calls.rpc[0].target_post_id, null);
+
+  const korean = mutationClient();
+  assert.ok((await savePost(korean.client, null, postForm({ title: "한글 제목" }))).fieldErrors.slug);
+  assert.equal(korean.calls.rpc.length, 0);
+});
+
+test("상태 전환도 글 상세 경로까지 무효화한다", async () => {
+  const events = [];
+  const { switchPostStatus } = loadMutations(events);
+  const { client, calls } = mutationClient({ currentSlug: "post" });
+  assert.deepEqual(await switchPostStatus(client, "id"), { status: "published" });
+  assert.equal(calls.update[0].status, "published");
+  assert.ok(events.includes("tag:post") && events.includes("path:/posts/post"));
 });
