@@ -50,7 +50,7 @@ Client utilities in `src/lib/supabase/`:
 - `server.ts` — Server client (`createServerClient`) for server components and route handlers
 - `proxy.ts` — Session refresh logic used by `src/proxy.ts`
 
-Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs on all routes except static assets, refreshing the auth token on every request.
+Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs on all routes except static assets, refreshing the auth token when it is about to expire (`getSession()` — no Auth round trip otherwise; user verification stays in pages/actions via `getUser()`).
 
 ### Data Layer
 
@@ -101,7 +101,7 @@ Proxy (`src/proxy.ts` — formerly `middleware.ts`, Node.js runtime only) runs o
 
 - `src/providers/auth-provider.tsx` — `onAuthStateChange` 구독, zustand 스토어 동기화
 - `src/stores/auth-store.ts` — `{ user, isLoading, setUser, setLoading }` (zustand)
-- `src/lib/supabase/proxy.ts` — 모든 요청에서 `getUser()`로 토큰 갱신
+- `src/lib/supabase/proxy.ts` — 모든 요청에서 `getSession()`으로 토큰 갱신(만료 임박 시에만 Auth 왕복). proxy는 권한 판단을 하지 않으므로 `getUser()`로 되돌려 매 요청 Auth 왕복을 다시 만들지 말 것 — 검증은 `src/lib/auth.ts`의 `getUser()`가 맡는다
 
 **Admin gate**: 관리자 이메일 상수는 `src/lib/admin-email.ts` 한 곳에만 있다 (클라이언트 `header.tsx`도 import하므로 서버 의존성 없음). 서버 헬퍼는 `src/lib/auth.ts`의 `getCurrentUser()` / `isAdmin()` / `requireAdmin()`이다 (`react.cache()`로 요청당 Auth 왕복 1회). 관리자 페이지와 Server Action은 모두 `requireAdmin()`을 쓴다 — 관리자면 supabase client, 아니면 `null`을 돌려주고 거절 방식(에러 반환 / `redirect("/")`)은 호출부가 정한다. 이메일을 바꾸면 DB의 `is_blog_admin()`도 마이그레이션으로 맞춘다.
 

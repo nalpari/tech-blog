@@ -227,7 +227,7 @@
       <li><code>signInWithOAuth({ provider, options: { redirectTo: `${origin}/auth/callback` } })</code>. provider는 <code>github</code> 또는 <code>google</code>.</li>
       <li>콜백은 <code>exchangeCodeForSession(code)</code> 성공 시 <code>${origin}${next}</code>(기본 <code>/</code>)로, 실패하거나 code가 없으면 <code>/sign-in?error=auth_callback_error</code>로 보냄. SignInForm이 이 쿼리를 읽어 에러를 표시함.</li>
       <li>이메일 로그인은 <code>signInWithPassword</code> 뒤 <code>router.push("/")</code>와 <code>router.refresh()</code>만 하고 콜백은 거치지 않음.</li>
-      <li><code>src/proxy.ts</code>의 matcher(정적 자산 제외)에 걸리는 모든 요청에서 <code>updateSession()</code>이 <code>auth.getUser()</code>로 토큰을 갱신하고 응답 쿠키를 다시 set함.</li>
+      <li><code>src/proxy.ts</code>의 matcher(정적 자산 제외)에 걸리는 모든 요청에서 <code>updateSession()</code>이 <code>auth.getSession()</code>으로 쿠키 세션을 읽고, 만료 임박(90초 이내)일 때만 Auth 서버에 refresh해 응답 쿠키를 다시 set함. 사용자 검증(<code>getUser()</code>)은 페이지·액션에서 함.</li>
       <li><code>AuthProvider</code>는 마운트 시 <code>getUser()</code>로 초기화하고, 이후 <code>onAuthStateChange</code>로 <code>setUser</code>/<code>setLoading(false)</code>를 호출함.</li>
     </ul>
   </div>
