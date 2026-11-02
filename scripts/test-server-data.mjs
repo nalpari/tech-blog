@@ -251,3 +251,33 @@ test("상태 전환도 글 상세 경로까지 무효화한다", async () => {
   assert.deepEqual(calls.rpc, [{ target_post_id: "id" }]);
   assert.ok(events.includes("tag:post") && events.includes("path:/posts/post"));
 });
+
+test("proxy는 유효한 세션에 Auth 서버를 부르지 않고 만료 임박 시에만 refresh한다", async () => {
+  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://abc.supabase.co";
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon";
+  const { NextRequest } = require("next/server");
+  const { updateSession } = load("src/lib/supabase/proxy.ts");
+  const now = Math.floor(Date.now() / 1000);
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    calls.push(String(url));
+    return Response.json({ access_token: "new", refresh_token: "r2", expires_in: 3600, expires_at: now + 3600, token_type: "bearer", user: { id: "u1" } });
+  };
+  const request = (expiresIn) => {
+    const session = { access_token: "old", refresh_token: "r1", expires_in: expiresIn, expires_at: now + expiresIn, token_type: "bearer", user: { id: "u1" } };
+    const cookie = `sb-abc-auth-token=base64-${Buffer.from(JSON.stringify(session)).toString("base64url")}`;
+    return new NextRequest("http://localhost/posts/x", { headers: { cookie } });
+  };
+  try {
+    await updateSession(new NextRequest("http://localhost/"));
+    await updateSession(request(3000));
+    assert.deepEqual(calls, []);
+
+    const response = await updateSession(request(30));
+    assert.ok(calls.some((url) => url.includes("grant_type=refresh_token")));
+    assert.ok(response.cookies.getAll().some((c) => c.name.startsWith("sb-abc-auth-token")));
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
