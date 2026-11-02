@@ -25,8 +25,10 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Refresh the auth token
-  await supabase.auth.getUser();
+  // 토큰 갱신만 한다. getSession()은 만료 임박 시에만 Auth 서버로 refresh하고
+  // 평소엔 쿠키만 읽어 매 요청 Auth 왕복을 없앤다. proxy는 권한 판단을 하지 않으므로
+  // 사용자 검증은 페이지·액션의 getUser()(src/lib/auth.ts)가 맡는다.
+  await supabase.auth.getSession();
 
   return supabaseResponse;
 }
